@@ -1,59 +1,193 @@
-# Panduan Dokumentasi Sistem MTsN 32 Jakarta (`mtsn32-docs`)
+# Sistem Informasi Terpadu & Perpustakaan Digital MTsN 32 Jakarta
 
-Selamat datang di direktori dokumentasi resmi **Sistem Informasi Terpadu & Perpustakaan Digital MTsN 32 Jakarta**.
+Selamat datang di repositori resmi **Sistem Informasi Terpadu & Perpustakaan Digital MTsN 32 Jakarta**. 
 
-Direktori ini merupakan **Single Source of Truth (SSOT)** untuk seluruh pengembangan aplikasi. Seluruh anggota tim pengembang dan **AI Coding Assistant** (seperti Cursor, Windsurf, Claude Code, GitHub Copilot, Antigravity, dll.) **wajib** memahami dan mematuhi panduan di sini sebelum merancang atau menulis kode.
+Aplikasi web ini menggabungkan portal informasi madrasah dengan layanan otomasi perpustakaan (katalog OPAC, presensi pengunjung kiosk mode, sirkulasi peminjaman & pengembalian buku fisik, serta pembaca buku digital terproteksi dengan Dynamic Watermark).
 
 ---
 
-## 1. Struktur & Peran Dokumen
+## 🚀 Panduan Instalasi & Menjalankan Proyek
 
-Dokumentasi ini dibagi menjadi 5 file spesifik agar mudah dipahami oleh manusia maupun AI:
+### Prasyarat Sistem
+Pastikan perangkat Anda sudah terpasang:
+- **PHP** >= 8.3 (dengan ekstensi: `pdo`, `mbstring`, `openssl`, `tokenizer`, `xml`, `ctype`, `json`, `bcmath`)
+- **Composer** (versi terbaru)
+- **Node.js** (v18+ atau v20+) & **NPM**
+- **Database Server:** MySQL / MariaDB / PostgreSQL (atau SQLite untuk pengembangan lokal)
+- *(Opsional)* **Laravel Herd** untuk kemudahan environment lokal di Windows/macOS.
+
+### Langkah Instalasi
+
+1. **Clone Repositori**
+   ```bash
+   git clone https://github.com/rendikaadji/website-MTsN32.git
+   cd website-MTsN32
+   ```
+
+2. **Install Dependensi Backend (PHP)**
+   ```bash
+   composer install
+   ```
+
+3. **Konfigurasi Environment File**
+   Salin file konfigurasi lingkungan:
+   ```bash
+   cp .env.example .env
+   ```
+   *Bagi pengguna Windows PowerShell:*
+   ```powershell
+   copy .env.example .env
+   ```
+
+4. **Generate Application Key**
+   ```bash
+   php artisan key:generate
+   ```
+
+5. **Konfigurasi Database & Jalankan Migrasi**
+   Buka file `.env` dan sesuaikan kredensial database Anda:
+   ```env
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=mtsn32_db
+   DB_USERNAME=root
+   DB_PASSWORD=
+   ```
+   Setelah itu, jalankan migrasi tabel:
+   ```bash
+   php artisan migrate
+   ```
+   *(Opsional) Jika ingin menyertakan data awal/seeder:*
+   ```bash
+   php artisan migrate --seed
+   ```
+
+6. **Install Dependensi Frontend & Compile Asset**
+   ```bash
+   npm install
+   npm run dev
+   ```
+
+7. **Menjalankan Server Aplikasi**
+   - **Jika menggunakan Laravel Herd:** Akses langsung di browser Anda melalui alamat domain lokal (misalnya: `http://mtsn32-web.test` atau `http://website-mtsn32.test`).
+   - **Jika menggunakan PHP CLI biasa:**
+     ```bash
+     php artisan serve
+     ```
+     Buka browser di `http://127.0.0.1:8000`.
+
+---
+
+## 🌿 Panduan Git & Branching Workflow (Wajib untuk Tim)
+
+> [!IMPORTANT]
+> **DILARANG KERAS melakukan `git push` langsung ke branch `main`!**
+> Seluruh pengerjaan fitur, perbaikan bug, maupun pembaruan dokumentasi wajib dikerjakan di branch terpisah dan digabungkan ke `main` hanya melalui mekanisme **Pull Request (PR)**.
+
+### Alur Kerja Standar:
+
+```mermaid
+gitGraph
+   commit id: "Initial"
+   branch feat/sirkulasi
+   checkout feat/sirkulasi
+   commit id: "feat: form peminjaman"
+   commit id: "feat: transaksi ACID"
+   checkout main
+   merge feat/sirkulasi id: "PR #1 Merged"
+```
+
+#### 1. Sinkronisasi Branch `main` Terbaru
+Sebelum mulai membuat fitur atau perubahan baru, pastikan branch `main` di lokal Anda dalam kondisi paling mutakhir:
+```bash
+git checkout main
+git pull origin main
+```
+
+#### 2. Buat Branch Baru Sesuai Tujuan
+Gunakan konvensi penamaan branch standar:
+- `feat/nama-fitur` $\rightarrow$ Penambahan fitur baru (contoh: `feat/sirkulasi-peminjaman`, `feat/gate-presensi`, `feat/opac-search`).
+- `fix/nama-bug` $\rightarrow$ Perbaikan bug/masalah (contoh: `fix/hitung-denda`, `fix/redirect-login`).
+- `docs/nama-perubahan` $\rightarrow$ Perubahan/pembaruan dokumentasi (contoh: `docs/update-schema`, `docs/panduan-setup`).
+- `refactor/nama-modul` $\rightarrow$ Restrukturisasi kode tanpa mengubah fungsionalitas.
+
+Contoh pembuatan branch:
+```bash
+git checkout -b feat/sirkulasi-peminjaman
+```
+
+#### 3. Kerjakan Kode & Lakukan Commit
+Simpan perubahan secara berkala dengan pesan commit yang jelas:
+```bash
+git add .
+git commit -m "feat: implementasi alur peminjaman buku dengan transaksi ACID"
+```
+
+#### 4. Push Branch ke Remote (GitHub)
+Kirim branch kerja Anda ke GitHub:
+```bash
+git push -u origin feat/sirkulasi-peminjaman
+```
+
+#### 5. Buat Pull Request (PR) di GitHub
+1. Masuk ke halaman repositori: [website-MTsN32 di GitHub](https://github.com/rendikaadji/website-MTsN32).
+2. Klik tombol **Compare & pull request** pada branch yang baru saja di-push.
+3. Pastikan arah merge adalah `base: main` $\leftarrow$ `compare: feat/sirkulasi-peminjaman`.
+4. Isi judul dan deskripsi PR secara informatif:
+   - Apa yang ditambahkan/diubah.
+   - Referensi modul terkait di `mtsn32-docs/`.
+   - Bukti uji coba/testing.
+5. Minta review dari rekan tim.
+6. Setelah di-review dan disetujui (Approved), lakukan **Merge Pull Request**.
+
+#### 6. Bersihkan Branch Lokal Setelah Merge
+Setelah PR selesai di-merge di GitHub:
+```bash
+git checkout main
+git pull origin main
+git branch -d feat/sirkulasi-peminjaman
+```
+
+---
+
+## 📖 Panduan Dokumentasi Sistem (`mtsn32-docs`)
+
+Direktori [`mtsn32-docs/`](./mtsn32-docs/) merupakan **Single Source of Truth (SSOT)** untuk seluruh arsitektur dan aturan sistem. Seluruh developer dan **AI Coding Assistant** (Cursor, Windsurf, Claude Code, GitHub Copilot, Antigravity, dll.) **wajib** membaca dan mematuhi dokumentasi ini sebelum menulis kode.
+
+### 1. Struktur & Peran Dokumen
 
 | File | Nama Dokumen | Peran & Deskripsi |
 |---|---|---|
-| [**`prd.md`**](./prd.md) | **Product Requirements Document** | **Sumber kebenaran tertinggi.** Berisi latar belakang, tujuan sistem, daftar modul, matriks hak akses pengguna (RBAC), user flows, dan kriteria penerimaan. |
-| [**`rules.md`**](./rules.md) | **Aturan untuk AI Coding Assistant** | Berisi aturan ketat bagi AI dan developer: hierarki kebenaran, disiplin scope, standar keamanan, transaksi database ACID, konvensi kode/bahasa, dan batas kewenangan. |
-| [**`architecture.md`**](./architecture.md) | **Arsitektur Sistem** | Berisi gambaran umum sistem teknis, peta route & otorisasi, alur teknis per modul (presensi, sirkulasi, buku digital), dan integrasi perangkat kiosk/scanner. |
-| [**`schema.md`**](./schema.md) | **Struktur Database** | Berisi rancangan skema tabel, tipe data, foreign key, index, serta aturan integritas data relasional. |
-| [**`design.md`**](./design.md) | **Panduan UI/UX** | Berisi prinsip desain antarmuka, responsivitas mobile-first, struktur landing page per peran, tata letak kiosk mode (`/gate`), dan konsistensi komponen UI. |
+| [**`prd.md`**](./mtsn32-docs/prd.md) | **Product Requirements Document** | **Sumber kebenaran tertinggi.** Berisi kebutuhan produk, daftar modul, matriks peran & hak akses pengguna (RBAC), user flows, dan kriteria penerimaan. |
+| [**`rules.md`**](./mtsn32-docs/rules.md) | **Aturan untuk AI Coding Assistant** | Aturan ketat untuk AI dan developer: hierarki kebenaran, disiplin scope, standar keamanan, transaksi database ACID, dan konvensi penamaan. |
+| [**`architecture.md`**](./mtsn32-docs/architecture.md) | **Arsitektur Sistem** | Gambaran umum sistem, peta route & otorisasi, alur teknis per modul (presensi, sirkulasi, buku digital), serta integrasi perangkat kiosk/scanner. |
+| [**`schema.md`**](./mtsn32-docs/schema.md) | **Struktur Database** | Rancangan skema tabel, tipe data, foreign key, index, dan aturan integritas data relasional. |
+| [**`design.md`**](./mtsn32-docs/design.md) | **Panduan UI/UX** | Prinsip desain antarmuka, responsivitas mobile-first, struktur landing page per peran, tata letak kiosk mode (`/gate`), dan konsistensi komponen UI. |
 
----
+### 2. Hierarki Sumber Kebenaran
 
-## 2. Hierarki Sumber Kebenaran
-
-Jika terdapat ketidaksesuaian atau ambiguitas antardokumen, gunakan hierarki berikut:
-
-```mermaid
-flowchart TD
-    PRD["1. prd.md (Kebutuhan Produk & Fitur - TERTINGGI)"] --> SCHEMA["2. schema.md (Struktur Database & Integritas)"]
-    SCHEMA --> ARCH["3. architecture.md & design.md (Arsitektur & UI/UX)"]
-    ARCH --> CODE["4. Kode Implementasi (Laravel / Blade / JS)"]
-```
-
-1. **`prd.md`** menang atas semua dokumen teknis lainnya.
+Jika terdapat ketidaksesuaian antardokumen:
+1. **`prd.md`** menang atas semua dokumen lainnya.
 2. **`schema.md`** menjadi acuan utama struktur data dan integritas database.
 3. **`architecture.md`** dan **`design.md`** menjelaskan cara mengimplementasikan fitur tersebut.
-4. **Item bertanda `[BELUM DITETAPKAN]` atau `TBD`**: Dilarang membuat asumsi sepihak. Selalu diskusikan dengan tim/Product Owner terlebih dahulu.
+4. **Item bertanda `[BELUM DITETAPKAN]` atau `TBD`:** Dilarang membuat asumsi sepihak. Selalu diskusikan dengan tim/Product Owner terlebih dahulu.
 
 ---
 
-## 3. Panduan untuk Tim: Cara Mengarahkan AI Coding Assistant
+## 🤖 Cara Mengarahkan AI Coding Assistant
 
-Agar AI menghasilkan kode yang akurat, aman, dan sesuai spesifikasi, pastikan AI membaca dokumen di `mtsn32-docs/` **terlebih dahulu** pada setiap sesi tugas atau prompt baru.
+Agar AI menghasilkan kode yang akurat, aman, dan sesuai spesifikasi, pastikan AI membaca dokumen di `mtsn32-docs/` **terlebih dahulu** pada setiap sesi pengerjaan.
 
-### 3.1. Metode Menggunakan Mention Context (`@`)
-
-Jika menggunakan editor AI seperti **Cursor**, **Windsurf**, atau **Antigravity**, selalu sertakan file dokumentasi terkait di chat:
-
+### Metode Mention Context (`@`)
+Sertakan file dokumentasi terkait di kolom chat AI (Cursor, Windsurf, Antigravity, dll.):
 ```text
 @mtsn32-docs/rules.md @mtsn32-docs/prd.md @mtsn32-docs/architecture.md @mtsn32-docs/schema.md
 Tolong buatkan migration, model, dan controller untuk modul Sirkulasi (Peminjaman dan Pengembalian Buku). Pastikan transaksi bersifat ACID sesuai schema.md dan periksa otorisasi sesuai prd.md.
 ```
 
-### 3.2. Template Prompt Standar (Copy-Paste Ready)
-
-Gunakan template prompt berikut saat memberikan tugas baru kepada AI:
+### Template Prompt Standar (Siap Salin)
+Gunakan template prompt berikut saat memulai sesi baru bersama AI:
 
 ```markdown
 Sebelum menulis atau mengubah kode apa pun, baca dan pahami seluruh panduan di:
@@ -74,53 +208,26 @@ Ketentuan pengerjaan:
 - Jelaskan secara ringkas langkah yang akan kamu lakukan sebelum menulis kode.
 ```
 
-### 3.3. Mengonfigurasi Aturan AI Otomatis (Workspace Rules)
-
-Agar Anda tidak perlu mengetik ulang instruksi di setiap percakapan, Anda dapat mendaftarkan referensi `mtsn32-docs/` ke dalam konfigurasi AI:
-
-- **Cursor (`.cursorrules` atau `.cursor/rules/*.mdc`)**:
-  Tambahkan instruksi:
-  ```text
-  Always consult and prioritize `mtsn32-docs/rules.md`, `mtsn32-docs/prd.md`, `mtsn32-docs/architecture.md`, and `mtsn32-docs/schema.md` before generating any code or proposing architecture changes.
-  ```
-- **Claude Code (`CLAUDE.md`) & Agent Guidelines (`AGENTS.md`)**:
-  Pastikan instruksi membaca `mtsn32-docs/` tercantum sebagai acuan wajib bagi setiap agen AI yang bekerja di repositori ini.
-
 ---
 
-## 4. Prinsip Utama yang Wajib Diingat Tim & AI
+## 🛡️ Aturan Utama Proyek (Engineering Guidelines)
 
-### 🛡️ Keamanan & Otorisasi
-- **Otorisasi di Sisi Server (Server-Side Enforcement):** Jangan pernah hanya menyembunyikan tombol/menu di UI. Setiap route, controller, dan action wajib memeriksa role dan kepemilikan data pengguna.
-- **Kepemilikan Data:**
-  - Siswa & Guru hanya dapat melihat data milik mereka sendiri.
-  - Wali Murid hanya dapat melihat data anak yang terhubung via `guardian_students`.
-  - Buku digital wajib disimpan di direktori **private** dan disajikan melalui endpoint terproteksi dengan **Dynamic Watermark**.
-
-### ⚡ Integritas Data & Transaksi
-- **Transaksi ACID Wajib:** Alur peminjaman (`loans`) dan pengembalian buku wajib berada dalam satu blok transaksi database (`DB::transaction`). Jika satu langkah gagal, lakukan rollback penuh.
-- **Waktu Server:** Waktu presensi (`visits`) dan transaksi peminjaman/pengembalian wajib menggunakan waktu server (`now()`), bukan waktu dari klien.
-- **Konfigurasi Dinamis:** Denda, durasi pinjam, dan kuota peminjaman dibaca dari tabel konfigurasi (`loan_rules`), **bukan di-hardcode**.
-
-### 🌐 Konvensi Bahasa & Penamaan
-- **Kode:** Nama variabel, fungsi, class, method, route, tabel database, dan kolom menggunakan **Bahasa Inggris** (contoh: `book_copies`, `LoanController`, `visited_at`).
-- **Antarmuka (UI):** Semua teks tampilan pengguna, label tombol, form, notifikasi, dan pesan error menggunakan **Bahasa Indonesia** yang ramah dan mudah dipahami (contoh: "Katalog Buku", "Peminjaman & Pengembalian", "Presensi Pengunjung").
-
----
-
-## 5. Cara Memperbarui Dokumentasi
-
-Jika terjadi perubahan kebutuhan madrasah di masa mendatang:
-
-1. **Diskusikan Perubahan:** Ajukan perubahan ke tim/Product Owner.
-2. **Update Dokumentasi Terlebih Dahulu (Doc-First Development):**
-   - Perubahan fitur/role $\rightarrow$ perbarui [`prd.md`](./prd.md).
-   - Perubahan struktur tabel/kolom $\rightarrow$ perbarui [`schema.md`](./schema.md).
-   - Perubahan route/alur modul $\rightarrow$ perbarui [`architecture.md`](./architecture.md).
-   - Perubahan tampilan/komponen $\rightarrow$ perbarui [`design.md`](./design.md).
-3. **Baru Lakukan Koding:** Terapkan perubahan pada kode aplikasi setelah dokumentasi diperbarui dan disepakati.
+1. **Otorisasi di Sisi Server (Server-Side Enforcement):**
+   - Pemeriksaan hak akses wajib dilakukan di controller/policy/middleware, bukan sekadar menyembunyikan tombol di antarmuka.
+   - Siswa & Guru hanya dapat melihat data pribadi mereka.
+   - Wali Murid hanya dapat melihat data anak yang terhubung lewat tabel `guardian_students`.
+2. **Transaksi ACID Wajib:**
+   - Proses peminjaman dan pengembalian buku wajib berada dalam satu transaksi database (`DB::transaction`). Jika ada satu langkah gagal, lakukan rollback penuh.
+3. **Waktu Server:**
+   - Waktu presensi (`visits`) dan transaksi peminjaman/pengembalian wajib menggunakan waktu server (`now()`), bukan waktu dari klien.
+4. **Konvensi Bahasa & Penamaan:**
+   - **Kode:** Variabel, fungsi, method, route, tabel, dan kolom wajib menggunakan **Bahasa Inggris**.
+   - **Antarmuka (UI):** Seluruh label, form, notifikasi, dan pesan error menggunakan **Bahasa Indonesia** yang baku dan ramah.
+5. **Keamanan Buku Digital:**
+   - File buku digital disimpan di folder **private** (bukan public storage).
+   - Ditampilkan hanya melalui endpoint terproteksi dengan **Dynamic Watermark** (identitas pengguna yang membaca).
 
 ---
 
 > [!NOTE]
-> Jika ada pertanyaan atau ketidakjelasan pada isi dokumentasi, silakan buka diskusi di tim pengembang sebelum mengambil keputusan teknis.
+> Jika ada pertanyaan teknis atau perbedaan pendapat mengenai kebutuhan fitur, selalu diskusikan di forum tim pengembang terlebih dahulu sebelum mengubah kode.
