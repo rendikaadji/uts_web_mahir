@@ -10,6 +10,25 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         body { font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; }
+
+        /* Custom sleek scrollbar for sidebar */
+        .custom-sidebar-scroll {
+            scrollbar-width: thin;
+            scrollbar-color: #334155 rgba(15, 23, 42, 0.4);
+        }
+        .custom-sidebar-scroll::-webkit-scrollbar {
+            width: 5px;
+        }
+        .custom-sidebar-scroll::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.4);
+        }
+        .custom-sidebar-scroll::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        .custom-sidebar-scroll::-webkit-scrollbar-thumb:hover {
+            background: #047857;
+        }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex">
@@ -17,13 +36,13 @@
     <!-- Mobile Sidebar Backdrop & Drawer -->
     <div id="admin-mobile-drawer" class="fixed inset-0 z-50 transform -translate-x-full transition-transform duration-300 ease-in-out md:hidden" aria-hidden="true">
         <div id="admin-drawer-backdrop" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs opacity-0 transition-opacity duration-300"></div>
-        <aside class="relative w-4/5 max-w-xs bg-slate-900 text-slate-300 h-full shadow-2xl flex flex-col justify-between overflow-y-auto">
+        <aside class="relative w-4/5 max-w-xs bg-slate-900 text-slate-300 h-full shadow-2xl flex flex-col overflow-hidden">
             @include('layouts.partials.admin-sidebar-nav')
         </aside>
     </div>
 
     <!-- Desktop Sidebar (Fixed Left) -->
-    <aside class="w-64 bg-slate-900 text-slate-300 shrink-0 hidden md:flex flex-col justify-between border-r border-slate-800 sticky top-0 h-screen">
+    <aside class="w-64 bg-slate-900 text-slate-300 shrink-0 hidden md:flex flex-col border-r border-slate-800 sticky top-0 h-screen overflow-hidden z-20">
         @include('layouts.partials.admin-sidebar-nav')
     </aside>
 
