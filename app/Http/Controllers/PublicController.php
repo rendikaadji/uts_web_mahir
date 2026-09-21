@@ -6,7 +6,12 @@ use App\Models\Article;
 use App\Models\Book;
 use App\Models\BookCopy;
 use App\Models\Category;
+use App\Models\Extracurricular;
+use App\Models\Facility;
+use App\Models\Gallery;
 use App\Models\Member;
+use App\Models\SchoolProfile;
+use App\Models\TeacherStaff;
 use App\Models\Visit;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -15,9 +20,11 @@ class PublicController extends Controller
 {
     public function home(): View
     {
+        $profile = SchoolProfile::getActiveProfile();
+
         $stats = [
             'students' => Member::where('member_type', 'siswa')->count(),
-            'teachers' => Member::where('member_type', 'guru')->count(),
+            'teachers' => TeacherStaff::where('role_type', 'guru')->where('is_active', true)->count(),
             'books' => Book::count(),
             'copies' => BookCopy::count(),
             'visits_today' => Visit::whereDate('visited_at', today())->count(),
@@ -35,23 +42,32 @@ class PublicController extends Controller
             ->get();
 
         $categories = Category::withCount('books')->get();
+        $galleries = Gallery::latest('event_date')->take(6)->get();
 
-        return view('public.home', compact('stats', 'latestArticles', 'featuredBooks', 'categories'));
+        return view('public.home', compact('profile', 'stats', 'latestArticles', 'featuredBooks', 'categories', 'galleries'));
     }
 
     public function profile(): View
     {
-        return view('public.profile');
+        $profile = SchoolProfile::getActiveProfile();
+        $teachers = TeacherStaff::where('is_active', true)->orderBy('sort_order')->orderBy('id')->get();
+        $facilities = Facility::where('is_active', true)->latest()->get();
+
+        return view('public.profile', compact('profile', 'teachers', 'facilities'));
     }
 
     public function academic(): View
     {
-        return view('public.academic');
+        $profile = SchoolProfile::getActiveProfile();
+        $extracurriculars = Extracurricular::where('is_active', true)->get();
+
+        return view('public.academic', compact('profile', 'extracurriculars'));
     }
 
     public function information(Request $request): View
     {
         $selectedCategory = $request->query('kategori');
+        $profile = SchoolProfile::getActiveProfile();
 
         $query = Article::whereNotNull('published_at')
             ->where('published_at', '<=', now());
@@ -61,8 +77,9 @@ class PublicController extends Controller
         }
 
         $articles = $query->latest('published_at')->paginate(9)->withQueryString();
+        $galleries = Gallery::latest('event_date')->take(6)->get();
 
-        return view('public.information', compact('articles', 'selectedCategory'));
+        return view('public.information', compact('articles', 'selectedCategory', 'profile', 'galleries'));
     }
 
     public function articleDetail(string $slug): View

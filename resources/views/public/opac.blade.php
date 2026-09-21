@@ -56,11 +56,15 @@
         @forelse($books as $book)
             <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs hover:shadow-md transition flex flex-col justify-between">
                 <div class="space-y-3">
-                    <div class="w-full h-44 rounded-xl bg-gradient-to-tr from-emerald-50 to-teal-50 flex items-center justify-center text-emerald-800 border border-emerald-100/80">
-                        <div class="text-center p-3">
-                            <svg class="w-10 h-10 mx-auto text-emerald-600 mb-2 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-                            <span class="text-xs font-bold text-slate-800 block line-clamp-2">{{ $book->title }}</span>
-                        </div>
+                    <div class="w-full h-48 rounded-xl bg-gradient-to-tr from-emerald-50 to-teal-50 flex items-center justify-center text-emerald-800 border border-emerald-100/80 overflow-hidden">
+                        @if($book->cover_image)
+                            <img src="{{ str_starts_with($book->cover_image, 'http') ? $book->cover_image : asset('storage/' . $book->cover_image) }}" alt="{{ $book->title }}" class="w-full h-full object-cover">
+                        @else
+                            <div class="text-center p-3">
+                                <svg class="w-10 h-10 mx-auto text-emerald-600 mb-2 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                                <span class="text-xs font-bold text-slate-800 block line-clamp-2">{{ $book->title }}</span>
+                            </div>
+                        @endif
                     </div>
 
                     <div class="space-y-1.5">

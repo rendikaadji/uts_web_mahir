@@ -27,7 +27,7 @@
             <table class="w-full text-left text-xs text-slate-600">
                 <thead class="bg-slate-50 text-slate-400 font-bold uppercase text-[10px] tracking-wider border-b border-slate-100">
                     <tr>
-                        <th class="py-3.5 px-4">Informasi Buku</th>
+                        <th class="py-3.5 px-4">Informasi & Sampul Buku</th>
                         <th class="py-3.5 px-4">Kategori</th>
                         <th class="py-3.5 px-4">Penerbit & Tahun</th>
                         <th class="py-3.5 px-4">ISBN</th>
@@ -38,9 +38,20 @@
                 <tbody class="divide-y divide-slate-100">
                     @forelse($books as $book)
                         <tr class="hover:bg-slate-50/80 transition">
-                            <td class="py-3.5 px-4 max-w-xs">
-                                <span class="font-bold text-slate-900 block truncate">{{ $book->title }}</span>
-                                <span class="text-[11px] text-slate-500">Penulis: {{ $book->author }}</span>
+                            <td class="py-3 px-4 max-w-xs">
+                                <div class="flex items-center gap-3">
+                                    @if($book->cover_image)
+                                        <img src="{{ str_starts_with($book->cover_image, 'http') ? $book->cover_image : asset('storage/' . $book->cover_image) }}" alt="{{ $book->title }}" class="w-10 h-14 object-cover rounded-lg border border-slate-200 shrink-0 shadow-xs">
+                                    @else
+                                        <div class="w-10 h-14 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center border border-dashed border-emerald-200 shrink-0">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                                        </div>
+                                    @endif
+                                    <div class="truncate">
+                                        <a href="{{ route('admin.books.show', $book) }}" class="font-bold text-slate-900 hover:text-emerald-700 block truncate">{{ $book->title }}</a>
+                                        <span class="text-[11px] text-slate-500 block truncate">Penulis: {{ $book->author }}</span>
+                                    </div>
+                                </div>
                             </td>
                             <td class="py-3.5 px-4">
                                 <span class="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 font-semibold text-[10px]">
@@ -58,26 +69,38 @@
                                 <span class="font-bold {{ $book->available_copies_count > 0 ? 'text-emerald-700' : 'text-rose-600' }}">
                                     {{ $book->available_copies_count }}
                                 </span>
-                                <span class="text-slate-400">/ {{ $book->copies->count() }}</span>
+                                <span class="text-slate-400 text-[11px]">/ {{ $book->total_copies_count }}</span>
                             </td>
-                            <td class="py-3.5 px-4 text-right">
-                                <a href="{{ route('admin.books.show', $book) }}" class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-700 font-semibold text-xs transition">
-                                    Detail & Barcode &rarr;
+                            <td class="py-3.5 px-4 text-right space-x-2">
+                                <a href="{{ route('admin.books.show', $book) }}" class="text-slate-600 hover:text-slate-900 font-bold hover:underline">
+                                    Detail
                                 </a>
+                                <a href="{{ route('admin.books.edit', $book) }}" class="text-emerald-700 hover:text-emerald-900 font-bold hover:underline">
+                                    Edit
+                                </a>
+                                <form action="{{ route('admin.books.destroy', $book) }}" method="POST" class="inline" onsubmit="return confirm('Hapus judul buku dan semua eksemplarnya?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-rose-600 hover:text-rose-800 font-semibold text-xs">
+                                        Hapus
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="py-8 text-center text-slate-400">Belum ada koleksi buku yang sesuai kriteria pencarian.</td>
+                            <td colspan="6" class="py-8 text-center text-slate-400">Belum ada koleksi buku yang terdaftar.</td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
 
-        <div class="p-4 border-t border-slate-100">
-            {{ $books->links() }}
-        </div>
+        @if($books->hasPages())
+            <div class="p-4 border-t border-slate-100">
+                {{ $books->links() }}
+            </div>
+        @endif
     </div>
 </div>
 @endsection

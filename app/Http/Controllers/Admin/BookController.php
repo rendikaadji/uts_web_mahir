@@ -8,6 +8,7 @@ use App\Models\BookCopy;
 use App\Models\Category;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -55,12 +56,15 @@ class BookController extends Controller
             'publication_year' => ['required', 'integer', 'min:1900', 'max:'.(date('Y') + 1)],
             'isbn' => ['nullable', 'string', 'max:50'],
             'description' => ['nullable', 'string'],
+            'cover_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
             'copies_count' => ['required', 'integer', 'min:1', 'max:50'],
         ], [
             'category_id.required' => 'Kategori buku wajib dipilih.',
             'title.required' => 'Judul buku wajib diisi.',
             'author.required' => 'Penulis buku wajib diisi.',
             'publisher.required' => 'Penerbit buku wajib diisi.',
+            'cover_image.image' => 'Sampul buku harus berupa file gambar (JPG, PNG, WebP).',
+            'cover_image.max' => 'Ukuran file sampul buku maksimal 2MB.',
             'copies_count.required' => 'Jumlah eksemplar fisik wajib diisi minimal 1.',
         ]);
 
@@ -69,6 +73,11 @@ class BookController extends Controller
         $counter = 1;
         while (Book::where('slug', $slug)->exists()) {
             $slug = $baseSlug.'-'.$counter++;
+        }
+
+        $coverPath = null;
+        if ($request->hasFile('cover_image')) {
+            $coverPath = $request->file('cover_image')->store('books', 'public');
         }
 
         $book = Book::create([
@@ -80,6 +89,7 @@ class BookController extends Controller
             'publication_year' => $validated['publication_year'],
             'isbn' => $validated['isbn'] ?? null,
             'description' => $validated['description'] ?? null,
+            'cover_image' => $coverPath,
         ]);
 
         // Buat eksemplar fisik
@@ -96,7 +106,7 @@ class BookController extends Controller
             ]);
         }
 
-        return redirect()->route('admin.books.index')->with('success', 'Buku "'.$book->title.'" dan '.$count.' eksemplar berhasil ditambahkan.');
+        return redirect()->route('admin.books.index')->with('success', 'Buku "'.$book->title.'" dan '.$count.' eksemplar berhasil ditambahkan ke katalog.');
     }
 
     public function show(Book $book): View
@@ -104,6 +114,71 @@ class BookController extends Controller
         $book->load(['category', 'copies.loans' => fn ($q) => $q->latest()->take(5)]);
 
         return view('admin.books.show', compact('book'));
+    }
+
+    public function edit(Book $book): View
+    {
+        $categories = Category::all();
+
+        return view('admin.books.edit', compact('book', 'categories'));
+    }
+
+    public function update(Request $request, Book $book): RedirectResponse
+    {
+        $validated = $request->validate([
+            'category_id' => ['required', 'exists:categories,id'],
+            'title' => ['required', 'string', 'max:255'],
+            'author' => ['required', 'string', 'max:255'],
+            'publisher' => ['required', 'string', 'max:255'],
+            'publication_year' => ['required', 'integer', 'min:1900', 'max:'.(date('Y') + 1)],
+            'isbn' => ['nullable', 'string', 'max:50'],
+            'description' => ['nullable', 'string'],
+            'cover_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+        ], [
+            'category_id.required' => 'Kategori buku wajib dipilih.',
+            'title.required' => 'Judul buku wajib diisi.',
+            'author.required' => 'Penulis buku wajib diisi.',
+            'publisher.required' => 'Penerbit buku wajib diisi.',
+            'cover_image.image' => 'Sampul buku harus berupa file gambar (JPG, PNG, WebP).',
+            'cover_image.max' => 'Ukuran file sampul buku maksimal 2MB.',
+        ]);
+
+        $data = [
+            'category_id' => $validated['category_id'],
+            'title' => $validated['title'],
+            'author' => $validated['author'],
+            'publisher' => $validated['publisher'],
+            'publication_year' => $validated['publication_year'],
+            'isbn' => $validated['isbn'] ?? null,
+            'description' => $validated['description'] ?? null,
+        ];
+
+        if ($request->hasFile('cover_image')) {
+            if ($book->cover_image && ! str_starts_with($book->cover_image, 'http') && Storage::disk('public')->exists($book->cover_image)) {
+                Storage::disk('public')->delete($book->cover_image);
+            }
+            $data['cover_image'] = $request->file('cover_image')->store('books', 'public');
+        }
+
+        $book->update($data);
+
+        return redirect()->route('admin.books.show', $book)->with('success', 'Informasi buku "'.$book->title.'" berhasil diperbarui.');
+    }
+
+    public function destroy(Book $book): RedirectResponse
+    {
+        if ($book->copies()->where('status', 'dipinjam')->exists()) {
+            return back()->withErrors(['error' => 'Buku tidak dapat dihapus karena salah satu eksemplarnya sedang dipinjam santri/guru.']);
+        }
+
+        if ($book->cover_image && ! str_starts_with($book->cover_image, 'http') && Storage::disk('public')->exists($book->cover_image)) {
+            Storage::disk('public')->delete($book->cover_image);
+        }
+
+        $book->copies()->delete();
+        $book->delete();
+
+        return redirect()->route('admin.books.index')->with('success', 'Buku dan seluruh eksemplarnya berhasil dihapus.');
     }
 
     public function addCopy(Request $request, Book $book): RedirectResponse
