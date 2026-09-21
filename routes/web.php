@@ -108,6 +108,8 @@ Route::middleware(['auth', 'role:admin_madrasah,pustakawan'])->prefix('admin')->
     Route::get('/fasilitas', [FacilityController::class, 'index'])->name('facilities.index');
     Route::get('/fasilitas/tambah', [FacilityController::class, 'create'])->name('facilities.create');
     Route::post('/fasilitas', [FacilityController::class, 'store'])->name('facilities.store');
+    Route::get('/fasilitas/{facility}/edit', [FacilityController::class, 'edit'])->name('facilities.edit');
+    Route::put('/fasilitas/{facility}', [FacilityController::class, 'update'])->name('facilities.update');
     Route::delete('/fasilitas/{facility}', [FacilityController::class, 'destroy'])->name('facilities.destroy');
 
     // Pusat Laporan & Ekspor (Excel & PDF Resmi)

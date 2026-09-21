@@ -229,16 +229,31 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             @foreach($facilities as $fac)
-                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between space-y-3">
-                    <div class="space-y-2">
-                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-50 text-teal-700 uppercase">
-                            {{ $fac->category }}
-                        </span>
-                        <h3 class="font-bold text-sm text-slate-900">{{ $fac->name }}</h3>
-                        <p class="text-xs text-slate-600 line-clamp-3">{{ $fac->description }}</p>
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-xs hover:shadow-md transition flex flex-col justify-between overflow-hidden group">
+                    <div>
+                        <div class="aspect-video w-full bg-slate-100 overflow-hidden relative border-b border-slate-100">
+                            @if($fac->photo)
+                                <img src="{{ Str::startsWith($fac->photo, 'http') ? $fac->photo : asset('storage/' . $fac->photo) }}" alt="{{ $fac->name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                            @else
+                                <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 text-slate-400">
+                                    <svg class="w-8 h-8 mb-1 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                                    <span class="text-[10px] font-semibold text-slate-400">MTsN 32 Jakarta</span>
+                                </div>
+                            @endif
+                            <span class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded text-[10px] font-bold bg-slate-900/80 text-white uppercase backdrop-blur-xs">
+                                {{ $fac->category }}
+                            </span>
+                        </div>
+                        <div class="p-4 space-y-1.5">
+                            <h3 class="font-bold text-sm text-slate-900 leading-snug">{{ $fac->name }}</h3>
+                            <p class="text-xs text-slate-600 line-clamp-3 leading-relaxed">{{ $fac->description }}</p>
+                        </div>
                     </div>
-                    <div class="pt-2 border-t border-slate-100 text-[11px] text-slate-500">
-                        Kapasitas: <strong class="text-slate-800">{{ $fac->capacity }}</strong>
+                    <div class="p-4 pt-0">
+                        <div class="pt-2.5 border-t border-slate-100 text-[11px] text-slate-500 flex items-center justify-between">
+                            <span>Kapasitas:</span>
+                            <strong class="text-slate-800">{{ $fac->capacity ?? '-' }}</strong>
+                        </div>
                     </div>
                 </div>
             @endforeach

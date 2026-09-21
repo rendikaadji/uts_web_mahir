@@ -7,6 +7,7 @@ use App\Models\Book;
 use App\Models\BookCopy;
 use App\Models\Category;
 use App\Models\Extracurricular;
+use App\Models\Facility;
 use App\Models\Gallery;
 use App\Models\GuardianStudent;
 use App\Models\Member;
@@ -639,5 +640,76 @@ class PortalAndLibraryTest extends TestCase
         $this->assertStringContainsString('KEMENTERIAN AGAMA REPUBLIK INDONESIA', $exportResponse->getContent());
         $this->assertStringContainsString('LAPORAN RESMI SIRKULASI', $exportResponse->getContent());
         $this->assertStringContainsString('DisplayGridlines', $exportResponse->getContent());
+    }
+
+    public function test_admin_can_manage_facilities_with_photo_crud(): void
+    {
+        Storage::fake('public');
+
+        $admin = User::create([
+            'name' => 'Admin Sarpras',
+            'username' => 'adminsarpras',
+            'email' => 'adminsarpras@test.com',
+            'password' => Hash::make('admin123'),
+            'role' => 'admin_madrasah',
+            'is_active' => true,
+        ]);
+
+        // 1. Create Facility with photo
+        $photo = UploadedFile::fake()->image('lab-bahasa.jpg', 800, 600);
+        $createResponse = $this->actingAs($admin)->post('/admin/fasilitas', [
+            'name' => 'Laboratorium Bahasa Digital',
+            'category' => 'akademik',
+            'capacity' => '36 Siswa',
+            'description' => 'Lab bahasa modern berstandar internasional Cambridge.',
+            'photo' => $photo,
+            'is_active' => 1,
+        ]);
+
+        $createResponse->assertRedirect('/admin/fasilitas');
+        $facility = Facility::where('name', 'Laboratorium Bahasa Digital')->first();
+        $this->assertNotNull($facility);
+        $this->assertNotNull($facility->photo);
+        Storage::disk('public')->assertExists($facility->photo);
+
+        // 2. View Edit Page
+        $this->actingAs($admin)
+            ->get('/admin/fasilitas/'.$facility->id.'/edit')
+            ->assertStatus(200)
+            ->assertSee('Edit Fasilitas')
+            ->assertSee('Laboratorium Bahasa Digital');
+
+        // 3. Update Facility and Replace Photo
+        $newPhoto = UploadedFile::fake()->image('lab-bahasa-v2.jpg', 800, 600);
+        $oldPhotoPath = $facility->photo;
+
+        $updateResponse = $this->actingAs($admin)->put('/admin/fasilitas/'.$facility->id, [
+            'name' => 'Laboratorium Bahasa & Multimedia Digital',
+            'category' => 'akademik',
+            'capacity' => '40 Siswa',
+            'description' => 'Lab multimedia dan bahasa dengan 40 komputer.',
+            'photo' => $newPhoto,
+            'is_active' => 1,
+        ]);
+
+        $updateResponse->assertRedirect('/admin/fasilitas');
+        $facility->refresh();
+        $this->assertEquals('Laboratorium Bahasa & Multimedia Digital', $facility->name);
+        $this->assertEquals('40 Siswa', $facility->capacity);
+        $this->assertNotEquals($oldPhotoPath, $facility->photo);
+        Storage::disk('public')->assertMissing($oldPhotoPath);
+        Storage::disk('public')->assertExists($facility->photo);
+
+        // Check public profile page displays facility
+        $this->get('/profil')
+            ->assertStatus(200)
+            ->assertSee('Laboratorium Bahasa & Multimedia Digital');
+
+        // 4. Delete Facility and Verify File Cleanup
+        $deletedPhotoPath = $facility->photo;
+        $deleteResponse = $this->actingAs($admin)->delete('/admin/fasilitas/'.$facility->id);
+        $deleteResponse->assertRedirect('/admin/fasilitas');
+        $this->assertNull(Facility::find($facility->id));
+        Storage::disk('public')->assertMissing($deletedPhotoPath);
     }
 }
