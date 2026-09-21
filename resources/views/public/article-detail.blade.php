@@ -20,6 +20,12 @@
         </div>
     </header>
 
+    @if($article->image)
+        <div class="rounded-2xl overflow-hidden shadow-md border border-slate-200 aspect-video sm:aspect-[21/9] bg-slate-100">
+            <img src="{{ Str::startsWith($article->image, 'http') ? $article->image : asset('storage/'.$article->image) }}" alt="{{ $article->title }}" class="w-full h-full object-cover">
+        </div>
+    @endif
+
     <div class="prose max-w-none text-slate-700 text-sm sm:text-base leading-relaxed space-y-4">
         {!! nl2br(e($article->content)) !!}
     </div>

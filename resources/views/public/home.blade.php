@@ -136,37 +136,60 @@
         </div>
     </section>
 
-    <!-- 4. Galeri Foto Dokumentasi Kegiatan -->
+    <!-- 4. Warta & Berita Terkini Madrasah -->
     <section class="max-w-6xl mx-auto px-4 sm:px-6 space-y-6">
         <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-slate-200 pb-4">
             <div>
-                <h2 class="text-xl sm:text-2xl font-black text-slate-900">Galeri & Dokumentasi Kegiatan</h2>
-                <p class="text-xs sm:text-sm text-slate-500">Momen prestasi, riset, ibadah, dan literasi civitas MTsN 32 Jakarta</p>
+                <span class="text-xs font-bold uppercase tracking-wider text-emerald-700">Warta Terpadu</span>
+                <h2 class="text-xl sm:text-2xl font-black text-slate-900">Berita & Pengumuman Terkini</h2>
+                <p class="text-xs sm:text-sm text-slate-500">Informasi resmi, agenda kegiatan, dan kabar prestasi madrasah</p>
             </div>
-            <a href="{{ route('information') }}" class="text-xs font-bold text-emerald-700 hover:underline">Lihat Semua Warta &rarr;</a>
+            <a href="{{ route('information') }}" class="text-xs font-bold text-emerald-700 hover:text-emerald-800 hover:underline inline-flex items-center gap-1">
+                Lihat Semua Berita &rarr;
+            </a>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            @forelse($galleries as $gal)
-                <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs hover:shadow-md transition space-y-3">
-                    <div class="h-44 bg-gradient-to-br from-emerald-800 to-teal-900 p-6 flex flex-col justify-between text-white relative">
-                        <div class="flex justify-between items-center">
-                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-white/20 backdrop-blur-xs text-amber-300">
-                                {{ $gal->category }}
+            @forelse($latestArticles as $article)
+                <article class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs hover:shadow-md transition flex flex-col justify-between group">
+                    @if($article->image)
+                        <div class="aspect-video w-full overflow-hidden bg-slate-100 border-b border-slate-100">
+                            <img src="{{ Str::startsWith($article->image, 'http') ? $article->image : asset('storage/'.$article->image) }}" alt="{{ $article->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                        </div>
+                    @else
+                        <div class="aspect-video w-full bg-gradient-to-br from-emerald-800 to-teal-900 p-6 flex flex-col justify-between text-white relative">
+                            <span class="px-2.5 py-0.5 rounded text-[10px] font-bold uppercase bg-white/20 backdrop-blur-xs w-fit text-amber-300">
+                                {{ $article->category_badge }}
                             </span>
-                            <span class="text-[11px] font-mono opacity-80">{{ $gal->event_date ? $gal->event_date->translatedFormat('d M Y') : '' }}</span>
+                            <div class="text-left">
+                                <svg class="w-8 h-8 text-amber-300/80 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>
+                            </div>
                         </div>
-                        <div class="text-left">
-                            <svg class="w-8 h-8 text-amber-400/80 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                            <h4 class="font-extrabold text-sm leading-snug line-clamp-2">{{ $gal->title }}</h4>
+                    @endif
+                    <div class="p-5 space-y-2.5 flex-1 flex flex-col justify-between">
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between text-[11px] text-slate-400">
+                                <span class="px-2 py-0.5 rounded font-bold uppercase {{ $article->category === 'berita' ? 'bg-emerald-50 text-emerald-700' : ($article->category === 'pengumuman' ? 'bg-amber-50 text-amber-700' : 'bg-sky-50 text-sky-700') }}">
+                                    {{ $article->category_badge }}
+                                </span>
+                                <span>{{ $article->published_at ? $article->published_at->translatedFormat('d M Y') : '-' }}</span>
+                            </div>
+                            <h3 class="font-bold text-sm text-slate-900 group-hover:text-emerald-700 transition line-clamp-2 leading-snug">
+                                <a href="{{ route('article.detail', $article->slug) }}">{{ $article->title }}</a>
+                            </h3>
+                            <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                                {{ $article->summary }}
+                            </p>
+                        </div>
+                        <div class="pt-3 border-t border-slate-100">
+                            <a href="{{ route('article.detail', $article->slug) }}" class="text-xs font-bold text-emerald-700 hover:text-emerald-800 inline-flex items-center gap-1">
+                                Baca Selengkapnya &rarr;
+                            </a>
                         </div>
                     </div>
-                    <div class="p-4 pt-1 text-xs text-slate-600">
-                        <p class="line-clamp-2">{{ $gal->description }}</p>
-                    </div>
-                </div>
+                </article>
             @empty
-                <div class="col-span-3 text-center py-8 text-slate-400">Belum ada foto dokumentasi.</div>
+                <div class="col-span-3 text-center py-8 text-slate-400">Belum ada warta berita yang dipublikasikan.</div>
             @endforelse
         </div>
     </section>

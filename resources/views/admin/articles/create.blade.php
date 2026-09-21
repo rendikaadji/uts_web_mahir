@@ -9,7 +9,7 @@
     </div>
 
     <div class="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-xs">
-        <form action="{{ route('admin.articles.store') }}" method="POST" class="space-y-4">
+        <form action="{{ route('admin.articles.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
             @csrf
 
             <div>
@@ -36,6 +36,21 @@
                 </div>
             </div>
 
+            <!-- Upload Foto / Thumbnail Berita -->
+            <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1">Foto Sampul / Gambar Berita</label>
+                <div class="flex items-center gap-4">
+                    <div id="imagePreviewContainer" class="hidden w-24 h-24 rounded-xl border border-slate-200 overflow-hidden shrink-0 bg-slate-100">
+                        <img id="imagePreview" src="" alt="Preview" class="w-full h-full object-cover">
+                    </div>
+                    <div class="flex-1">
+                        <input type="file" name="image" id="imageInput" accept="image/jpeg,image/png,image/jpg,image/webp" class="w-full text-xs text-slate-600 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer">
+                        <p class="text-[11px] text-slate-400 mt-1">Format: JPG, JPEG, PNG, atau WebP. Maksimal ukuran 3MB.</p>
+                        @error('image') <p class="text-rose-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+                </div>
+            </div>
+
             <div>
                 <label class="block text-xs font-bold text-slate-700 mb-1">Ringkasan Singkat (Lead Paragraph)</label>
                 <textarea name="summary" rows="2" placeholder="Ringkasan 1-2 kalimat untuk preview di homepage..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600">{{ old('summary') }}</textarea>
@@ -54,4 +69,22 @@
         </form>
     </div>
 </div>
+
+<script>
+    document.getElementById('imageInput')?.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('imagePreview');
+                const container = document.getElementById('imagePreviewContainer');
+                if (preview && container) {
+                    preview.src = e.target.result;
+                    container.classList.remove('hidden');
+                }
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
 @endsection

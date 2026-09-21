@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Article;
 use App\Models\Book;
 use App\Models\BookCopy;
 use App\Models\Category;
@@ -538,6 +539,72 @@ class PortalAndLibraryTest extends TestCase
         Storage::disk('public')->assertExists($ekskul->icon_or_photo);
     }
 
+    public function test_admin_can_manage_articles_with_photo_and_crud(): void
+    {
+        Storage::fake('public');
+
+        $admin = User::create([
+            'name' => 'Admin Berita',
+            'username' => 'adminberita',
+            'email' => 'adminberita@test.com',
+            'password' => Hash::make('admin123'),
+            'role' => 'admin_madrasah',
+            'is_active' => true,
+        ]);
+
+        $photo = UploadedFile::fake()->image('prestasi-ksm.jpg', 600, 400);
+
+        // 1. Create Article with Photo
+        $createResponse = $this->actingAs($admin)->post('/admin/berita', [
+            'title' => 'Santri MTsN 32 Raih Emas KSM Nasional 2026',
+            'category' => 'berita',
+            'summary' => 'Prestasi membanggakan kembali diraih oleh kontingen santri madrasah.',
+            'content' => 'Alhamdulillah, siswa MTsN 32 Jakarta berhasil meraih medali emas dalam ajang Kompetisi Sains Madrasah tingkat Nasional...',
+            'image' => $photo,
+            'is_featured' => 1,
+        ]);
+
+        $createResponse->assertRedirect('/admin/berita');
+        $article = Article::where('title', 'Santri MTsN 32 Raih Emas KSM Nasional 2026')->first();
+        $this->assertNotNull($article);
+        $this->assertNotNull($article->image);
+        Storage::disk('public')->assertExists($article->image);
+
+        // 2. Access Edit Page
+        $this->actingAs($admin)
+            ->get('/admin/berita/'.$article->id.'/edit')
+            ->assertStatus(200)
+            ->assertSee('Edit Artikel')
+            ->assertSee('Santri MTsN 32 Raih Emas KSM Nasional 2026');
+
+        // 3. Update Article and Replace Photo
+        $newPhoto = UploadedFile::fake()->image('prestasi-ksm-final.jpg', 800, 600);
+        $oldImagePath = $article->image;
+
+        $updateResponse = $this->actingAs($admin)->put('/admin/berita/'.$article->id, [
+            'title' => 'Santri MTsN 32 Raih Juara Umum KSM Nasional 2026',
+            'category' => 'berita',
+            'summary' => 'Ringkasan yang diperbarui...',
+            'content' => 'Konten lengkap yang telah diperbarui dengan data final...',
+            'image' => $newPhoto,
+            'is_featured' => 1,
+        ]);
+
+        $updateResponse->assertRedirect('/admin/berita');
+        $article->refresh();
+        $this->assertEquals('Santri MTsN 32 Raih Juara Umum KSM Nasional 2026', $article->title);
+        $this->assertNotEquals($oldImagePath, $article->image);
+        Storage::disk('public')->assertMissing($oldImagePath);
+        Storage::disk('public')->assertExists($article->image);
+
+        // 4. Delete Article and Verify Cleanup
+        $deletedImagePath = $article->image;
+        $deleteResponse = $this->actingAs($admin)->delete('/admin/berita/'.$article->id);
+        $deleteResponse->assertRedirect('/admin/berita');
+        $this->assertNull(Article::find($article->id));
+        Storage::disk('public')->assertMissing($deletedImagePath);
+    }
+
     public function test_admin_can_view_reports_and_export_data(): void
     {
         $admin = User::create([
@@ -562,11 +629,15 @@ class PortalAndLibraryTest extends TestCase
             ->assertSee('KEMENTERIAN AGAMA REPUBLIK INDONESIA')
             ->assertSee('MADRASAH TSANAWIYAH NEGERI 32 JAKARTA');
 
-        // Test CSV / Excel Stream Export
+        // Test Formatted Excel (.xls) Export
         $exportResponse = $this->actingAs($admin)
             ->get('/admin/laporan/export-excel?type=sirkulasi&period=all');
 
         $exportResponse->assertStatus(200);
-        $this->assertEquals('text/csv; charset=UTF-8', $exportResponse->headers->get('content-type'));
+        $this->assertEquals('application/vnd.ms-excel; charset=UTF-8', $exportResponse->headers->get('content-type'));
+        $this->assertStringContainsString('.xls', $exportResponse->headers->get('content-disposition'));
+        $this->assertStringContainsString('KEMENTERIAN AGAMA REPUBLIK INDONESIA', $exportResponse->getContent());
+        $this->assertStringContainsString('LAPORAN RESMI SIRKULASI', $exportResponse->getContent());
+        $this->assertStringContainsString('DisplayGridlines', $exportResponse->getContent());
     }
 }

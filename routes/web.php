@@ -72,6 +72,9 @@ Route::middleware(['auth', 'role:admin_madrasah,pustakawan'])->prefix('admin')->
     Route::get('/berita', [AdminArticleController::class, 'index'])->name('articles.index');
     Route::get('/berita/tambah', [AdminArticleController::class, 'create'])->name('articles.create');
     Route::post('/berita', [AdminArticleController::class, 'store'])->name('articles.store');
+    Route::get('/berita/{article}/edit', [AdminArticleController::class, 'edit'])->name('articles.edit');
+    Route::put('/berita/{article}', [AdminArticleController::class, 'update'])->name('articles.update');
+    Route::delete('/berita/{article}', [AdminArticleController::class, 'destroy'])->name('articles.destroy');
 
     // Profil Sekolah & Kepemimpinan Dinamis
     Route::get('/profil-sekolah', [SchoolProfileController::class, 'edit'])->name('school.profile');

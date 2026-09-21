@@ -28,7 +28,12 @@
     <!-- Article Cards Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @forelse($articles as $article)
-            <article class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs hover:shadow-md transition flex flex-col justify-between">
+            <article class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs hover:shadow-md transition flex flex-col justify-between group">
+                @if($article->image)
+                    <div class="aspect-video w-full overflow-hidden bg-slate-100 border-b border-slate-100">
+                        <img src="{{ Str::startsWith($article->image, 'http') ? $article->image : asset('storage/'.$article->image) }}" alt="{{ $article->title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                    </div>
+                @endif
                 <div class="p-6 space-y-3">
                     <div class="flex items-center justify-between text-xs text-slate-400">
                         <span class="px-2.5 py-1 rounded-md font-semibold text-[11px] {{ $article->category === 'berita' ? 'bg-emerald-50 text-emerald-700' : ($article->category === 'pengumuman' ? 'bg-amber-50 text-amber-700' : 'bg-sky-50 text-sky-700') }}">
