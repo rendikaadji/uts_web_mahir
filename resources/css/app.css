@@ -2,8 +2,62 @@
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
+@source '../views/**/*.blade.php';
+@source '../js/**/*.{js,jsx}';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-serif: 'Playfair Display', Georgia, serif;
+    --font-sans: 'Plus Jakarta Sans', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+
+    --color-canvas: #F3F7F4;
+    --color-surface: #FFFFFF;
+    --color-surface-warm: #EBF3EC;
+    --color-forest-950: #0F1F16;
+    --color-forest-900: #14281D;
+    --color-forest-800: #1E3A2B;
+    --color-forest-700: #284E3A;
+    --color-forest-600: #35654B;
+    --color-forest-500: #427A5B;
+    --color-sage-600: #4A6E55;
+    --color-sage-500: #668E71;
+    --color-sage-300: #9EC1A7;
+    --color-sage-200: #C2DEC9;
+    --color-sage-100: #DFEFE3;
+    --color-sage-50: #EEF6F0;
+    --color-sage-border: #C8DEC9;
+    --color-sand-divider: #DCEBE0;
+    --color-charcoal: #122117;
+    --color-body-text: #223B2C;
+    --color-muted-text: #54715E;
+    --color-mint-accent: #7FD197;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.25s ease-out forwards;
+}
+
+.animate-scaleUp {
+    animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Custom crisp QR scanner video styling */
+#qr-reader-viewport video {
+    object-fit: cover !important;
+    border-radius: 1.25rem !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+#qr-reader-viewport img {
+    display: none !important;
 }
