@@ -40,4 +40,25 @@ class Article extends Model
             default => 'Artikel',
         };
     }
+
+    public function getImageUrlAttribute(): string
+    {
+        if ($this->image) {
+            if (str_starts_with($this->image, 'http://') || str_starts_with($this->image, 'https://')) {
+                return $this->image;
+            }
+            if (str_starts_with($this->image, '/images/') || str_starts_with($this->image, 'images/')) {
+                return asset(ltrim($this->image, '/'));
+            }
+
+            return asset('storage/'.$this->image);
+        }
+
+        return match ($this->category) {
+            'berita' => asset('images/program-science.jpg'),
+            'pengumuman' => asset('images/program-cambridge.jpg'),
+            'agenda' => asset('images/program-library.jpg'),
+            default => asset('images/campus-life.jpg'),
+        };
+    }
 }

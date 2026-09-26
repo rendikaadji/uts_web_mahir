@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Member;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -26,31 +27,40 @@ class AuthController extends Controller
             'login' => ['required', 'string'],
             'password' => ['required', 'string'],
         ], [
-            'login.required' => 'Username atau email wajib diisi.',
+            'login.required' => 'Username, NISN, NIP, atau email wajib diisi.',
             'password.required' => 'Kata sandi wajib diisi.',
         ]);
 
-        $loginInput = $credentials['login'];
-        $fieldType = filter_var($loginInput, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+        $loginInput = trim($credentials['login']);
+        $user = null;
 
-        $attemptCredentials = [
-            $fieldType => $loginInput,
-            'password' => $credentials['password'],
-        ];
+        if (filter_var($loginInput, FILTER_VALIDATE_EMAIL)) {
+            $user = User::where('email', $loginInput)->first();
+        } else {
+            // 1. Cek username langsung
+            $user = User::where('username', $loginInput)->first();
 
-        if (Auth::attempt($attemptCredentials, $request->boolean('remember'))) {
-            $user = Auth::user();
+            // 2. Jika belum ditemukan, periksa NISN, NIP, atau Barcode pada data Member
+            if (! $user) {
+                $member = Member::where('nisn', $loginInput)
+                    ->orWhere('nip', $loginInput)
+                    ->orWhere('barcode', $loginInput)
+                    ->first();
 
+                if ($member && $member->user) {
+                    $user = $member->user;
+                }
+            }
+        }
+
+        if ($user && Hash::check($credentials['password'], $user->password)) {
             if (! $user->is_active) {
-                Auth::logout();
-                $request->session()->invalidate();
-                $request->session()->regenerateToken();
-
                 return back()->withInput($request->only('login', 'remember'))->withErrors([
                     'login' => 'Akun Anda sedang dinonaktifkan. Silakan hubungi pihak madrasah.',
                 ]);
             }
 
+            Auth::login($user, $request->boolean('remember'));
             $request->session()->regenerate();
 
             return $this->redirectUserByRole($user)->with('success', 'Selamat datang kembali, '.$user->name.'!');

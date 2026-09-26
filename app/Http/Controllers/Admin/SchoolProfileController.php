@@ -49,6 +49,9 @@ class SchoolProfileController extends Controller
             'email' => ['nullable', 'email', 'max:100'],
             'address' => ['nullable', 'string'],
             'maps_embed_url' => ['nullable', 'string'],
+            'instagram_url' => ['nullable', 'string', 'max:255'],
+            'tiktok_url' => ['nullable', 'string', 'max:255'],
+            'youtube_url' => ['nullable', 'string', 'max:255'],
             'cambridge_description' => ['nullable', 'string'],
         ], [
             'school_name.required' => 'Nama madrasah wajib diisi.',

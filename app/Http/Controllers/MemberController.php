@@ -3,18 +3,33 @@
 namespace App\Http\Controllers;
 
 use App\Models\Loan;
+use App\Models\Member;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class MemberController extends Controller
 {
-    public function dashboard(): View
+    public function dashboard(Request $request): View
     {
-        $user = auth()->user();
-        $member = $user->member;
+        $authUser = auth()->user();
+        $member = null;
+
+        if ($authUser->isAdmin() || $authUser->isLibrarian()) {
+            if ($request->filled('member_id')) {
+                $member = Member::with('user')->find($request->input('member_id'));
+            }
+            if (! $member) {
+                $member = $authUser->member ?? Member::with('user')->first();
+            }
+        } else {
+            $member = $authUser->member;
+        }
 
         if (! $member) {
             abort(404, 'Data anggota perpustakaan untuk akun Anda belum terdaftar.');
         }
+
+        $user = $member->user ?? $authUser;
 
         $activeLoans = Loan::with(['bookCopy.book'])
             ->where('member_id', $member->id)

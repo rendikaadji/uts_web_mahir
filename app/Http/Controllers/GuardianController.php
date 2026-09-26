@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Loan;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -10,10 +11,22 @@ class GuardianController extends Controller
 {
     public function dashboard(Request $request): View
     {
-        $user = auth()->user();
+        $authUser = auth()->user();
+        $targetUser = $authUser;
+
+        if ($authUser->isAdmin() || $authUser->isLibrarian()) {
+            if ($request->filled('guardian_id')) {
+                $targetUser = User::where('role', 'wali_murid')->find($request->input('guardian_id')) ?? $authUser;
+            } else {
+                $firstGuardian = User::where('role', 'wali_murid')->first();
+                if ($firstGuardian) {
+                    $targetUser = $firstGuardian;
+                }
+            }
+        }
 
         // Ambil hanya anak yang terdaftar di guardian_students
-        $students = $user->students()->with('user')->get();
+        $students = $targetUser->students()->with('user')->get();
 
         $selectedStudentId = $request->query('anak');
         $activeStudent = null;
@@ -41,6 +54,12 @@ class GuardianController extends Controller
                 ->get();
         }
 
-        return view('guardian.dashboard', compact('user', 'students', 'activeStudent', 'studentLoans', 'studentVisits'));
+        return view('guardian.dashboard', [
+            'user' => $targetUser,
+            'students' => $students,
+            'activeStudent' => $activeStudent,
+            'studentLoans' => $studentLoans,
+            'studentVisits' => $studentVisits,
+        ]);
     }
 }

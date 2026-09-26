@@ -28,9 +28,26 @@ class PortalAndLibraryTest extends TestCase
     {
         $this->get('/')->assertStatus(200);
         $this->get('/profil')->assertStatus(200);
+        $this->get('/profil/sambutan')->assertStatus(200);
+        $this->get('/profil/visi-misi')->assertStatus(200);
+        $this->get('/profil/struktur-organisasi')->assertStatus(200);
+        $this->get('/profil/guru-staf')->assertStatus(200);
+        $this->get('/profil/sarana-prasarana')->assertStatus(200);
         $this->get('/akademik')->assertStatus(200);
+        $this->get('/ppdb')->assertStatus(200);
+        $this->get('/akademik/cambridge')->assertStatus(200);
+        $this->get('/akademik/kurikulum')->assertStatus(200);
+        $this->get('/akademik/ekstrakurikuler')->assertStatus(200);
         $this->get('/informasi')->assertStatus(200);
+        $this->get('/informasi/berita')->assertStatus(200);
+        $this->get('/informasi/pengumuman')->assertStatus(200);
+        $this->get('/informasi/agenda')->assertStatus(200);
+        $this->get('/informasi/galeri')->assertStatus(200);
+        $this->get('/layanan')->assertStatus(200);
+        $this->get('/layanan/portal-siswa')->assertStatus(200);
+        $this->get('/layanan/portal-wali')->assertStatus(200);
         $this->get('/perpustakaan')->assertStatus(200);
+        $this->get('/perpustakaan/layanan')->assertStatus(200);
         $this->get('/opac')->assertStatus(200);
         $this->get('/gate')->assertStatus(200);
         $this->get('/login')->assertStatus(200);
@@ -711,5 +728,182 @@ class PortalAndLibraryTest extends TestCase
         $deleteResponse->assertRedirect('/admin/fasilitas');
         $this->assertNull(Facility::find($facility->id));
         Storage::disk('public')->assertMissing($deletedPhotoPath);
+    }
+
+    public function test_admin_can_access_student_portal_management_and_toggle_status(): void
+    {
+        $admin = User::create([
+            'name' => 'Admin Utama',
+            'username' => 'admin_portal_test',
+            'email' => 'adminportal@test.com',
+            'password' => bcrypt('password'),
+            'role' => 'admin_madrasah',
+            'is_active' => true,
+        ]);
+
+        $studentUser = User::create([
+            'name' => 'Raihan Pratama',
+            'username' => 'raihan_portal',
+            'email' => 'raihan@test.com',
+            'password' => bcrypt('password'),
+            'role' => 'siswa_guru',
+            'is_active' => true,
+        ]);
+
+        $member = Member::create([
+            'user_id' => $studentUser->id,
+            'identifier_number' => '0091234567',
+            'nisn' => '0091234567',
+            'member_type' => 'siswa',
+            'class_or_unit' => 'IX-A',
+            'barcode' => 'MBR-RAIHAN-001',
+            'is_active' => true,
+        ]);
+
+        $this->actingAs($admin)
+            ->get('/admin/portal-siswa-guru')
+            ->assertStatus(200)
+            ->assertSee('Portal Kontrol Siswa & Guru')
+            ->assertSee('Raihan Pratama')
+            ->assertSee('0091234567');
+
+        // Toggle member status
+        $toggleResponse = $this->actingAs($admin)
+            ->post('/admin/portal-siswa-guru/'.$member->id.'/toggle');
+
+        $toggleResponse->assertRedirect();
+        $this->assertFalse($member->fresh()->is_active);
+
+        // Toggle back to active
+        $this->actingAs($admin)
+            ->post('/admin/portal-siswa-guru/'.$member->id.'/toggle');
+
+        $this->assertTrue($member->fresh()->is_active);
+    }
+
+    public function test_admin_can_access_guardian_portal_management_and_toggle_status(): void
+    {
+        $admin = User::create([
+            'name' => 'Admin Utama',
+            'username' => 'admin_guardian_test',
+            'email' => 'adminguardian@test.com',
+            'password' => bcrypt('password'),
+            'role' => 'admin_madrasah',
+            'is_active' => true,
+        ]);
+
+        $guardian = User::create([
+            'name' => 'Bapak Sudirman',
+            'username' => 'sudirman_wali',
+            'email' => 'sudirman@test.com',
+            'password' => bcrypt('password'),
+            'role' => 'wali_murid',
+            'is_active' => true,
+        ]);
+
+        $studentUser = User::create([
+            'name' => 'Budi Santoso',
+            'username' => 'budi_santoso',
+            'email' => 'budi@test.com',
+            'password' => bcrypt('password'),
+            'role' => 'siswa_guru',
+            'is_active' => true,
+        ]);
+
+        $studentMember = Member::create([
+            'user_id' => $studentUser->id,
+            'identifier_number' => '0081234567',
+            'nisn' => '0081234567',
+            'member_type' => 'siswa',
+            'class_or_unit' => 'VIII-B',
+            'barcode' => 'MBR-BUDI-001',
+            'is_active' => true,
+        ]);
+
+        GuardianStudent::create([
+            'guardian_user_id' => $guardian->id,
+            'student_member_id' => $studentMember->id,
+            'relationship' => 'Ayah Kandung',
+        ]);
+
+        $this->actingAs($admin)
+            ->get('/admin/portal-wali-murid')
+            ->assertStatus(200)
+            ->assertSee('Portal Kontrol Wali Murid')
+            ->assertSee('Bapak Sudirman')
+            ->assertSee('Budi Santoso');
+
+        // Toggle guardian status
+        $toggleResponse = $this->actingAs($admin)
+            ->post('/admin/portal-wali-murid/'.$guardian->id.'/toggle');
+
+        $toggleResponse->assertRedirect();
+        $this->assertFalse($guardian->fresh()->is_active);
+
+        // Toggle back to active
+        $this->actingAs($admin)
+            ->post('/admin/portal-wali-murid/'.$guardian->id.'/toggle');
+
+        $this->assertTrue($guardian->fresh()->is_active);
+    }
+
+    public function test_admin_can_preview_member_and_guardian_dashboards(): void
+    {
+        $admin = User::create([
+            'name' => 'Admin Utama',
+            'username' => 'admin_preview_test',
+            'email' => 'adminpreview@test.com',
+            'password' => bcrypt('password'),
+            'role' => 'admin_madrasah',
+            'is_active' => true,
+        ]);
+
+        $studentUser = User::create([
+            'name' => 'Farhan Kamil',
+            'username' => 'farhan_kamil',
+            'email' => 'farhan@test.com',
+            'password' => bcrypt('password'),
+            'role' => 'siswa_guru',
+            'is_active' => true,
+        ]);
+
+        $member = Member::create([
+            'user_id' => $studentUser->id,
+            'identifier_number' => '0071234567',
+            'nisn' => '0071234567',
+            'member_type' => 'siswa',
+            'class_or_unit' => 'VII-C',
+            'barcode' => 'MBR-FARHAN-001',
+            'is_active' => true,
+        ]);
+
+        $guardian = User::create([
+            'name' => 'Ibu Fatimah',
+            'username' => 'fatimah_wali',
+            'email' => 'fatimah@test.com',
+            'password' => bcrypt('password'),
+            'role' => 'wali_murid',
+            'is_active' => true,
+        ]);
+
+        GuardianStudent::create([
+            'guardian_user_id' => $guardian->id,
+            'student_member_id' => $member->id,
+            'relationship' => 'Ibu Kandung',
+        ]);
+
+        // Admin preview member dashboard
+        $this->actingAs($admin)
+            ->get('/member?member_id='.$member->id)
+            ->assertStatus(200)
+            ->assertSee('Farhan Kamil')
+            ->assertSee('Panel Kontrol');
+
+        // Admin preview guardian dashboard
+        $this->actingAs($admin)
+            ->get('/wali?guardian_id='.$guardian->id)
+            ->assertStatus(200)
+            ->assertSee('Ibu Fatimah')
+            ->assertSee('Panel Kontrol');
     }
 }

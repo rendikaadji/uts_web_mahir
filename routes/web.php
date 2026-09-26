@@ -21,13 +21,46 @@ use Illuminate\Support\Facades\Route;
 
 // 1. Rute Publik & Portal Informasi Madrasah
 Route::get('/', [PublicController::class, 'home'])->name('home');
+Route::get('/cari', [PublicController::class, 'search'])->name('search');
+Route::get('/api/quick-search', [PublicController::class, 'quickSearch'])->name('api.quick-search');
+
+// Grup 1: Profil Madrasah
 Route::get('/profil', [PublicController::class, 'profile'])->name('profile');
+Route::get('/profil/sambutan', [PublicController::class, 'headmaster'])->name('profile.headmaster');
+Route::get('/profil/visi-misi', [PublicController::class, 'visionMission'])->name('profile.vision-mission');
+Route::get('/profil/struktur-organisasi', [PublicController::class, 'organization'])->name('profile.organization');
+Route::get('/profil/guru-staf', [PublicController::class, 'teachers'])->name('profile.teachers');
+Route::get('/profil/guru-staf/{teacher}', [PublicController::class, 'teacherDetail'])->name('profile.teachers.show');
+Route::get('/profil/sarana-prasarana', [PublicController::class, 'facilities'])->name('profile.facilities');
+Route::get('/profil/sarana-prasarana/{facility}', [PublicController::class, 'facilityDetail'])->name('profile.facilities.show');
+
+// Grup 2: Akademik & Program
 Route::get('/akademik', [PublicController::class, 'academic'])->name('academic');
+Route::get('/ppdb', [PublicController::class, 'ppdb'])->name('ppdb');
+Route::get('/akademik/cambridge', [PublicController::class, 'cambridge'])->name('academic.cambridge');
+Route::get('/akademik/kurikulum', [PublicController::class, 'curriculum'])->name('academic.curriculum');
+Route::get('/akademik/ekstrakurikuler', [PublicController::class, 'extracurricular'])->name('academic.extracurricular');
+
+// Grup 3: Warta & Informasi
 Route::get('/informasi', [PublicController::class, 'information'])->name('information');
+Route::get('/informasi/berita', [PublicController::class, 'news'])->name('information.news');
+Route::get('/informasi/pengumuman', [PublicController::class, 'announcements'])->name('information.announcements');
+Route::get('/informasi/agenda', [PublicController::class, 'events'])->name('information.events');
+Route::get('/informasi/galeri', [PublicController::class, 'gallery'])->name('information.gallery');
+Route::get('/informasi/galeri/{gallery}', [PublicController::class, 'galleryDetail'])->name('information.gallery.show');
 Route::get('/informasi/{slug}', [PublicController::class, 'articleDetail'])->name('article.detail');
+
+// Grup 4: Layanan Terpadu & Portal
+Route::get('/layanan', [PublicController::class, 'services'])->name('services.index');
+Route::get('/layanan/portal-siswa', [PublicController::class, 'portalStudents'])->name('services.students');
+Route::get('/layanan/portal-wali', [PublicController::class, 'portalGuardians'])->name('services.guardians');
+
+// Grup 5: Perpustakaan Digital & Literasi
 Route::get('/perpustakaan', [PublicController::class, 'library'])->name('library');
 Route::get('/perpus', fn () => redirect()->route('library'));
+Route::get('/perpustakaan/layanan', [PublicController::class, 'libraryServices'])->name('library.services');
 Route::get('/opac', [PublicController::class, 'opac'])->name('opac');
+Route::get('/opac/{slug}', [PublicController::class, 'bookDetail'])->name('opac.detail');
 
 // 2. Presensi Gate (Kiosk Mode)
 Route::get('/gate', [KioskController::class, 'index'])->name('gate');
@@ -45,6 +78,10 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('
 // 4. Panel Admin & Pustakawan
 Route::middleware(['auth', 'role:admin_madrasah,pustakawan'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/portal-siswa-guru', [DashboardController::class, 'portalStudents'])->name('portal.students');
+    Route::post('/portal-siswa-guru/{member}/toggle', [DashboardController::class, 'toggleMemberStatus'])->name('portal.students.toggle');
+    Route::get('/portal-wali-murid', [DashboardController::class, 'portalGuardians'])->name('portal.guardians');
+    Route::post('/portal-wali-murid/{user}/toggle', [DashboardController::class, 'toggleGuardianStatus'])->name('portal.guardians.toggle');
 
     // Sirkulasi Perpustakaan (Peminjaman & Pengembalian ACID)
     Route::get('/sirkulasi', [CirculationController::class, 'index'])->name('circulation.index');
@@ -119,11 +156,11 @@ Route::middleware(['auth', 'role:admin_madrasah,pustakawan'])->prefix('admin')->
 });
 
 // 5. Area Anggota (Siswa & Guru)
-Route::middleware(['auth', 'role:siswa_guru'])->prefix('member')->name('member.')->group(function () {
+Route::middleware(['auth', 'role:siswa_guru,admin_madrasah,pustakawan'])->prefix('member')->name('member.')->group(function () {
     Route::get('/', [MemberController::class, 'dashboard'])->name('dashboard');
 });
 
 // 6. Area Pemantauan Wali Murid
-Route::middleware(['auth', 'role:wali_murid'])->prefix('wali')->name('guardian.')->group(function () {
+Route::middleware(['auth', 'role:wali_murid,admin_madrasah,pustakawan'])->prefix('wali')->name('guardian.')->group(function () {
     Route::get('/', [GuardianController::class, 'dashboard'])->name('dashboard');
 });

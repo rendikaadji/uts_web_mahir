@@ -5,9 +5,9 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         <!-- Form Peminjaman Baru -->
-        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
             <div class="border-b border-slate-100 pb-3 flex items-center gap-2">
-                <span class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xs">01</span>
+                <span class="w-8 h-8 rounded-lg bg-[#01ABE8]/15 text-[#01ABE8] flex items-center justify-center font-bold text-xs">01</span>
                 <div>
                     <h2 class="font-bold text-sm text-slate-900">Transaksi Peminjaman Buku</h2>
                     <p class="text-[11px] text-slate-400">Input barcode anggota dan barcode eksemplar buku</p>
@@ -18,35 +18,35 @@
                 @csrf
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Barcode Anggota / NISN / NIP</label>
-                    <input type="text" name="member_barcode" required placeholder="Scan kartu siswa (contoh: MTS32-S-001)..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600">
+                    <input type="text" name="member_barcode" required placeholder="Scan kartu siswa (contoh: MTS32-S-001)..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#01ABE8]">
                 </div>
 
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Barcode Eksemplar Buku</label>
-                    <input type="text" name="book_barcode" required placeholder="Scan buku (contoh: BK-001-02)..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600">
+                    <input type="text" name="book_barcode" required placeholder="Scan buku (contoh: BK-001-02)..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#01ABE8]">
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Lama Pinjam (Hari)</label>
-                        <input type="number" name="loan_duration" value="7" min="1" max="30" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600">
+                        <input type="number" name="loan_duration" value="7" min="1" max="30" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#01ABE8]">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Catatan Tambahan</label>
-                        <input type="text" name="notes" placeholder="Opsional..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600">
+                        <input type="text" name="notes" placeholder="Opsional..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#01ABE8]">
                     </div>
                 </div>
 
-                <button type="submit" class="w-full py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs sm:text-sm shadow-xs transition">
+                <button type="submit" class="w-full py-2.5 rounded-xl bg-[#01ABE8] hover:bg-[#0096cc] text-white font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer">
                     Simpan Peminjaman (ACID Safe)
                 </button>
             </form>
         </div>
 
         <!-- Form Pengembalian Buku -->
-        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+        <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
             <div class="border-b border-slate-100 pb-3 flex items-center gap-2">
-                <span class="w-8 h-8 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center font-bold text-xs">02</span>
+                <span class="w-8 h-8 rounded-lg bg-sky-100 text-[#01ABE8] flex items-center justify-center font-bold text-xs">02</span>
                 <div>
                     <h2 class="font-bold text-sm text-slate-900">Pengembalian Buku Fisik</h2>
                     <p class="text-[11px] text-slate-400">Scan barcode buku untuk memproses pengembalian & denda otomatis</p>
@@ -57,7 +57,7 @@
                 @csrf
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Barcode Eksemplar Buku yang Dikembalikan</label>
-                    <input type="text" name="return_barcode" required placeholder="Arahkan scanner ke barcode buku..." class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-teal-600">
+                    <input type="text" name="return_barcode" required placeholder="Arahkan scanner ke barcode buku..." class="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#01ABE8]">
                 </div>
 
                 <div class="p-4 rounded-xl bg-slate-50 border border-slate-100 text-xs text-slate-500 space-y-1">
@@ -66,7 +66,7 @@
                     <p>&bull; Denda sebesar <strong>Rp 1.000,- / hari</strong> langsung dicatat jika lewat tenggat.</p>
                 </div>
 
-                <button type="submit" class="w-full py-2.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white font-bold text-xs sm:text-sm shadow-xs transition">
+                <button type="submit" class="w-full py-2.5 rounded-xl bg-[#0B1B3D] hover:bg-[#132A58] text-white font-bold text-xs sm:text-sm shadow-xs transition cursor-pointer">
                     Proses Pengembalian Buku
                 </button>
             </form>
@@ -75,12 +75,12 @@
     </div>
 
     <!-- Circulation Table -->
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
         <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
             <h3 class="font-bold text-sm text-slate-900">Daftar Transaksi Sirkulasi</h3>
             
             <div class="flex items-center gap-2 text-xs">
-                <a href="{{ route('admin.circulation.index', ['status' => 'aktif']) }}" class="px-3 py-1.5 rounded-lg font-semibold transition {{ $status === 'aktif' ? 'bg-emerald-700 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">Aktif</a>
+                <a href="{{ route('admin.circulation.index', ['status' => 'aktif']) }}" class="px-3 py-1.5 rounded-lg font-semibold transition {{ $status === 'aktif' ? 'bg-[#01ABE8] text-white shadow-xs' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">Aktif</a>
                 <a href="{{ route('admin.circulation.index', ['status' => 'terlambat']) }}" class="px-3 py-1.5 rounded-lg font-semibold transition {{ $status === 'terlambat' ? 'bg-rose-700 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">Terlambat</a>
                 <a href="{{ route('admin.circulation.index', ['status' => 'kembali']) }}" class="px-3 py-1.5 rounded-lg font-semibold transition {{ $status === 'kembali' ? 'bg-slate-700 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">Selesai</a>
             </div>
@@ -106,7 +106,7 @@
                             </td>
                             <td class="py-3.5 px-4">
                                 <span class="font-semibold text-slate-800 block">{{ $loan->bookCopy->book->title }}</span>
-                                <span class="text-[11px] text-emerald-700 font-mono">{{ $loan->bookCopy->barcode }}</span>
+                                <span class="text-[11px] text-slate-500 font-mono">{{ $loan->bookCopy->barcode }}</span>
                             </td>
                             <td class="py-3.5 px-4">{{ $loan->loan_date->translatedFormat('d M Y') }}</td>
                             <td class="py-3.5 px-4">
@@ -119,7 +119,7 @@
                                     @if($loan->isOverdue())
                                         <span class="px-2 py-0.5 rounded bg-rose-50 text-rose-700 font-bold text-[10px]">TERLAMBAT</span>
                                     @else
-                                        <span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-bold text-[10px]">DIPINJAM</span>
+                                        <span class="px-2 py-0.5 rounded bg-blue-50 text-blue-800 font-bold text-[10px]">DIPINJAM</span>
                                     @endif
                                 @else
                                     <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-semibold text-[10px]">KEMBALI</span>

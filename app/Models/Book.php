@@ -52,4 +52,53 @@ class Book extends Model
     {
         return $this->availableCopies()->exists();
     }
+
+    public function getCoverUrlAttribute(): string
+    {
+        $value = $this->cover_image;
+
+        if ($value) {
+            if (str_starts_with($value, 'http://') || str_starts_with($value, 'https://')) {
+                return $value;
+            }
+            if (str_starts_with($value, '/images/') || str_starts_with($value, 'images/')) {
+                return asset(ltrim($value, '/'));
+            }
+
+            return asset('storage/'.$value);
+        }
+
+        if (file_exists(public_path('images/books/'.$this->slug.'.jpg'))) {
+            return asset('images/books/'.$this->slug.'.jpg');
+        }
+
+        return asset('images/program-library.jpg');
+    }
+
+    public function getPdfUrlAttribute(): ?string
+    {
+        $value = $this->digital_file_path;
+
+        if ($value) {
+            if (str_starts_with($value, 'http://') || str_starts_with($value, 'https://')) {
+                return $value;
+            }
+            if (str_starts_with($value, '/documents/') || str_starts_with($value, 'documents/')) {
+                return asset(ltrim($value, '/'));
+            }
+
+            return asset('storage/'.$value);
+        }
+
+        if (file_exists(public_path('documents/ebooks/'.$this->slug.'.pdf'))) {
+            return asset('documents/ebooks/'.$this->slug.'.pdf');
+        }
+
+        return null;
+    }
+
+    public function getCategoryBadgeAttribute(): string
+    {
+        return $this->category?->name ?? 'Koleksi Umum';
+    }
 }
