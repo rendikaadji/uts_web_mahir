@@ -90,7 +90,7 @@ function AppContent() {
     // =========================================================================
     if (isStaff) {
         return (
-            <div className="min-h-screen bg-[#FAFCFA] text-[#14281D] flex flex-col md:flex-row selection:bg-[#1E3A2B] selection:text-white">
+            <div className="min-h-screen bg-[#FAFCFF] text-[#07132B] flex flex-col md:flex-row selection:bg-[#0B1B3D] selection:text-white">
                 {/* Dedicated Sticky Admin Sidebar */}
                 <AdminSidebar
                     activeTab={location.pathname === '/visits' ? activeTab : null}
@@ -108,7 +108,7 @@ function AppContent() {
                 />
 
                 {/* Main Content Workspace */}
-                <div className="flex-1 flex flex-col min-w-0 min-h-screen overflow-x-hidden bg-[#FAFCFA]">
+                <div className="flex-1 flex flex-col min-w-0 min-h-screen overflow-x-hidden bg-[#FAFCFF]">
                     <Routes>
                         <Route path="/" element={<Navigate to="/visits" replace />} />
                         <Route path="/visits" element={<VisitsDashboard />} />
@@ -172,7 +172,7 @@ function AppContent() {
     // 2. PUBLIC / STUDENT LAYOUT: Uses Navbar, NO Sidebar
     // =========================================================================
     return (
-        <div className="min-h-screen bg-[#F3F7F4] text-[#14281D] flex flex-col selection:bg-[#1E3A2B] selection:text-white">
+        <div className="min-h-screen bg-[#F8FAFC] text-[#07132B] flex flex-col selection:bg-[#0B1B3D] selection:text-white">
             <Navbar />
             <div className="flex-1 flex flex-col">
                 <Routes>

@@ -9,27 +9,27 @@
     --font-serif: 'Playfair Display', Georgia, serif;
     --font-sans: 'Plus Jakarta Sans', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
 
-    --color-canvas: #F3F7F4;
+    --color-canvas: #F8FAFC;
     --color-surface: #FFFFFF;
-    --color-surface-warm: #EBF3EC;
-    --color-forest-950: #0F1F16;
-    --color-forest-900: #14281D;
-    --color-forest-800: #1E3A2B;
-    --color-forest-700: #284E3A;
-    --color-forest-600: #35654B;
-    --color-forest-500: #427A5B;
-    --color-sage-600: #4A6E55;
-    --color-sage-500: #668E71;
-    --color-sage-300: #9EC1A7;
-    --color-sage-200: #C2DEC9;
-    --color-sage-100: #DFEFE3;
-    --color-sage-50: #EEF6F0;
-    --color-sage-border: #C8DEC9;
-    --color-sand-divider: #DCEBE0;
-    --color-charcoal: #122117;
-    --color-body-text: #223B2C;
-    --color-muted-text: #54715E;
-    --color-mint-accent: #7FD197;
+    --color-surface-warm: #EAEEF4;
+    --color-forest-950: #071127;
+    --color-forest-900: #07132B;
+    --color-forest-800: #0B1B3D;
+    --color-forest-700: #132A58;
+    --color-forest-600: #225978;
+    --color-forest-500: #2C6B90;
+    --color-sage-600: #475569;
+    --color-sage-500: #627692;
+    --color-sage-300: #9BACC4;
+    --color-sage-200: #B7D7E9;
+    --color-sage-100: #D9EBF5;
+    --color-sage-50: #F0F9FF;
+    --color-sage-border: #BAE6FD;
+    --color-sand-divider: #D6E7F1;
+    --color-charcoal: #0F172A;
+    --color-body-text: #1E293B;
+    --color-muted-text: #475569;
+    --color-mint-accent: #01ABE8;
 }
 
 @keyframes fadeIn {

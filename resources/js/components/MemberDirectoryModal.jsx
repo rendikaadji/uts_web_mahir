@@ -108,11 +108,11 @@ export default function MemberDirectoryModal({ isOpen, onClose, onOpenQr, onOpen
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fadeIn">
-            <div className="relative w-full max-w-4xl overflow-hidden rounded-2xl border-2 border-[#C8DEC9] bg-white shadow-2xl flex flex-col max-h-[90vh]">
+            <div className="relative w-full max-w-4xl overflow-hidden rounded-2xl border-2 border-[#BAE6FD] bg-white shadow-2xl flex flex-col max-h-[90vh]">
                 {/* Header */}
-                <div className="flex items-center justify-between border-b border-[#2C563D] bg-[#1E3A2B] p-5 text-white flex-shrink-0">
+                <div className="flex items-center justify-between border-b border-[#17326B] bg-[#0B1B3D] p-5 text-white flex-shrink-0">
                     <div>
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#7FD197]">
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#01ABE8]">
                             Manajemen Data Anggota (CRUD)
                         </span>
                         <h3 className="font-serif text-xl sm:text-2xl font-bold text-white mt-0.5">
@@ -127,10 +127,10 @@ export default function MemberDirectoryModal({ isOpen, onClose, onOpenQr, onOpen
                         <button
                             type="button"
                             onClick={() => setImportModalOpen(true)}
-                            className="hidden sm:flex items-center gap-1.5 rounded-lg bg-[#244A36] hover:bg-[#2c5840] border border-[#3E6F52] px-3.5 py-2 text-xs font-semibold uppercase tracking-wider text-[#B8D7BF] hover:text-white transition cursor-pointer shadow-xs"
+                            className="hidden sm:flex items-center gap-1.5 rounded-lg bg-[#11295D] hover:bg-[#16326E] border border-[#2A6283] px-3.5 py-2 text-xs font-semibold uppercase tracking-wider text-[#ACCFE3] hover:text-white transition cursor-pointer shadow-xs"
                             title="Impor Data dari Excel (.xlsx) atau .csv"
                         >
-                            <svg className="w-4 h-4 text-[#7FD197]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-4 h-4 text-[#01ABE8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
                             <span>Impor Excel</span>
@@ -139,7 +139,7 @@ export default function MemberDirectoryModal({ isOpen, onClose, onOpenQr, onOpen
                             <button
                                 type="button"
                                 onClick={onOpenAddMember}
-                                className="hidden sm:flex items-center gap-1.5 rounded-lg bg-[#7FD197] hover:bg-[#6ec286] px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-[#102418] transition cursor-pointer shadow-xs"
+                                className="hidden sm:flex items-center gap-1.5 rounded-lg bg-[#01ABE8] hover:bg-[#0284C7] px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-[#07132D] transition cursor-pointer shadow-xs"
                             >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
@@ -150,7 +150,7 @@ export default function MemberDirectoryModal({ isOpen, onClose, onOpenQr, onOpen
                         <button
                             onClick={onClose}
                             type="button"
-                            className="rounded-lg p-1.5 text-[#B8D7BE] hover:bg-[#284E3A] hover:text-white transition cursor-pointer"
+                            className="rounded-lg p-1.5 text-[#ACCFE3] hover:bg-[#132A58] hover:text-white transition cursor-pointer"
                             aria-label="Tutup"
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -165,13 +165,13 @@ export default function MemberDirectoryModal({ isOpen, onClose, onOpenQr, onOpen
                     <div
                         className={`px-5 py-2.5 text-xs font-semibold flex items-center justify-between flex-shrink-0 transition ${
                             actionMessage.type === 'success'
-                                ? 'bg-[#EEF6F0] text-[#1E3A2B] border-b border-[#C8DEC9]'
+                                ? 'bg-[#F0F9FF] text-[#0B1B3D] border-b border-[#BAE6FD]'
                                 : 'bg-[#FFF5F5] text-[#9E3535] border-b border-[#D97373]/30'
                         }`}
                     >
                         <span className="flex items-center gap-2">
                             {actionMessage.type === 'success' ? (
-                                <svg className="w-4 h-4 text-[#24613B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-4 h-4 text-[#133172]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                                 </svg>
                             ) : (
@@ -191,14 +191,14 @@ export default function MemberDirectoryModal({ isOpen, onClose, onOpenQr, onOpen
                 )}
 
                 {/* Role Tabs */}
-                <div className="px-5 pt-2 bg-[#F7FAF8] border-b border-[#DDECE0] flex items-center gap-2 flex-shrink-0">
+                <div className="px-5 pt-2 bg-[#F8FAFC] border-b border-[#D7E8F2] flex items-center gap-2 flex-shrink-0">
                     <button
                         type="button"
                         onClick={() => { setRoleFilter(''); setPage(1); }}
                         className={`px-3.5 py-2 text-xs font-semibold border-b-2 transition cursor-pointer ${
                             !roleFilter
-                                ? 'border-[#1E3A2B] text-[#1E3A2B] font-bold'
-                                : 'border-transparent text-[#64846F] hover:text-[#1E3A2B]'
+                                ? 'border-[#0B1B3D] text-[#0B1B3D] font-bold'
+                                : 'border-transparent text-[#64748B] hover:text-[#0B1B3D]'
                         }`}
                     >
                         Semua Anggota
@@ -208,8 +208,8 @@ export default function MemberDirectoryModal({ isOpen, onClose, onOpenQr, onOpen
                         onClick={() => { setRoleFilter('siswa'); setPage(1); }}
                         className={`px-3.5 py-2 text-xs font-semibold border-b-2 transition cursor-pointer ${
                             roleFilter === 'siswa'
-                                ? 'border-[#1E3A2B] text-[#1E3A2B] font-bold'
-                                : 'border-transparent text-[#64846F] hover:text-[#1E3A2B]'
+                                ? 'border-[#0B1B3D] text-[#0B1B3D] font-bold'
+                                : 'border-transparent text-[#64748B] hover:text-[#0B1B3D]'
                         }`}
                     >
                         Siswa Madrasah
@@ -219,8 +219,8 @@ export default function MemberDirectoryModal({ isOpen, onClose, onOpenQr, onOpen
                         onClick={() => { setRoleFilter('guru'); setPage(1); }}
                         className={`px-3.5 py-2 text-xs font-semibold border-b-2 transition cursor-pointer ${
                             roleFilter === 'guru'
-                                ? 'border-[#1E3A2B] text-[#1E3A2B] font-bold'
-                                : 'border-transparent text-[#64846F] hover:text-[#1E3A2B]'
+                                ? 'border-[#0B1B3D] text-[#0B1B3D] font-bold'
+                                : 'border-transparent text-[#64748B] hover:text-[#0B1B3D]'
                         }`}
                     >
                         Dewan Guru
@@ -228,7 +228,7 @@ export default function MemberDirectoryModal({ isOpen, onClose, onOpenQr, onOpen
                 </div>
 
                 {/* Search Bar & Quick Add */}
-                <div className="p-4 bg-[#F7FAF8] border-b border-[#DDECE0] flex-shrink-0 flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between">
+                <div className="p-4 bg-[#F8FAFC] border-b border-[#D7E8F2] flex-shrink-0 flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between">
                     <form onSubmit={handleSearchSubmit} className="flex flex-1 gap-2">
                         <input
                             type="text"
@@ -241,11 +241,11 @@ export default function MemberDirectoryModal({ isOpen, onClose, onOpenQr, onOpen
                                     ? 'Cari berdasarkan NIS atau nama siswa...'
                                     : 'Cari NIS, NIP, email, atau nama anggota...'
                             }
-                            className="flex-1 rounded-lg border border-[#C5DBC7] bg-white px-3.5 py-2 text-xs text-[#14281D] placeholder-[#7F9988] focus:border-[#1E3A2B] focus:outline-none"
+                            className="flex-1 rounded-lg border border-[#CBD5E1] bg-white px-3.5 py-2 text-xs text-[#07132B] placeholder-[#94A3B8] focus:border-[#0B1B3D] focus:outline-none"
                         />
                         <button
                             type="submit"
-                            className="rounded-lg bg-[#1E3A2B] hover:bg-[#284E3A] px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white transition cursor-pointer shadow-xs"
+                            className="rounded-lg bg-[#0B1B3D] hover:bg-[#132A58] px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white transition cursor-pointer shadow-xs"
                         >
                             Cari
                         </button>
@@ -254,9 +254,9 @@ export default function MemberDirectoryModal({ isOpen, onClose, onOpenQr, onOpen
                         <button
                             type="button"
                             onClick={() => setImportModalOpen(true)}
-                            className="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-[#244A36] border border-[#3E6F52] px-3 py-2 text-xs font-semibold uppercase tracking-wider text-[#B8D7BF] transition cursor-pointer"
+                            className="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-[#11295D] border border-[#2A6283] px-3 py-2 text-xs font-semibold uppercase tracking-wider text-[#ACCFE3] transition cursor-pointer"
                         >
-                            <svg className="w-4 h-4 text-[#7FD197]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-4 h-4 text-[#01ABE8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
                             <span>Impor Excel</span>
@@ -265,7 +265,7 @@ export default function MemberDirectoryModal({ isOpen, onClose, onOpenQr, onOpen
                             <button
                                 type="button"
                                 onClick={onOpenAddMember}
-                                className="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-[#7FD197] hover:bg-[#6ec286] px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-[#102418] transition cursor-pointer shadow-xs"
+                                className="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-[#01ABE8] hover:bg-[#0284C7] px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-[#07132D] transition cursor-pointer shadow-xs"
                             >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
@@ -279,7 +279,7 @@ export default function MemberDirectoryModal({ isOpen, onClose, onOpenQr, onOpen
                 {/* Members List Table */}
                 <div className="overflow-y-auto flex-1 p-4">
                     <table className="w-full text-left text-xs">
-                        <thead className="bg-[#EEF6F0] text-[#1E3A2B] uppercase tracking-wider text-[10.5px] font-bold sticky top-0 z-10">
+                        <thead className="bg-[#F0F9FF] text-[#0B1B3D] uppercase tracking-wider text-[10.5px] font-bold sticky top-0 z-10">
                             <tr>
                                 <th className="px-4 py-3 rounded-l">Nama & Kontak</th>
                                 <th className="px-4 py-3">NIS / Identitas</th>
@@ -288,46 +288,46 @@ export default function MemberDirectoryModal({ isOpen, onClose, onOpenQr, onOpen
                                 <th className="px-4 py-3 text-right rounded-r">Aksi Kelola</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-[#E5EFE7]">
+                        <tbody className="divide-y divide-[#E4E9F0]">
                             {loading ? (
                                 <tr>
-                                    <td colSpan={5} className="text-center py-10 text-[#64846F]">
+                                    <td colSpan={5} className="text-center py-10 text-[#64748B]">
                                         Memuat daftar anggota madrasah...
                                     </td>
                                 </tr>
                             ) : members.length === 0 ? (
                                 <tr>
-                                    <td colSpan={5} className="text-center py-10 text-[#64846F]">
+                                    <td colSpan={5} className="text-center py-10 text-[#64748B]">
                                         Tidak ada anggota yang ditemukan.
                                     </td>
                                 </tr>
                             ) : (
                                 members.map((member) => (
-                                    <tr key={member.id} className="hover:bg-[#F7FAF8] transition">
+                                    <tr key={member.id} className="hover:bg-[#F8FAFC] transition">
                                         <td className="px-4 py-3">
-                                            <div className="font-bold text-[#14281D]">{member.name}</div>
+                                            <div className="font-bold text-[#07132B]">{member.name}</div>
                                             {member.email && (
-                                                <div className="text-[10.5px] text-[#64846F]">{member.email}</div>
+                                                <div className="text-[10.5px] text-[#64748B]">{member.email}</div>
                                             )}
                                         </td>
-                                        <td className="px-4 py-3 font-mono text-[#2E583F]">
+                                        <td className="px-4 py-3 font-mono text-[#19346D]">
                                             {member.username || `UID-${member.id}`}
                                         </td>
                                         <td className="px-4 py-3">
                                             {member.role === 'guru' ? (
-                                                <span className="rounded-full bg-[#1E3A2B] text-white px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">
+                                                <span className="rounded-full bg-[#0B1B3D] text-white px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">
                                                     Dewan Guru
                                                 </span>
                                             ) : member.role === 'admin_madrasah' ? (
-                                                <span className="rounded-full bg-[#14281D] text-[#8FE2A9] border border-[#2D583F] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">
+                                                <span className="rounded-full bg-[#07132B] text-[#38BDF8] border border-[#18336E] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">
                                                     Admin
                                                 </span>
                                             ) : member.role === 'pustakawan' ? (
-                                                <span className="rounded-full bg-[#1E3A2B] text-[#FAF8F5] border border-[#3E6F52] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">
+                                                <span className="rounded-full bg-[#0B1B3D] text-[#FAF8F5] border border-[#2A6283] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">
                                                     Pustakawan
                                                 </span>
                                             ) : (
-                                                <span className="rounded-full bg-[#EEF6F0] text-[#1E3A2B] border border-[#C8DEC9] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">
+                                                <span className="rounded-full bg-[#F0F9FF] text-[#0B1B3D] border border-[#BAE6FD] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">
                                                     Siswa
                                                 </span>
                                             )}
@@ -339,8 +339,8 @@ export default function MemberDirectoryModal({ isOpen, onClose, onOpenQr, onOpen
                                                     Nonaktif
                                                 </span>
                                             ) : (
-                                                <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-[#24613B]">
-                                                    <span className="w-1.5 h-1.5 rounded-full bg-[#7FD197]" />
+                                                <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-[#133172]">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-[#01ABE8]" />
                                                     Aktif
                                                 </span>
                                             )}
@@ -355,9 +355,9 @@ export default function MemberDirectoryModal({ isOpen, onClose, onOpenQr, onOpen
                                                         onClose();
                                                     }}
                                                     title="Buka Kartu & Unduh QR"
-                                                    className="p-1.5 rounded-lg bg-[#EEF6F0] hover:bg-[#DDECE0] text-[#1E3A2B] transition cursor-pointer border border-[#C8DEC9]"
+                                                    className="p-1.5 rounded-lg bg-[#F0F9FF] hover:bg-[#D7E8F2] text-[#0B1B3D] transition cursor-pointer border border-[#BAE6FD]"
                                                 >
-                                                    <svg className="w-4 h-4 text-[#1E3A2B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <svg className="w-4 h-4 text-[#0B1B3D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
                                                     </svg>
                                                 </button>
@@ -367,7 +367,7 @@ export default function MemberDirectoryModal({ isOpen, onClose, onOpenQr, onOpen
                                                     type="button"
                                                     onClick={() => setEditingMember(member)}
                                                     title="Edit Data Anggota"
-                                                    className="p-1.5 rounded-lg bg-[#F7FAF8] hover:bg-[#EEF6F0] text-[#244E36] transition cursor-pointer border border-[#C8DEC9]"
+                                                    className="p-1.5 rounded-lg bg-[#F8FAFC] hover:bg-[#F0F9FF] text-[#102A62] transition cursor-pointer border border-[#BAE6FD]"
                                                 >
                                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -398,20 +398,20 @@ export default function MemberDirectoryModal({ isOpen, onClose, onOpenQr, onOpen
 
                 {/* Footer Pagination */}
                 {pagination.last_page > 1 && (
-                    <div className="p-4 border-t border-[#E5EFE7] bg-[#F7FAF8] flex items-center justify-between text-xs text-[#54715E] flex-shrink-0">
+                    <div className="p-4 border-t border-[#E4E9F0] bg-[#F8FAFC] flex items-center justify-between text-xs text-[#475569] flex-shrink-0">
                         <span>Halaman {pagination.current_page} dari {pagination.last_page} ({pagination.total} anggota)</span>
                         <div className="flex gap-2">
                             <button
                                 disabled={pagination.current_page <= 1}
                                 onClick={() => setPage((p) => Math.max(p - 1, 1))}
-                                className="px-3 py-1 rounded border border-[#C5DBC7] bg-white disabled:opacity-40 cursor-pointer"
+                                className="px-3 py-1 rounded border border-[#CBD5E1] bg-white disabled:opacity-40 cursor-pointer"
                             >
                                 Sebelumnya
                             </button>
                             <button
                                 disabled={pagination.current_page >= pagination.last_page}
                                 onClick={() => setPage((p) => p + 1)}
-                                className="px-3 py-1 rounded border border-[#C5DBC7] bg-white disabled:opacity-40 cursor-pointer"
+                                className="px-3 py-1 rounded border border-[#CBD5E1] bg-white disabled:opacity-40 cursor-pointer"
                             >
                                 Berikutnya
                             </button>
@@ -438,11 +438,11 @@ export default function MemberDirectoryModal({ isOpen, onClose, onOpenQr, onOpen
                             </svg>
                         </div>
                         <div className="text-center">
-                            <h4 className="font-serif text-lg font-bold text-[#14281D]">
+                            <h4 className="font-serif text-lg font-bold text-[#07132B]">
                                 Hapus Data Anggota?
                             </h4>
-                            <p className="text-xs text-[#54715E] mt-1.5 leading-relaxed">
-                                Anda akan menghapus <span className="font-bold text-[#14281D]">{deletingMember.name}</span> (ID: {deletingMember.username || deletingMember.id}). Seluruh riwayat presensi terkait dan token QR anggota ini akan ikut dihapus. Tindakan ini tidak dapat dibatalkan.
+                            <p className="text-xs text-[#475569] mt-1.5 leading-relaxed">
+                                Anda akan menghapus <span className="font-bold text-[#07132B]">{deletingMember.name}</span> (ID: {deletingMember.username || deletingMember.id}). Seluruh riwayat presensi terkait dan token QR anggota ini akan ikut dihapus. Tindakan ini tidak dapat dibatalkan.
                             </p>
                         </div>
                         <div className="flex items-center justify-center gap-3 pt-2">
@@ -450,7 +450,7 @@ export default function MemberDirectoryModal({ isOpen, onClose, onOpenQr, onOpen
                                 type="button"
                                 disabled={actionLoading}
                                 onClick={() => setDeletingMember(null)}
-                                className="px-4 py-2 rounded-lg border border-[#C5DBC7] bg-white hover:bg-[#F7FAF8] text-xs font-semibold text-[#54715E] transition cursor-pointer"
+                                className="px-4 py-2 rounded-lg border border-[#CBD5E1] bg-white hover:bg-[#F8FAFC] text-xs font-semibold text-[#475569] transition cursor-pointer"
                             >
                                 Batal
                             </button>

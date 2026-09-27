@@ -16,8 +16,16 @@
 /.claude/
 /.factory/
 /.grok/
+/.gemini/
+/.junie/
+/.windsurf/
+/.playwright-mcp/
 /.mcp.json
 /boost.json
+/CLAUDE.md
+/AGENTS.md
+/GEMINI.md
+/.github/copilot-instructions.md
 /auth.json
 /node_modules
 /public/build

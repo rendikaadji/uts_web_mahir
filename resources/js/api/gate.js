@@ -219,9 +219,9 @@ export function downloadQrPng(svgString, filename = 'kartu-qr', memberName = '',
 
         // Background Luxury Botanical Emerald
         const gradient = ctx.createLinearGradient(0, 0, cardWidth, cardHeight);
-        gradient.addColorStop(0, '#1E3A2B');
-        gradient.addColorStop(0.5, '#244A35');
-        gradient.addColorStop(1, '#14281D');
+        gradient.addColorStop(0, '#0B1B3D');
+        gradient.addColorStop(0.5, '#11295D');
+        gradient.addColorStop(1, '#07132B');
         ctx.fillStyle = gradient;
         if (ctx.roundRect) {
             ctx.roundRect(0, 0, cardWidth, cardHeight, 32);
@@ -231,7 +231,7 @@ export function downloadQrPng(svgString, filename = 'kartu-qr', memberName = '',
         ctx.fill();
 
         // Border
-        ctx.strokeStyle = '#3E6F52';
+        ctx.strokeStyle = '#2A6283';
         ctx.lineWidth = 4;
         ctx.stroke();
 
@@ -241,12 +241,12 @@ export function downloadQrPng(svgString, filename = 'kartu-qr', memberName = '',
         ctx.textAlign = 'center';
         ctx.fillText('MTsN 32 JAKARTA', cardWidth / 2, 80);
 
-        ctx.fillStyle = '#8FE2A9';
+        ctx.fillStyle = '#38BDF8';
         ctx.font = 'bold 16px sans-serif';
         ctx.fillText('KARTU ANGGOTA PERPUSTAKAAN DIGITAL', cardWidth / 2, 115);
 
         // Divider
-        ctx.strokeStyle = '#2D583F';
+        ctx.strokeStyle = '#18336E';
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.moveTo(80, 140);
@@ -259,7 +259,7 @@ export function downloadQrPng(svgString, filename = 'kartu-qr', memberName = '',
         ctx.fillText(memberName || 'Nama Anggota', cardWidth / 2, 195);
 
         // Member ID & Role Badge
-        ctx.fillStyle = '#A8CEA9';
+        ctx.fillStyle = '#99C4DD';
         ctx.font = '20px monospace';
         ctx.fillText(`ID / NIS: ${memberId || '-'}  •  ${role}`, cardWidth / 2, 230);
 
@@ -280,11 +280,11 @@ export function downloadQrPng(svgString, filename = 'kartu-qr', memberName = '',
         ctx.drawImage(img, qrBoxX + qrPadding, qrBoxY + qrPadding, qrBoxSize - (qrPadding * 2), qrBoxSize - (qrPadding * 2));
 
         // Footer Guidance
-        ctx.fillStyle = '#D2E8D7';
+        ctx.fillStyle = '#C9E2F1';
         ctx.font = '16px sans-serif';
         ctx.fillText('Arahkan QR Code ini ke kamera Kiosk Pintu Gerbang', cardWidth / 2, 880);
 
-        ctx.fillStyle = '#7FD197';
+        ctx.fillStyle = '#01ABE8';
         ctx.font = 'bold 14px sans-serif';
         ctx.fillText('✓ QR CODE PERMANEN & RESMI TERVERIFIKASI', cardWidth / 2, 915);
 
