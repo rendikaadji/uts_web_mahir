@@ -398,8 +398,10 @@
                 </div>
             </div>
         </div>
+    </header>
 
-        <!-- Mobile Drawer Menu (Slide-out) -->
+    {{-- Kept outside <header>: its backdrop-filter would make this fixed drawer relative to the header instead of the viewport. --}}
+    <!-- Mobile Drawer Menu (Slide-out) -->
         <div id="mobile-drawer" class="fixed inset-0 z-50 transform -translate-x-full transition-transform duration-300 ease-in-out lg:hidden" aria-hidden="true">
             <div id="drawer-backdrop" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs opacity-0 transition-opacity duration-300"></div>
 
@@ -555,7 +557,6 @@
                 </div>
             </div>
         </div>
-    </header>
 
     <!-- Floating Toast Notification (Zero Layout Shift - Auto Dismissing) -->
     @if(session('success') || session('error') || session('info'))
@@ -728,7 +729,7 @@
                         </p>
                         <p class="flex items-center gap-2.5">
                             <svg class="w-4 h-4 text-[#01ABE8] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                            <span><a href="tel:02158906414" class="hover:text-[#01ABE8] font-semibold transition">{{ $profile->phone ?? '(021) 58906414' }}</a> &bull; WA: {{ $profile->whatsapp ?? '0812-9876-5432' }}</span>
+                            <span><a href="tel:02158906414" class="hover:text-[#01ABE8] font-semibold transition">{{ $profile->phone ?? '(021) 58906414' }}</a> &bull; WA: {{ $profile->whatsapp ?? '+62 857-1560-2930' }}</span>
                         </p>
                         <p class="flex items-center gap-2.5">
                             <svg class="w-4 h-4 text-[#01ABE8] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
@@ -740,7 +741,7 @@
                     <div class="pt-1">
                         <div class="rounded-xl overflow-hidden border border-sky-900/50 bg-[#0A2240] shadow-inner">
                             <iframe 
-                                src="{{ $profile->maps_embed_url ?? 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.195328224534!2d106.7571343749905!3d-6.237970893750244!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f0e137c35f0f%3A0x6280b2a8d672957e!2sMTsN%2032%20Jakarta!5e0!3m2!1sid!2sid!4v1711000000000!5m2!1sid!2sid' }}" 
+                                src="{{ $profile->maps_embed_url ?? 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1983.0!2d106.7408207!3d-6.2245871!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f0b3f964b499%3A0x97d10ea1980633b!2sMTsN%2032%20Jakarta%20Selatan!5e0!3m2!1sid!2sid!4v1790000000000!5m2!1sid!2sid' }}" 
                                 class="w-full h-28 border-0" 
                                 allowfullscreen="" 
                                 loading="lazy" 
@@ -752,7 +753,7 @@
                                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
                                     <span>Petukangan Utara</span>
                                 </span>
-                                <a href="https://maps.google.com/?q=MTsN+32+Jakarta,+Jl.+H.+Liun,+RT.13/RW.11,+Petukangan+Utara,+Pesanggrahan,+Jakarta+Selatan" target="_blank" rel="noopener noreferrer" class="text-[#01ABE8] hover:text-sky-300 font-bold inline-flex items-center gap-1 transition">
+                                <a href="https://www.google.com/maps/place/MTsN+32+Jakarta+Selatan/@-6.2245871,106.7408207,17z/data=!4m6!3m5!1s0x2e69f0b3f964b499:0x97d10ea1980633b!8m2!3d-6.2245871!4d106.7408207!16s%2Fg%2F11f33p0m5m" target="_blank" rel="noopener noreferrer" class="text-[#01ABE8] hover:text-sky-300 font-bold inline-flex items-center gap-1 transition">
                                     <span>Petunjuk Arah</span>
                                     <span>&rarr;</span>
                                 </a>

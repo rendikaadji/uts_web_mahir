@@ -320,7 +320,7 @@
         </div>
 
         <div class="shrink-0 flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
-            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $profile->whatsapp ?? '6281298765432') }}?text={{ urlencode('Halo Panitia PPDB MTsN 32 Jakarta, saya ingin bertanya seputar pendaftaran santri baru.') }}" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs sm:text-sm shadow-md transition inline-flex items-center justify-center gap-2">
+            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $profile->whatsapp ?? '6285715602930') }}?text={{ urlencode('Halo Panitia PPDB MTsN 32 Jakarta, saya ingin bertanya seputar pendaftaran santri baru.') }}" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs sm:text-sm shadow-md transition inline-flex items-center justify-center gap-2">
                 <span>WHATSAPP HELPDESK PPDB</span>
             </a>
             <a href="{{ route('profile') }}#sarana" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm border border-white/20 transition text-center">

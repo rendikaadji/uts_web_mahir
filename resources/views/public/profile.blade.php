@@ -336,15 +336,15 @@
     <!-- 5. Lokasi & Peta Madrasah -->
     <div id="lokasi" class="space-y-6 scroll-mt-28">
         <div class="text-center space-y-1">
-            <span class="text-xs font-bold uppercase tracking-wider text-amber-600">Akses & Lokasi Kampus</span>
+            <span class="text-xs font-bold uppercase tracking-wider text-amber-600">Akses & Lokasi Sekolah</span>
             <h2 class="text-2xl sm:text-3xl font-extrabold text-[#0B1B3D] font-editorial">Lokasi & Peta MTsN 32 Jakarta</h2>
-            <p class="text-xs text-slate-500">Kampus strategis di Pesanggrahan, Jakarta Selatan dengan akses transportasi mudah.</p>
+            <p class="text-xs text-slate-500">Sekolah berlokasi strategis di Pesanggrahan, Jakarta Selatan dengan akses transportasi mudah.</p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
             <div class="lg:col-span-8 rounded-3xl overflow-hidden border border-slate-200 shadow-xs bg-white min-h-[350px]">
                 <iframe 
-                    src="{{ $profile->maps_embed_url ?? 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.195328224534!2d106.7571343749905!3d-6.237970893750244!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f0e137c35f0f%3A0x6280b2a8d672957e!2sMTsN%2032%20Jakarta!5e0!3m2!1sid!2sid!4v1711000000000!5m2!1sid!2sid' }}" 
+                    src="{{ $profile->maps_embed_url ?? 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1983.0!2d106.7408207!3d-6.2245871!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f0b3f964b499%3A0x97d10ea1980633b!2sMTsN%2032%20Jakarta%20Selatan!5e0!3m2!1sid!2sid!4v1790000000000!5m2!1sid!2sid' }}" 
                     class="w-full h-full min-h-[350px] border-0" 
                     allowfullscreen="" 
                     loading="lazy" 
@@ -373,12 +373,12 @@
 
                     <div class="text-xs text-slate-600 space-y-2 pt-2 border-t border-slate-100">
                         <p><strong>Telepon:</strong> <a href="tel:02158906414" class="text-blue-700 hover:underline font-bold">{{ $profile->phone ?? '(021) 58906414' }}</a></p>
-                        <p><strong>WhatsApp:</strong> {{ $profile->whatsapp ?? '0812-9876-5432' }}</p>
+                        <p><strong>WhatsApp:</strong> {{ $profile->whatsapp ?? '+62 857-1560-2930' }}</p>
                         <p><strong>Email:</strong> {{ $profile->email ?? 'info@mtsn32jkt.sch.id' }}</p>
                     </div>
                 </div>
 
-                <a href="https://maps.google.com/?q=MTsN+32+Jakarta,+Jl.+H.+Liun,+RT.13/RW.11,+Petukangan+Utara,+Pesanggrahan,+Jakarta+Selatan" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-4 rounded-xl bg-[#0B1B3D] hover:bg-[#132A58] text-white font-bold text-xs uppercase tracking-wider text-center block transition shadow-xs">
+                <a href="https://www.google.com/maps/place/MTsN+32+Jakarta+Selatan/@-6.2245871,106.7408207,17z/data=!4m6!3m5!1s0x2e69f0b3f964b499:0x97d10ea1980633b!8m2!3d-6.2245871!4d106.7408207!16s%2Fg%2F11f33p0m5m" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 px-4 rounded-xl bg-[#0B1B3D] hover:bg-[#132A58] text-white font-bold text-xs uppercase tracking-wider text-center block transition shadow-xs">
                     Petunjuk Arah di Google Maps &rarr;
                 </a>
             </div>

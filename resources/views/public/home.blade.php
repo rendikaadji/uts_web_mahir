@@ -1054,7 +1054,7 @@
                     <div class="flex items-start gap-3">
                         <div class="w-16 h-22 rounded-xl overflow-hidden border border-slate-200 bg-slate-100 shrink-0 shadow-xs flex items-center justify-center">
                             @if($book->cover_image)
-                                <img src="{{ str_starts_with($book->cover_image, 'http') ? $book->cover_image : asset('storage/' . $book->cover_image) }}" alt="{{ $book->title }}" class="w-full h-full object-cover">
+                                <img src="{{ $book->cover_url }}" alt="{{ $book->title }}" class="w-full h-full object-cover">
                             @else
                                 <svg class="w-6 h-6 text-blue-900 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                             @endif
@@ -1130,10 +1130,10 @@
         <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-slate-200 pb-4">
             <div>
                 <span class="text-xs font-bold uppercase tracking-wider text-[#C59B3C] block mb-0.5">LOKASI & PETA RESMI</span>
-                <h2 class="text-2xl sm:text-3xl font-extrabold text-[#0B1B3D] font-editorial">Lokasi Kampus MTsN 32 Jakarta</h2>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-[#0B1B3D] font-editorial">Lokasi MTsN 32 Jakarta</h2>
                 <p class="text-xs sm:text-sm text-slate-500">Terletak strategis di Petukangan Utara, Pesanggrahan, Jakarta Selatan</p>
             </div>
-            <a href="https://maps.google.com/?q=MTsN+32+Jakarta,+Jl.+H.+Liun,+RT.13/RW.11,+Petukangan+Utara,+Pesanggrahan,+Jakarta+Selatan" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-blue-700 hover:text-blue-900 inline-flex items-center gap-1.5 uppercase tracking-wider">
+            <a href="https://www.google.com/maps/place/MTsN+32+Jakarta+Selatan/@-6.2245871,106.7408207,17z/data=!4m6!3m5!1s0x2e69f0b3f964b499:0x97d10ea1980633b!8m2!3d-6.2245871!4d106.7408207!16s%2Fg%2F11f33p0m5m" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-blue-700 hover:text-blue-900 inline-flex items-center gap-1.5 uppercase tracking-wider">
                 <span>Buka di Aplikasi Google Maps</span>
                 <span>&rarr;</span>
             </a>
@@ -1143,7 +1143,7 @@
             <!-- Peta Google Maps Interaktif -->
             <div class="lg:col-span-7 xl:col-span-8 rounded-3xl overflow-hidden border border-slate-200/90 shadow-md bg-white relative flex flex-col min-h-[380px] sm:min-h-[440px]">
                 <iframe 
-                    src="{{ $profile->maps_embed_url ?? 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.195328224534!2d106.7571343749905!3d-6.237970893750244!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f0e137c35f0f%3A0x6280b2a8d672957e!2sMTsN%2032%20Jakarta!5e0!3m2!1sid!2sid!4v1711000000000!5m2!1sid!2sid' }}" 
+                    src="{{ $profile->maps_embed_url ?? 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1983.0!2d106.7408207!3d-6.2245871!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f0b3f964b499%3A0x97d10ea1980633b!2sMTsN%2032%20Jakarta%20Selatan!5e0!3m2!1sid!2sid!4v1790000000000!5m2!1sid!2sid' }}" 
                     class="w-full flex-1 border-0" 
                     allowfullscreen="" 
                     loading="lazy" 
@@ -1155,7 +1155,7 @@
                         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                         <strong class="text-slate-800">Pin Peta Aktif:</strong> MTsN 32 Jakarta (Petukangan Utara)
                     </span>
-                    <a href="https://maps.google.com/?q=MTsN+32+Jakarta,+Jl.+H.+Liun,+RT.13/RW.11,+Petukangan+Utara,+Pesanggrahan,+Jakarta+Selatan" target="_blank" rel="noopener noreferrer" class="text-blue-700 hover:underline font-bold inline-flex items-center gap-1">
+                    <a href="https://www.google.com/maps/place/MTsN+32+Jakarta+Selatan/@-6.2245871,106.7408207,17z/data=!4m6!3m5!1s0x2e69f0b3f964b499:0x97d10ea1980633b!8m2!3d-6.2245871!4d106.7408207!16s%2Fg%2F11f33p0m5m" target="_blank" rel="noopener noreferrer" class="text-blue-700 hover:underline font-bold inline-flex items-center gap-1">
                         <span>Petunjuk Arah Rute Perjalanan</span>
                         <span>&rarr;</span>
                     </a>
@@ -1186,7 +1186,7 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                             </div>
                             <div>
-                                <span class="font-bold text-slate-800 block text-[11px] uppercase tracking-wider">Alamat Kampus:</span>
+                                <span class="font-bold text-slate-800 block text-[11px] uppercase tracking-wider">Alamat Sekolah:</span>
                                 <p class="text-slate-600 leading-relaxed mt-0.5">{{ $profile->address ?? 'Jl. H. Liun, RT.13/RW.11, Petukangan Utara, Kec. Pesanggrahan, Kota Jakarta Selatan, DKI Jakarta 12260' }}</p>
                             </div>
                         </div>
@@ -1200,7 +1200,7 @@
                                 <p class="text-slate-600 mt-0.5">
                                     <a href="tel:02158906414" class="text-blue-700 hover:underline font-bold">{{ $profile->phone ?? '(021) 58906414' }}</a> 
                                     &bull; 
-                                    <span>WA: {{ $profile->whatsapp ?? '0812-9876-5432' }}</span>
+                                    <span>WA: {{ $profile->whatsapp ?? '+62 857-1560-2930' }}</span>
                                 </p>
                             </div>
                         </div>
@@ -1236,7 +1236,7 @@
                         </a>
                     </div>
 
-                    <a href="https://maps.google.com/?q=MTsN+32+Jakarta,+Jl.+H.+Liun,+RT.13/RW.11,+Petukangan+Utara,+Pesanggrahan,+Jakarta+Selatan" target="_blank" rel="noopener noreferrer" class="w-full py-3 px-4 rounded-xl bg-[#0B1B3D] hover:bg-[#132A58] text-white font-bold text-xs uppercase tracking-wider text-center block transition shadow-sm">
+                    <a href="https://www.google.com/maps/place/MTsN+32+Jakarta+Selatan/@-6.2245871,106.7408207,17z/data=!4m6!3m5!1s0x2e69f0b3f964b499:0x97d10ea1980633b!8m2!3d-6.2245871!4d106.7408207!16s%2Fg%2F11f33p0m5m" target="_blank" rel="noopener noreferrer" class="w-full py-3 px-4 rounded-xl bg-[#0B1B3D] hover:bg-[#132A58] text-white font-bold text-xs uppercase tracking-wider text-center block transition shadow-sm">
                         Buka Petunjuk Arah di Google Maps &rarr;
                     </a>
                 </div>

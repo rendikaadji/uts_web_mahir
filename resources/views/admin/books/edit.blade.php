@@ -162,7 +162,7 @@
                     <div class="aspect-3/4 w-36 mx-auto rounded-xl overflow-hidden border-2 border-[#01ABE8]/40 bg-slate-100 relative group shadow-sm flex items-center justify-center">
                         @if($book->cover_image)
                             <img id="coverPreview" 
-                                 src="{{ str_starts_with($book->cover_image, 'http') ? $book->cover_image : asset('storage/' . $book->cover_image) }}" 
+                                 src="{{ $book->cover_url }}" 
                                  alt="{{ $book->title }}" 
                                  onerror="this.style.display='none'; document.getElementById('coverPlaceholder').style.display='flex';" 
                                  class="w-full h-full object-cover">
