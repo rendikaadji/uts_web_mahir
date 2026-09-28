@@ -24,7 +24,7 @@
 
     <!-- 1. Topbar Informasi (Biru Muda & Putih Sesuai Logo MTsN 32) -->
     <div class="bg-gradient-to-r from-[#01ABE8] via-[#0284C7] to-[#0275B1] text-white text-xs py-2 border-b border-sky-400/30 hidden sm:block shadow-2xs">
-        <div class="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
             <div class="flex items-center gap-6 text-[11px] text-sky-50">
                 <span class="flex items-center gap-1.5">
                     <svg class="w-3.5 h-3.5 text-white shrink-0 opacity-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -56,7 +56,7 @@
 
     <!-- 2. Main Navigation Header (Clean White Background) -->
     <header class="bg-white/95 backdrop-blur-md border-b border-sky-100 sticky top-0 z-50 shadow-xs">
-        <div class="max-w-7xl 2xl:max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-20 gap-2 xl:gap-3">
                 
                 <!-- School Brand / Emblem with Official MTsN 32 Logo -->

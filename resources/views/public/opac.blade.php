@@ -53,7 +53,7 @@
     </div>
 
     <!-- Book Grid List (Clean Academic White Cards) -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 3xl:grid-cols-5 4xl:grid-cols-6 gap-6">
         @forelse($books as $book)
             <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs hover:shadow-md transition flex flex-col justify-between group">
                 <div class="space-y-3">
