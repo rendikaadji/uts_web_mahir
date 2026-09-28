@@ -4,39 +4,25 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\MemberImportTemplate;
 use App\Services\SimpleExcelReader;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class MemberImportController extends Controller
 {
     /**
-     * Download sample Excel/CSV template for member import.
+     * Download the empty Excel (.xlsx) member import template.
      */
-    public function downloadTemplate(): StreamedResponse
+    public function downloadTemplate(): BinaryFileResponse
     {
-        $headers = [
-            'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="template_import_anggota_mtsn32.csv"',
-        ];
-
-        return response()->stream(function () {
-            $output = fopen('php://output', 'w');
-            // Write UTF-8 BOM for Microsoft Excel compatibility
-            fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
-
-            fputcsv($output, ['nama', 'nis_nip', 'peran', 'email', 'password']);
-            fputcsv($output, ['Ahmad Zaki Pratama', '0081234567', 'siswa', 'zaki@siswa.mtsn32.sch.id', 'password123']);
-            fputcsv($output, ['Aisyah Putri Rahma', '0081234568', 'siswa', 'aisyah@siswa.mtsn32.sch.id', 'password123']);
-            fputcsv($output, ['Dra. Hj. Siti Fatimah, M.Pd.', '198005152005012001', 'guru', 'siti.fatimah@guru.mtsn32.sch.id', 'password123']);
-            fputcsv($output, ['Rizki Ramadhan, M.Ed.', '198501012010011001', 'guru', 'rizki@guru.mtsn32.sch.id', 'password123']);
-
-            fclose($output);
-        }, 200, $headers);
+        return response()->download(MemberImportTemplate::build(), 'template_import_anggota_mtsn32.xlsx', [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ])->deleteFileAfterSend();
     }
 
     /**
@@ -229,7 +215,7 @@ class MemberImportController extends Controller
 
             if ($map['name'] === null && in_array($cleaned, ['nama', 'nama_lengkap', 'name', 'nama_siswa', 'nama_guru', 'nama_anggota'], true)) {
                 $map['name'] = $idx;
-            } elseif ($map['username'] === null && in_array($cleaned, ['nis_nip', 'nis', 'nip', 'nisn', 'username', 'no_induk', 'nomor_induk', 'id_anggota'], true)) {
+            } elseif ($map['username'] === null && in_array($cleaned, ['nis_nip', 'nisnip', 'nis', 'nip', 'nisn', 'username', 'no_induk', 'nomor_induk', 'id_anggota'], true)) {
                 $map['username'] = $idx;
             } elseif ($map['role'] === null && in_array($cleaned, ['peran', 'role', 'status', 'kategori', 'tipe'], true)) {
                 $map['role'] = $idx;

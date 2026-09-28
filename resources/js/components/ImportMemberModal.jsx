@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { importMembers, getMemberTemplateUrl } from '../api/gate';
+import { importMembers, downloadMemberTemplate } from '../api/gate';
 
 export default function ImportMemberModal({ isOpen, onClose, onSuccess, initialRole = 'siswa' }) {
     const [file, setFile] = useState(null);
@@ -127,20 +127,20 @@ export default function ImportMemberModal({ isOpen, onClose, onSuccess, initialR
                             <div>
                                 <h4 className="font-semibold text-sm text-[#0B1B3D]">Belum memiliki template format Excel?</h4>
                                 <p className="text-[11px] text-[#3E526D] mt-0.5">
-                                    Unduh format template CSV/Excel yang telah disesuaikan dengan kolom NIS/NIP, Nama, dan Peran.
+                                    Unduh format template Excel yang telah disesuaikan dengan kolom NIS/NIP, Nama, dan Peran.
                                 </p>
                             </div>
                         </div>
-                        <a
-                            href={getMemberTemplateUrl()}
-                            download="template_import_anggota_mtsn32.csv"
+                        <button
+                            type="button"
+                            onClick={() => downloadMemberTemplate().catch((err) => setError(err.message))}
                             className="inline-flex items-center gap-1.5 rounded-lg bg-[#0B1B3D] hover:bg-[#132A58] px-3.5 py-2 text-xs font-bold text-white transition shadow-xs flex-shrink-0 cursor-pointer"
                         >
                             <svg className="w-4 h-4 text-[#01ABE8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
                             <span>Unduh Template</span>
-                        </a>
+                        </button>
                     </div>
 
                     {/* Result Summary State */}

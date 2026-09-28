@@ -176,9 +176,30 @@ export function importMembers(file, defaultRole = 'siswa', updateExisting = fals
     });
 }
 
-// 4h. Get Member Import Template URL
-export function getMemberTemplateUrl() {
-    return '/api/v1/members/template';
+// 4h. Download authenticated file (plain <a href> can't send the Bearer token)
+export async function downloadAuthFile(endpoint, filename) {
+    const token = getAuthToken();
+    const response = await fetch(endpoint, {
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+    });
+
+    if (!response.ok) {
+        if (response.status === 401) {
+            clearAuth();
+        }
+        throw new Error(`Gagal mengunduh file (Status: ${response.status})`);
+    }
+
+    const url = URL.createObjectURL(await response.blob());
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.click();
+    URL.revokeObjectURL(url);
+}
+
+export function downloadMemberTemplate() {
+    return downloadAuthFile('/api/v1/members/template', 'template_import_anggota_mtsn32.xlsx');
 }
 
 

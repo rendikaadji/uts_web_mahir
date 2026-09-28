@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Services\SimpleExcelReader;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Tests\TestCase;
@@ -21,8 +22,32 @@ class MemberImportTest extends TestCase
         $response = $this->actingAs($admin, 'sanctum')->get('/api/v1/members/template');
 
         $response->assertStatus(200);
-        $response->assertHeader('content-type', 'text/csv; charset=UTF-8');
-        $this->assertStringContainsString('nama,nis_nip,peran,email,password', $response->streamedContent());
+        $response->assertHeader('content-type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+
+        $templatePath = $response->baseResponse->getFile()->getPathname();
+        $rows = SimpleExcelReader::readXlsx($templatePath);
+
+        $this->assertSame(['Nama Lengkap', 'NIS/NIP', 'Peran', 'Email', 'Password'], $rows[0]);
+
+        // Fill one row like a user would; headers must be recognised and the "Petunjuk" sheet ignored.
+        $zip = new \ZipArchive;
+        $zip->open($templatePath);
+        $sheet = $zip->getFromName('xl/worksheets/sheet1.xml');
+        $sheet = str_replace('<c r="A2" s="2"/>', '<c r="A2" s="2" t="inlineStr"><is><t>Siswa Template</t></is></c>', $sheet);
+        $sheet = str_replace('<c r="B2" s="2"/>', '<c r="B2" s="2" t="inlineStr"><is><t>0081112223</t></is></c>', $sheet);
+        $zip->addFromString('xl/worksheets/sheet1.xml', $sheet);
+        $zip->close();
+
+        $file = new UploadedFile($templatePath, 'template.xlsx', null, null, true);
+        $this->actingAs($admin, 'sanctum')
+            ->postJson('/api/v1/members/import', ['file' => $file])
+            ->assertOk()
+            ->assertJsonPath('data.imported', 1)
+            ->assertJsonPath('data.skipped', 0);
+
+        $this->assertDatabaseHas('users', ['username' => '0081112223', 'name' => 'Siswa Template', 'role' => 'siswa']);
+
+        @unlink($templatePath);
     }
 
     public function test_staff_can_import_members_from_csv(): void
