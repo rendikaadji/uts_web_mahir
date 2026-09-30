@@ -96,7 +96,7 @@ export default function MyQrCard() {
                                         <img src="/images/logo-mtsn32.png" alt="Logo MTsN 32 Jakarta" className="w-full h-full object-contain" />
                                     </div>
                                     <div>
-                                        <h3 className="font-serif font-bold text-base tracking-wide text-[#FAF8F5] leading-none">
+                                        <h3 className="font-bold text-base tracking-wide text-[#FAF8F5] leading-none">
                                             MTsN 32 JAKARTA
                                         </h3>
                                         <p className="text-[10px] text-[#97C2DB] uppercase tracking-[0.18em] mt-1 font-semibold">
@@ -111,7 +111,7 @@ export default function MyQrCard() {
 
                             {/* Member Name & Identification */}
                             <div className="text-center mb-5">
-                                <h2 className="font-serif text-2xl sm:text-3xl font-bold text-white tracking-tight">
+                                <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
                                     {qrData.user.name}
                                 </h2>
                                 <p className="text-xs text-[#99C4DD] font-mono mt-1">

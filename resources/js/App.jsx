@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
 import GateScan from './pages/GateScan';
 import MyQrCard from './pages/MyQrCard';
 import VisitsDashboard from './pages/VisitsDashboard';
-import AdminSidebar from './components/AdminSidebar';
 import ManualCheckinModal from './components/ManualCheckinModal';
 import AddMemberModal from './components/AddMemberModal';
 import MemberQrModal from './components/MemberQrModal';
@@ -79,6 +76,25 @@ function AppContent() {
         setManualModalOpen(true);
     };
 
+    // Perintah dari menu dropdown sidebar Blade (nav = pindah tab, action = buka modal)
+    useEffect(() => {
+        const run = ({ nav, action }) => {
+            if (nav) navigate(nav);
+            if (action === 'add-member') setAddMemberModalOpen(true);
+            if (action === 'directory') { setDirectoryInitialRole(''); setDirectoryModalOpen(true); }
+            if (action === 'import') setImportMemberModalOpen(true);
+            if (action === 'manual') handleOpenManual('member');
+        };
+        const onCommand = (e) => run(e.detail || {});
+        window.addEventListener('presensi-command', onCommand);
+        const initial = new URLSearchParams(window.location.search).get('action');
+        if (initial) {
+            run({ action: initial });
+            window.history.replaceState(null, '', window.location.pathname);
+        }
+        return () => window.removeEventListener('presensi-command', onCommand);
+    }, []);
+
     const handleManualSuccess = () => {
         window.dispatchEvent(new CustomEvent('visits-updated'));
         loadStats();
@@ -98,29 +114,13 @@ function AppContent() {
     // =========================================================================
     if (isStaff) {
         return (
-            <div className="min-h-screen bg-[#FAFCFF] text-[#07132B] flex flex-col md:flex-row selection:bg-[#0B1B3D] selection:text-white">
-                {/* Dedicated Sticky Admin Sidebar */}
-                <AdminSidebar
-                    activeTab={location.pathname === '/visits' ? activeTab : null}
-                    onSelectTab={handleSelectTab}
-                    onOpenManualCheckin={handleOpenManual}
-                    onOpenAddMember={() => setAddMemberModalOpen(true)}
-                    exportUrl={getExportCsvUrl()}
-                    stats={stats}
-                    currentUser={user}
-                    onOpenMemberDirectory={(role = '') => {
-                        setDirectoryInitialRole(role);
-                        setDirectoryModalOpen(true);
-                    }}
-                    onOpenImportExcel={() => setImportMemberModalOpen(true)}
-                />
-
+            <div className="text-[#07132B]">
                 {/* Main Content Workspace */}
-                <div className="flex-1 flex flex-col min-w-0 min-h-screen overflow-x-hidden bg-[#FAFCFF]">
+                <div className="flex flex-col min-w-0">
                     <Routes>
                         <Route path="/" element={<Navigate to="/visits" replace />} />
                         <Route path="/visits" element={<VisitsDashboard />} />
-                        <Route path="/gate" element={<GateScan />} />
+                        <Route path="/scan" element={<GateScan />} />
                         <Route path="/my-qr" element={<MyQrCard />} />
                         <Route path="*" element={<Navigate to="/visits" replace />} />
                     </Routes>
@@ -180,18 +180,16 @@ function AppContent() {
     // =========================================================================
     return (
         <div className="min-h-screen bg-[#F8FAFC] text-[#07132B] flex flex-col selection:bg-[#0B1B3D] selection:text-white">
-            <Navbar />
             <div className="flex-1 flex flex-col">
                 <Routes>
-                    <Route path="/" element={<Navigate to="/gate" replace />} />
-                    <Route path="/gate" element={<GateScan />} />
+                    <Route path="/" element={<Navigate to="/scan" replace />} />
+                    <Route path="/scan" element={<GateScan />} />
                     <Route path="/my-qr" element={<MyQrCard />} />
                     <Route path="/visits" element={<VisitsDashboard />} />
                     <Route path="/login" element={<LoginRedirect />} />
-                    <Route path="*" element={<Navigate to="/gate" replace />} />
+                    <Route path="*" element={<Navigate to="/scan" replace />} />
                 </Routes>
             </div>
-            <Footer />
         </div>
     );
 }

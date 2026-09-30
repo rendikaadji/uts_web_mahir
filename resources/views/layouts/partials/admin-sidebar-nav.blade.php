@@ -84,14 +84,25 @@
         <span class="text-slate-500 text-[10px]">&rsaquo;</span>
     </a>
 
-    <!-- Presensi Pengunjung -->
-    <a href="{{ route('admin.visits.index') }}" class="group flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-semibold transition {{ request()->routeIs('admin.visits*') ? 'bg-[#0E244D] text-white border-l-2 border-[#01ABE8] font-bold shadow-xs' : 'text-slate-300 hover:text-white hover:bg-[#10244C]' }}">
-        <div class="flex items-center gap-2.5">
-            <svg class="w-3.5 h-3.5 {{ request()->routeIs('admin.visits*') ? 'text-[#01ABE8]' : 'text-slate-400 group-hover:text-[#01ABE8]' }} transition shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-            <span class="truncate">Buku Tamu / Presensi</span>
+    <!-- Presensi QR & Anggota (SPA /presensi) -->
+    <div class="space-y-0.5 accordion-group" data-accordion="presensi">
+        <button type="button"
+                class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-slate-200 font-semibold {{ request()->is('presensi/*') ? 'bg-[#10244C] text-[#01ABE8]' : 'hover:bg-[#10244C]/70' }} transition focus:outline-none select-none accordion-btn cursor-pointer"
+                aria-expanded="{{ request()->is('presensi/*') ? 'true' : 'false' }}">
+            <div class="flex items-center gap-2.5">
+                <svg class="w-3.5 h-3.5 text-[#01ABE8] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4h6v6H4V4zm10 0h6v6h-6V4zM4 14h6v6H4v-6zm10 0h2m4 0h0m-6 3h2v3m4-3v3"/></svg>
+                <span class="text-xs">Presensi QR &amp; Anggota</span>
+            </div>
+            <svg class="w-3 h-3 text-slate-400 transform transition-transform duration-200 {{ request()->is('presensi/*') ? 'rotate-90' : '' }} accordion-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </button>
+        <div class="pl-6 pr-1 py-0.5 space-y-0.5 transition-all duration-200 overflow-hidden accordion-menu {{ request()->is('presensi/*') ? '' : 'hidden' }}">
+            <a href="/presensi/scan" data-presensi-nav="/scan" class="flex items-center gap-2 px-2.5 py-1 rounded-md text-[11px] font-semibold transition text-slate-300 hover:text-white hover:bg-[#0E244D]/50"><span class="text-[9px] text-[#01ABE8]">&rsaquo;</span><span>Scan QR Presensi</span></a>
+            <a href="/presensi/visits?tab=dashboard" data-presensi-nav="/visits?tab=dashboard" class="flex items-center gap-2 px-2.5 py-1 rounded-md text-[11px] font-semibold transition text-slate-300 hover:text-white hover:bg-[#0E244D]/50"><span class="text-[9px] text-[#01ABE8]">&rsaquo;</span><span>Ringkasan &amp; Riwayat</span></a>
+            <a href="/presensi/visits?action=directory" data-presensi-action="directory" class="flex items-center gap-2 px-2.5 py-1 rounded-md text-[11px] font-semibold transition text-slate-300 hover:text-white hover:bg-[#0E244D]/50"><span class="text-[9px] text-[#01ABE8]">&rsaquo;</span><span>Kelola Anggota</span></a>
+            <a href="/presensi/visits?action=manual" data-presensi-action="manual" class="flex items-center gap-2 px-2.5 py-1 rounded-md text-[11px] font-semibold transition text-slate-300 hover:text-white hover:bg-[#0E244D]/50"><span class="text-[9px] text-[#01ABE8]">&rsaquo;</span><span>Presensi Manual</span></a>
+            <a href="/api/v1/visits/export"  class="flex items-center gap-2 px-2.5 py-1 rounded-md text-[11px] font-semibold transition text-slate-300 hover:text-white hover:bg-[#0E244D]/50"><span class="text-[9px] text-[#01ABE8]">&rsaquo;</span><span>Unduh Rekap Excel</span></a>
         </div>
-        <span class="text-slate-500 text-[10px]">&rsaquo;</span>
-    </a>
+    </div>
 
     <!-- Denda Keterlambatan -->
     <a href="{{ route('admin.fines.index') }}" class="group flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-semibold transition {{ request()->routeIs('admin.fines*') ? 'bg-[#0E244D] text-white border-l-2 border-[#01ABE8] font-bold shadow-xs' : 'text-slate-300 hover:text-white hover:bg-[#10244C]' }}">

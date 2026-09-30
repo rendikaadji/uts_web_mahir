@@ -54,7 +54,7 @@ export default function GuestForm({ isOpen, onClose, onSuccess }) {
                         <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#01ABE8]">
                             Presensi Pengunjung Tamu
                         </span>
-                        <h3 className="font-serif text-2xl font-bold text-white mt-0.5">
+                        <h3 className="text-2xl font-bold text-white mt-0.5">
                             Formulir Buku Tamu
                         </h3>
                     </div>

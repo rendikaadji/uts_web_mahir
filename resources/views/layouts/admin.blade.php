@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title ?? 'Panel Pengelola' }} - MTsN 32 Jakarta</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-mtsn32.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/logo-mtsn32.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -60,16 +62,11 @@
                 </button>
 
                 <div class="flex items-center gap-2.5 min-w-0">
-                    <div class="w-7 h-7 rounded-lg bg-[#01ABE8]/10 border border-[#01ABE8]/25 text-[#01ABE8] flex items-center justify-center shrink-0">
-                        <svg class="w-4 h-4 text-[#01ABE8]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
-                    </div>
+                    <img src="{{ asset('images/logo-mtsn32.png') }}" alt="Logo MTsN 32 Jakarta" class="h-9 w-9 shrink-0 object-contain">
                     <div class="flex items-center gap-2 min-w-0">
                         <h1 class="text-xs sm:text-sm font-bold text-slate-800 tracking-tight truncate">
                             {{ $headerTitle ?? ($title ?? 'Panel Pengelola Madrasah') }}
                         </h1>
-                        <span class="hidden lg:inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-[#01ABE8]/10 text-[#01ABE8] border border-[#01ABE8]/20 shrink-0">
-                            MTsN 32 Jakarta
-                        </span>
                     </div>
                 </div>
             </div>

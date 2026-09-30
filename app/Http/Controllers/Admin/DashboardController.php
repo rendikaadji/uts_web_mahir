@@ -30,13 +30,10 @@ class DashboardController extends Controller
 
         $teacherCount = TeacherStaff::count();
         if ($teacherCount === 0) {
-            $teacherCount = Member::where('member_type', 'guru')->count() ?: 12;
+            $teacherCount = Member::where('member_type', 'guru')->count();
         }
 
         $guardianCount = User::where('role', 'wali_murid')->count();
-        if ($guardianCount === 0) {
-            $guardianCount = 1;
-        }
 
         $metrics = [
             'total_students' => $studentCount,

@@ -77,7 +77,7 @@ export default function ManualCheckinModal({ isOpen, onClose, onSuccess, default
                         <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#01ABE8]">
                             Khusus Pustakawan & Admin
                         </span>
-                        <h3 className="font-serif text-2xl font-bold text-white mt-0.5">
+                        <h3 className="text-2xl font-bold text-white mt-0.5">
                             Presensi Manual (Override)
                         </h3>
                     </div>

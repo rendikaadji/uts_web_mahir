@@ -97,7 +97,7 @@ export default function ImportMemberModal({ isOpen, onClose, onSuccess, initialR
                             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#01ABE8]">
                                 Migrasi Data ke Database
                             </span>
-                            <h3 className="font-serif text-lg sm:text-xl font-bold text-white leading-tight">
+                            <h3 className="text-lg sm:text-xl font-bold text-white leading-tight">
                                 Impor Anggota via Excel / CSV
                             </h3>
                         </div>

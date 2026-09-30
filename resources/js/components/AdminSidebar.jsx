@@ -63,7 +63,7 @@ export default function AdminSidebar({
                         </span>
                         <Link
                             to="/visits"
-                            className="font-serif font-bold text-sm tracking-wide uppercase text-white truncate block mt-0.5 hover:text-[#01ABE8] transition"
+                            className="font-bold text-sm tracking-wide uppercase text-white truncate block mt-0.5 hover:text-[#01ABE8] transition"
                         >
                             MTsN 32 Jakarta
                         </Link>
@@ -285,10 +285,10 @@ export default function AdminSidebar({
                     </a>
 
                     <Link
-                        to="/gate"
+                        to="/scan"
                         onClick={() => setMobileOpen(false)}
                         className={`w-full flex items-center justify-between px-3.5 py-2 rounded-lg text-xs font-semibold transition ${
-                            location.pathname === '/gate'
+                            location.pathname === '/scan'
                                 ? 'bg-[#11295D] text-white border-l-4 border-[#01ABE8]'
                                 : 'text-[#ACCFE3] hover:bg-[#0F2149] hover:text-white'
                         }`}
@@ -366,8 +366,8 @@ export default function AdminSidebar({
                         </svg>
                         <span>Menu Panel</span>
                     </button>
-                    <span className="text-xs font-serif font-bold text-[#CAE0ED]">
-                        {location.pathname === '/gate'
+                    <span className="text-xs font-bold text-[#CAE0ED]">
+                        {location.pathname === '/scan'
                             ? 'Layar Kiosk'
                             : location.pathname === '/my-qr'
                             ? 'Kartu QR'

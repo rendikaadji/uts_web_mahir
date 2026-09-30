@@ -207,7 +207,7 @@ export default function VisitsDashboard() {
                     <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#A65B47]">
                         Akses Dibatasi (RBAC)
                     </span>
-                    <h2 className="font-serif text-2xl font-bold text-[#07132B] mt-1 mb-3">
+                    <h2 className="text-2xl font-bold text-[#07132B] mt-1 mb-3">
                         Panel Khusus Staf
                     </h2>
                     <p className="text-xs text-[#475569] leading-relaxed mb-6">
@@ -221,7 +221,7 @@ export default function VisitsDashboard() {
                             Buka Kartu Anggota QR Saya
                         </Link>
                         <Link
-                            to="/gate"
+                            to="/scan"
                             className="rounded-sm border border-[#CBD5E1] bg-white hover:bg-[#F0F9FF] py-2 px-4 text-xs font-semibold text-[#0B1B3D] transition"
                         >
                             Menuju Layar Kiosk Perpustakaan
@@ -249,137 +249,35 @@ export default function VisitsDashboard() {
                 {/* ========================================================================= */}
                 {activeTab === 'dashboard' && (
                     <div className="space-y-8">
-                        {/* Section Header */}
-                        <div className="border-b border-[#BAE6FD] pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                            <div>
-                                <span className="text-[11px] uppercase tracking-[0.2em] font-semibold text-[#475569] flex items-center gap-1.5">
-                                    <span className="w-2 h-2 rounded-full bg-[#01ABE8] animate-pulse" />
-                                    Ringkasan Presensi Hari Ini
-                                </span>
-                                <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#07132B] mt-1">
-                                    Dashboard Administrasi Perpustakaan
-                                </h1>
-                            </div>
-                            <div className="flex items-center gap-2 flex-wrap">
-                                <button
-                                    type="button"
-                                    onClick={() => setAddMemberModalOpen(true)}
-                                    className="rounded-lg bg-[#01ABE8] hover:bg-[#0284C7] px-4 py-2 text-xs font-bold uppercase tracking-wider text-[#07132D] transition flex items-center gap-1.5 shadow-xs cursor-pointer"
-                                >
-                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                                    </svg>
-                                    + Tambah Siswa / Guru
-                                </button>
-                                <button
-                                    onClick={() => handleOpenManual('member')}
-                                    className="rounded-lg bg-[#0B1B3D] hover:bg-[#132A58] px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white transition flex items-center gap-2 shadow-xs cursor-pointer"
-                                >
-                                    <svg className="w-3.5 h-3.5 text-[#01ABE8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-                                    </svg>
-                                    Presensi Manual
-                                </button>
-                                <a
-                                    href={getEffectiveExportUrl()}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="rounded-lg border border-[#CBD5E1] bg-white hover:bg-[#F0F9FF] px-3.5 py-2 text-xs font-semibold text-[#0B1B3D] transition flex items-center gap-1.5 shadow-2xs cursor-pointer"
-                                >
-                                    <svg className="w-3.5 h-3.5 text-[#19346D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                    </svg>
-                                    Unduh CSV
-                                </a>
-                            </div>
-                        </div>
-
-                        {/* Top KPI Cards */}
+                        {/* Top KPI Cards (gaya sama dengan dashboard utama) */}
                         {stats && (
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5">
-                                <div className="col-span-2 md:col-span-1 rounded-xl border-2 border-[#18336E] bg-gradient-to-br from-[#0B1B3D] via-[#11295D] to-[#0A1836] text-white p-4 sm:p-5 shadow-xs">
-                                    <div className="text-[10.5px] font-semibold uppercase tracking-[0.16em] text-[#01ABE8]">
-                                        Total Kunjungan
-                                    </div>
-                                    <div className="font-serif text-3xl sm:text-4xl font-bold text-white mt-1.5">
-                                        {stats.today.total}
-                                    </div>
-                                    <div className="text-[10.5px] text-[#99C4DD] mt-1 font-medium">
-                                        {stats.today.qr} QR &bull; {stats.today.manual} Manual
-                                    </div>
-                                </div>
-
-                                <div
-                                    onClick={() => handleTabChange('siswa')}
-                                    className="rounded-xl border border-[#BAE6FD] bg-[#F0F9FF] p-4 sm:p-5 shadow-2xs hover:border-[#0B1B3D] transition cursor-pointer group"
-                                >
-                                    <div className="flex items-center justify-between">
-                                        <div className="text-[10.5px] font-semibold uppercase tracking-[0.15em] text-[#0B1B3D]">
-                                            Siswa
+                            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                                {[
+                                    { key: 'total', label: 'Total', value: stats.today.total, note: `${stats.today.qr} QR • ${stats.today.manual} Manual`, tone: 'bg-sky-50 text-sky-600' },
+                                    { key: 'siswa', label: 'Siswa', value: stats.today.by_role.siswa ?? 0, note: 'Hadir hari ini', tone: 'bg-emerald-50 text-emerald-600', tab: 'siswa' },
+                                    { key: 'guru', label: 'Teachers', value: stats.today.by_role.guru ?? 0, note: 'Dewan guru hadir', tone: 'bg-blue-50 text-blue-600', tab: 'guru' },
+                                    { key: 'tamu', label: 'Guests', value: stats.today.by_role.tamu ?? 0, note: 'Pengunjung dinas/luar', tone: 'bg-indigo-50 text-indigo-600', tab: 'buku_tamu' },
+                                ].map((card) => (
+                                    <div
+                                        key={card.key}
+                                        onClick={card.tab ? () => handleTabChange(card.tab) : undefined}
+                                        className={`bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md transition flex items-center justify-between ${card.tab ? 'cursor-pointer' : ''}`}
+                                    >
+                                        <div className="flex flex-col items-center justify-center pr-4">
+                                            <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-1.5 shadow-2xs ${card.tone}`}>
+                                                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                                                </svg>
+                                            </div>
+                                            <span className="text-xs font-bold text-slate-700">{card.label}</span>
                                         </div>
-                                        <span className="text-xs text-[#19346D] group-hover:translate-x-1 transition-transform">&rarr;</span>
-                                    </div>
-                                    <div className="font-serif text-3xl sm:text-4xl font-bold text-[#0B1B3D] mt-1.5">
-                                        {stats.today.by_role.siswa ?? 0}
-                                    </div>
-                                    <div className="text-[10.5px] text-[#475569] mt-1 truncate">
-                                        Peserta didik madrasah
-                                    </div>
-                                </div>
-
-                                <div
-                                    onClick={() => handleTabChange('guru')}
-                                    className="rounded-xl border border-[#BAE6FD] bg-[#F0F9FF] p-4 sm:p-5 shadow-2xs hover:border-[#0B1B3D] transition cursor-pointer group"
-                                >
-                                    <div className="flex items-center justify-between">
-                                        <div className="text-[10.5px] font-semibold uppercase tracking-[0.15em] text-[#0B1B3D]">
-                                            Dewan Guru
+                                        <div className="h-12 w-px bg-slate-200" />
+                                        <div className="flex-1 text-right pl-4">
+                                            <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight block">{card.value}</span>
+                                            <span className="text-[11px] text-slate-400 font-medium">{card.note}</span>
                                         </div>
-                                        <span className="text-xs text-[#19346D] group-hover:translate-x-1 transition-transform">&rarr;</span>
                                     </div>
-                                    <div className="font-serif text-3xl sm:text-4xl font-bold text-[#0B1B3D] mt-1.5">
-                                        {stats.today.by_role.guru ?? 0}
-                                    </div>
-                                    <div className="text-[10.5px] text-[#475569] mt-1 truncate">
-                                        Tenaga pendidik
-                                    </div>
-                                </div>
-
-                                <div
-                                    onClick={() => handleTabChange('buku_tamu')}
-                                    className="rounded-xl border border-[#BAE6FD] bg-[#F0F9FF] p-4 sm:p-5 shadow-2xs hover:border-[#0B1B3D] transition cursor-pointer group"
-                                >
-                                    <div className="flex items-center justify-between">
-                                        <div className="text-[10.5px] font-semibold uppercase tracking-[0.15em] text-[#102A62]">
-                                            Buku Tamu
-                                        </div>
-                                        <span className="text-xs text-[#19346D] group-hover:translate-x-1 transition-transform">&rarr;</span>
-                                    </div>
-                                    <div className="font-serif text-3xl sm:text-4xl font-bold text-[#0B1B3D] mt-1.5">
-                                        {stats.today.by_role.tamu}
-                                    </div>
-                                    <div className="text-[10.5px] text-[#475569] mt-1 truncate">
-                                        Pengunjung dinas/luar
-                                    </div>
-                                </div>
-
-                                <div
-                                    onClick={() => handleTabChange('staf')}
-                                    className="rounded-xl border border-[#BAE6FD] bg-[#F0F9FF] p-4 sm:p-5 shadow-2xs hover:border-[#0B1B3D] transition cursor-pointer group"
-                                >
-                                    <div className="flex items-center justify-between">
-                                        <div className="text-[10.5px] font-semibold uppercase tracking-[0.15em] text-[#19346D]">
-                                            Petugas / Staf
-                                        </div>
-                                        <span className="text-xs text-[#19346D] group-hover:translate-x-1 transition-transform">&rarr;</span>
-                                    </div>
-                                    <div className="font-serif text-3xl sm:text-4xl font-bold text-[#0B1B3D] mt-1.5">
-                                        {stats.today.by_role.pustakawan + stats.today.by_role.admin_madrasah}
-                                    </div>
-                                    <div className="text-[10.5px] text-[#475569] mt-1 truncate">
-                                        Pustakawan & Admin
-                                    </div>
-                                </div>
+                                ))}
                             </div>
                         )}
 
@@ -390,7 +288,7 @@ export default function VisitsDashboard() {
                                 <div className="lg:col-span-2 rounded-xl border-2 border-[#BAE6FD] bg-white p-6 shadow-2xs">
                                     <div className="flex items-center justify-between mb-4">
                                         <div>
-                                            <h3 className="font-serif text-base font-bold text-[#07132B]">
+                                            <h3 className="text-base font-bold text-[#07132B]">
                                                 Distribusi Jam Kedatangan Hari Ini
                                             </h3>
                                             <p className="text-xs text-[#475569]">Kepadatan arus pengunjung perpustakaan per jam</p>
@@ -423,7 +321,7 @@ export default function VisitsDashboard() {
                             {/* Method Breakdown & Quick Kiosk status */}
                             <div className="rounded-xl border-2 border-[#BAE6FD] bg-[#F8FAFC] p-6 shadow-2xs flex flex-col justify-between space-y-4">
                                 <div>
-                                    <h3 className="font-serif text-base font-bold text-[#07132B] mb-1">
+                                    <h3 className="text-base font-bold text-[#07132B] mb-1">
                                         Metode Presensi
                                     </h3>
                                     <p className="text-xs text-[#475569] mb-4">Rasio pemindaian mandiri vs pencatatan manual</p>
@@ -469,7 +367,7 @@ export default function VisitsDashboard() {
 
                                 <div className="pt-3 border-t border-[#DBE1E9] flex items-center justify-between text-xs">
                                     <span className="text-[#475569]">Kiosk Gerbang Presensi</span>
-                                    <Link to="/gate" className="text-[#0B1B3D] font-bold hover:underline">
+                                    <Link to="/scan" className="text-[#0B1B3D] font-bold hover:underline">
                                         Buka Kiosk &rarr;
                                     </Link>
                                 </div>
@@ -482,7 +380,7 @@ export default function VisitsDashboard() {
                                 <div className="flex items-center gap-2.5">
                                     <div className="w-2.5 h-2.5 rounded-full bg-[#01ABE8] animate-pulse" />
                                     <div>
-                                        <h3 className="font-serif text-base font-bold text-[#07132B]">
+                                        <h3 className="text-base font-bold text-[#07132B]">
                                             Kunjungan Terkini Hari Ini
                                         </h3>
                                         <p className="text-[11px] text-[#475569]">Presensi terbaru yang baru saja tercatat di gerbang</p>
@@ -564,7 +462,7 @@ export default function VisitsDashboard() {
                                 <div className="text-[11px] uppercase tracking-[0.2em] font-semibold text-[#475569]">
                                     Modul Peserta Didik
                                 </div>
-                                <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#07132B] mt-1">
+                                <h1 className="text-2xl sm:text-3xl font-bold text-[#07132B] mt-1">
                                     Presensi Siswa Madrasah
                                 </h1>
                                 <p className="text-xs text-[#475569] mt-0.5">
@@ -631,7 +529,7 @@ export default function VisitsDashboard() {
                                     <svg className="w-3.5 h-3.5 text-[#19346D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                     </svg>
-                                    Ekspor Siswa (CSV)
+                                    Ekspor Siswa (Excel)
                                 </a>
                             </div>
                         </div>
@@ -818,7 +716,7 @@ export default function VisitsDashboard() {
                                 <div className="text-[11px] uppercase tracking-[0.2em] font-semibold text-[#475569]">
                                     Modul Tenaga Pendidik
                                 </div>
-                                <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#07132B] mt-1">
+                                <h1 className="text-2xl sm:text-3xl font-bold text-[#07132B] mt-1">
                                     Presensi Dewan Guru
                                 </h1>
                                 <p className="text-xs text-[#475569] mt-0.5">
@@ -885,7 +783,7 @@ export default function VisitsDashboard() {
                                     <svg className="w-3.5 h-3.5 text-[#19346D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                     </svg>
-                                    Ekspor Guru (CSV)
+                                    Ekspor Guru (Excel)
                                 </a>
                             </div>
                         </div>
@@ -1072,7 +970,7 @@ export default function VisitsDashboard() {
                                 <div className="text-[11px] uppercase tracking-[0.2em] font-semibold text-[#475569]">
                                     Buku Tamu Eksternal
                                 </div>
-                                <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#07132B] mt-1">
+                                <h1 className="text-2xl sm:text-3xl font-bold text-[#07132B] mt-1">
                                     Buku Tamu Digital Perpustakaan
                                 </h1>
                                 <p className="text-xs text-[#475569] mt-0.5">
@@ -1098,7 +996,7 @@ export default function VisitsDashboard() {
                                     <svg className="w-3.5 h-3.5 text-[#19346D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                     </svg>
-                                    Ekspor Buku Tamu (CSV)
+                                    Ekspor Buku Tamu (Excel)
                                 </a>
                             </div>
                         </div>
@@ -1243,7 +1141,7 @@ export default function VisitsDashboard() {
                                 <div className="text-[11px] uppercase tracking-[0.2em] font-semibold text-[#475569]">
                                     Log Kehadiran Internal
                                 </div>
-                                <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#07132B] mt-1">
+                                <h1 className="text-2xl sm:text-3xl font-bold text-[#07132B] mt-1">
                                     Presensi Pustakawan & Admin
                                 </h1>
                                 <p className="text-xs text-[#475569] mt-0.5">
@@ -1260,7 +1158,7 @@ export default function VisitsDashboard() {
                                     <svg className="w-3.5 h-3.5 text-[#19346D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                     </svg>
-                                    Ekspor Staf (CSV)
+                                    Ekspor Staf (Excel)
                                 </a>
                             </div>
                         </div>
@@ -1336,7 +1234,7 @@ export default function VisitsDashboard() {
                                 <div className="text-[11px] uppercase tracking-[0.2em] font-semibold text-[#475569]">
                                     Rekapitulasi Lengkap
                                 </div>
-                                <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#07132B] mt-1">
+                                <h1 className="text-2xl sm:text-3xl font-bold text-[#07132B] mt-1">
                                     Semua Riwayat Presensi
                                 </h1>
                                 <p className="text-xs text-[#475569] mt-0.5">
@@ -1362,7 +1260,7 @@ export default function VisitsDashboard() {
                                     <svg className="w-3.5 h-3.5 text-[#01ABE8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                     </svg>
-                                    Ekspor Master CSV
+                                    Ekspor Master Excel
                                 </a>
                             </div>
                         </div>

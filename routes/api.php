@@ -9,12 +9,6 @@ use Illuminate\Support\Facades\Route;
 
 // Memakai sesi web (cookie + CSRF) yang sama dengan portal; tidak ada login token terpisah.
 Route::prefix('v1')->middleware('web')->group(function () {
-    // Public Kiosk endpoints with rate limiting
-    Route::middleware('throttle:60,1')->group(function () {
-        Route::post('/gate/scan', [GateController::class, 'scan']);
-        Route::post('/gate/guest', [GateController::class, 'guest']);
-    });
-
     // Authenticated member & staff endpoints
     Route::middleware('auth')->group(function () {
         Route::get('/auth/user', [AuthController::class, 'me']);
@@ -31,6 +25,8 @@ Route::prefix('v1')->middleware('web')->group(function () {
         Route::post('/qr/generate', [QrController::class, 'generate']);
 
         // Staff attendance override & reporting
+        Route::post('/gate/scan', [GateController::class, 'scan'])->middleware('throttle:60,1');
+        Route::post('/gate/guest', [GateController::class, 'guest'])->middleware('throttle:60,1');
         Route::post('/gate/manual', [GateController::class, 'manual']);
         Route::get('/visits', [VisitReportController::class, 'index']);
         Route::get('/visits/stats', [VisitReportController::class, 'stats']);

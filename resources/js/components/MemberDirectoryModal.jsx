@@ -115,7 +115,7 @@ export default function MemberDirectoryModal({ isOpen, onClose, onOpenQr, onOpen
                         <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#01ABE8]">
                             Manajemen Data Anggota (CRUD)
                         </span>
-                        <h3 className="font-serif text-xl sm:text-2xl font-bold text-white mt-0.5">
+                        <h3 className="text-xl sm:text-2xl font-bold text-white mt-0.5">
                             {roleFilter === 'siswa'
                                 ? 'Direktori & Kelola Data Siswa'
                                 : roleFilter === 'guru'
@@ -438,7 +438,7 @@ export default function MemberDirectoryModal({ isOpen, onClose, onOpenQr, onOpen
                             </svg>
                         </div>
                         <div className="text-center">
-                            <h4 className="font-serif text-lg font-bold text-[#07132B]">
+                            <h4 className="text-lg font-bold text-[#07132B]">
                                 Hapus Data Anggota?
                             </h4>
                             <p className="text-xs text-[#475569] mt-1.5 leading-relaxed">

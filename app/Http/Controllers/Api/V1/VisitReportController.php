@@ -7,7 +7,7 @@ use App\Http\Resources\VisitResource;
 use App\Models\Visit;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Illuminate\Http\Response;
 
 class VisitReportController extends Controller
 {
@@ -87,66 +87,46 @@ class VisitReportController extends Controller
     }
 
     /**
-     * Export visits as streamed CSV file.
+     * Export visits as an Excel file (HTML table, same approach as the portal reports).
      */
-    public function export(Request $request): StreamedResponse
+    public function export(Request $request): Response
     {
         $this->ensureStaff($request);
 
-        $filename = 'laporan-presensi-'.now()->format('Y-m-d-His').'.csv';
+        $filename = 'laporan-presensi-'.now()->format('Y-m-d-His').'.xls';
 
-        $query = Visit::with(['member.user', 'recorder'])
+        $rows = Visit::with(['member.user', 'recorder'])
             ->filter($request->only(['date_from', 'date_to', 'role', 'method', 'search']))
-            ->latest('visited_at');
+            ->latest('visited_at')
+            ->get()
+            ->map(function (Visit $visit) use ($request) {
+                $resource = (new VisitResource($visit))->toArray($request);
 
-        return response()->streamDownload(function () use ($query) {
-            $handle = fopen('php://output', 'w');
-
-            // UTF-8 BOM for Excel compatibility
-            fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF));
-
-            // CSV Header
-            fputcsv($handle, [
-                'No',
-                'Tanggal & Waktu',
-                'Nama Pengunjung',
-                'Peran',
-                'Identitas / Asal',
-                'Keperluan',
-                'Kontak / HP',
-                'Metode',
-                'Dicatat Oleh',
-                'Catatan Perangkat',
-            ]);
-
-            $index = 1;
-            $query->chunk(250, function ($visits) use ($handle, &$index) {
-                foreach ($visits as $visit) {
-                    $resource = (new VisitResource($visit))->toArray(request());
-                    $name = $resource['visitor_name'];
-                    $role = $resource['visitor_role'];
-                    $origin = $resource['visitor_origin'] ?? '-';
-                    $purpose = $resource['visitor_purpose'] ?? '-';
-                    $phone = $resource['visitor_phone'] ?? '-';
-
-                    fputcsv($handle, [
-                        $index++,
-                        $visit->visited_at?->format('Y-m-d H:i:s'),
-                        $name,
-                        $role,
-                        $origin,
-                        $purpose,
-                        $phone,
-                        $visit->method,
-                        $visit->recorder?->name ?? 'Sistem / Mandiri',
-                        $visit->device_note ?? '-',
-                    ]);
-                }
+                return [
+                    $resource['checked_in_formatted'],
+                    $resource['visitor_name'],
+                    match ($resource['visitor_role']) {
+                        'guru' => 'Dewan Guru',
+                        'tamu' => 'Tamu',
+                        default => 'Siswa',
+                    },
+                    $resource['visitor_origin'] ?: '-',
+                    $visit->method === 'qr' ? 'QR Scan' : 'Manual',
+                    $visit->recorder?->name ?? 'Kiosk Mandiri',
+                ];
             });
 
-            fclose($handle);
-        }, $filename, [
-            'Content-Type' => 'text/csv; charset=UTF-8',
+        // Kolom sama persis dengan tabel "Semua Riwayat Presensi" di web.
+        $headers = ['Waktu Presensi', 'Nama Pengunjung', 'Peran', 'Identitas / Asal', 'Metode', 'Dicatat Oleh'];
+
+        $html = '<html><head><meta charset="UTF-8"></head><body><table border="1"><tr>'
+            .collect($headers)->map(fn ($h) => '<th style="background:#0B1B3D;color:#fff">'.e($h).'</th>')->implode('')
+            .'</tr>'
+            .$rows->map(fn ($row) => '<tr>'.collect($row)->map(fn ($cell) => '<td style="mso-number-format:\'\\@\'">'.e((string) $cell).'</td>')->implode('').'</tr>')->implode('')
+            .'</table></body></html>';
+
+        return response($html, 200, [
+            'Content-Type' => 'application/vnd.ms-excel; charset=UTF-8',
             'Content-Disposition' => "attachment; filename=\"{$filename}\"",
         ]);
     }

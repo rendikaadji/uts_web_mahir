@@ -12,7 +12,7 @@ export default function Footer() {
                             <div className="w-9 h-9 rounded-lg bg-white p-1 flex items-center justify-center">
                                 <img src="/images/logo-mtsn32.png" alt="Logo MTsN 32 Jakarta" className="w-full h-full object-contain" />
                             </div>
-                            <span className="font-serif text-lg font-bold tracking-[0.14em] uppercase text-[#FAF8F5]">
+                            <span className="text-lg font-bold tracking-[0.14em] uppercase text-[#FAF8F5]">
                                 MTsN 32 Jakarta
                             </span>
                         </div>
@@ -28,7 +28,7 @@ export default function Footer() {
                         </div>
                         <ul className="space-y-1.5 text-xs text-[#B1BFD3]">
                             <li>
-                                <Link to="/gate" className="hover:text-white transition flex items-center gap-1.5">
+                                <Link to="/scan" className="hover:text-white transition flex items-center gap-1.5">
                                     <span>&rsaquo;</span> Pintu Masuk Kiosk Mandiri
                                 </Link>
                             </li>

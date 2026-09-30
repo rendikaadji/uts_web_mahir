@@ -6,7 +6,7 @@ import ManualCheckinModal from '../components/ManualCheckinModal';
 
 export default function GateScan() {
     const [scanFeedback, setScanFeedback] = useState(null); // { type: 'success'|'warning'|'error', title, message, visitor }
-    const [isProcessing, setIsProcessing] = useState(false);
+    const isProcessingRef = useRef(false);
     const [cameraActive, setCameraActive] = useState(false);
     const [cameraError, setCameraError] = useState(null);
     const [guestFormOpen, setGuestFormOpen] = useState(false);
@@ -79,8 +79,8 @@ export default function GateScan() {
 
     // Process scanned QR token
     const handleCodeScanned = async (tokenString) => {
-        if (isProcessing) return;
-        setIsProcessing(true);
+        if (isProcessingRef.current) return;
+        isProcessingRef.current = true;
 
         playFeedbackBeep();
 
@@ -139,13 +139,19 @@ export default function GateScan() {
                 message: err.message || 'QR Code tidak valid atau kedaluwarsa.',
             });
             speakGreeting('Presensi gagal. Kode QR tidak valid.');
-        } finally {
-            setTimeout(() => {
-                setScanFeedback(null);
-                setIsProcessing(false);
-            }, 5000);
         }
     };
+
+    const dismissFeedback = () => {
+        setScanFeedback(null);
+        isProcessingRef.current = false;
+    };
+
+    useEffect(() => {
+        if (!scanFeedback) return;
+        const timer = setTimeout(dismissFeedback, 15000);
+        return () => clearTimeout(timer);
+    }, [scanFeedback]);
 
     const handleManualSubmit = (e) => {
         e.preventDefault();
@@ -176,48 +182,6 @@ export default function GateScan() {
         <div className="flex-1 flex flex-col justify-between">
             {/* Main Content Area */}
             <main className="flex-1 max-w-6xl mx-auto w-full px-6 py-8 md:py-12 flex flex-col items-center">
-                {/* Hero Editorial Header (Purelis Inspired Botanical Card) */}
-                <div className="w-full max-w-3xl rounded-2xl bg-gradient-to-br from-[#0B1B3D] via-[#122959] to-[#0A1939] text-white p-8 md:p-10 mb-10 shadow-[0_15px_35px_rgba(20,40,28,0.12)] border border-[#1A3570] text-center relative overflow-hidden">
-                    {/* Subtle leaf watermark accent */}
-                    <div className="absolute -right-10 -bottom-10 w-48 h-48 rounded-full bg-[#01ABE8]/5 pointer-events-none blur-2xl" />
-                    <div className="absolute -left-10 -top-10 w-48 h-48 rounded-full bg-[#01ABE8]/5 pointer-events-none blur-2xl" />
-
-                    <div className="inline-flex items-center gap-2 rounded-full bg-[#183066] border border-[#2B6180] px-4 py-1 text-[11px] uppercase tracking-[0.18em] font-semibold text-[#1AB2F9] mb-4">
-                        <span className="w-2 h-2 rounded-full bg-[#01ABE8] animate-pulse" />
-                        Sistem Presensi Kiosk Mandiri
-                    </div>
-                    <h1 className="font-serif text-3xl sm:text-5xl font-normal tracking-tight text-[#FAF8F5] leading-tight">
-                        MEMBACA MEMBUKA JENDELA.<br />
-                        <span className="font-semibold italic text-[#1AB2F9]">SELAMAT DATANG.</span>
-                    </h1>
-                    <p className="text-[#BBD7E8] text-sm md:text-base mt-3 max-w-xl mx-auto leading-relaxed">
-                        Arahkan QR Code kartu anggota madrasah Anda ke arah kamera untuk presensi instan tanpa antrean.
-                    </p>
-
-                    <div className="mt-5 flex items-center justify-center gap-4 text-xs text-[#8FBDD8]">
-                        <span className="flex items-center gap-1.5">
-                            <svg className="w-4 h-4 text-[#01ABE8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            Scan Cepat 0.5s
-                        </span>
-                        <span>&bull;</span>
-                        <span className="flex items-center gap-1.5">
-                            <svg className="w-4 h-4 text-[#01ABE8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            Anti-Duplikasi
-                        </span>
-                        <span>&bull;</span>
-                        <span className="flex items-center gap-1.5">
-                            <svg className="w-4 h-4 text-[#01ABE8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                            </svg>
-                            Buku Tamu Digital
-                        </span>
-                    </div>
-                </div>
-
                 {/* Camera Scanner Viewport Card */}
                 <div className="w-full max-w-md bg-white rounded-2xl border-2 border-[#BAE6FD] p-5 shadow-[0_15px_35px_rgba(20,40,28,0.06)] relative">
                     <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-[#EAEEF4] border border-[#BBD7E7] flex items-center justify-center">
@@ -245,7 +209,7 @@ export default function GateScan() {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                                     </svg>
                                 </div>
-                                <h3 className="font-serif font-bold text-lg text-[#07132B]">Akses Kamera Tidak Aktif</h3>
+                                <h3 className="font-bold text-lg text-[#07132B]">Akses Kamera Tidak Aktif</h3>
                                 <p className="text-xs text-[#475569] mt-1 mb-4 leading-relaxed max-w-xs">{cameraError}</p>
                                 <button
                                     onClick={() => setShowManualInput(true)}
@@ -274,6 +238,16 @@ export default function GateScan() {
                                         ? 'bg-[#FFFDF5]/98 border-2 border-[#C88A3B]'
                                         : 'bg-[#FFF5F5]/98 border-2 border-[#B94E48]'
                                 }`}>
+                                    <button
+                                        type="button"
+                                        onClick={dismissFeedback}
+                                        aria-label="Tutup"
+                                        className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/80 border border-[#BBD7E7] text-[#07132B] flex items-center justify-center hover:bg-white"
+                                    >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
                                     <div className={`w-14 h-14 rounded-full flex items-center justify-center mb-2.5 shadow-md ${
                                         scanFeedback.type === 'success'
                                             ? 'bg-[#0B1B3D] text-[#01ABE8]'
@@ -298,7 +272,7 @@ export default function GateScan() {
                                         )}
                                     </div>
 
-                                    <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#07132B]">
+                                    <h3 className="text-xl sm:text-2xl font-bold text-[#07132B]">
                                         {scanFeedback.title}
                                     </h3>
                                     <p className="text-xs text-[#475569] mt-0.5 mb-3 leading-relaxed max-w-xs">
@@ -328,7 +302,7 @@ export default function GateScan() {
                                                 <span className="text-[9.5px] uppercase tracking-wider font-semibold text-[#67768B] block">
                                                     Nama Lengkap
                                                 </span>
-                                                <span className="font-serif font-bold text-sm sm:text-base text-[#07132B] leading-tight block">
+                                                <span className="font-bold text-sm sm:text-base text-[#07132B] leading-tight block">
                                                     {visitorName || 'Anggota Terdaftar'}
                                                 </span>
                                             </div>
@@ -412,7 +386,7 @@ export default function GateScan() {
                             </svg>
                         </div>
                         <div>
-                            <h4 className="font-serif font-bold text-xs text-[#07132B]">Scan Otomatis</h4>
+                            <h4 className="font-bold text-xs text-[#07132B]">Scan Otomatis</h4>
                             <p className="text-[11px] text-[#3F4E64] mt-0.5 leading-snug">Presensi instan via kamera tanpa barcode scanner fisik</p>
                         </div>
                     </div>
@@ -424,7 +398,7 @@ export default function GateScan() {
                             </svg>
                         </div>
                         <div>
-                            <h4 className="font-serif font-bold text-xs text-[#07132B]">Anti-Duplikasi</h4>
+                            <h4 className="font-bold text-xs text-[#07132B]">Anti-Duplikasi</h4>
                             <p className="text-[11px] text-[#3F4E64] mt-0.5 leading-snug">Interval 5 menit cegah pencatatan ganda tak sengaja</p>
                         </div>
                     </div>
@@ -436,7 +410,7 @@ export default function GateScan() {
                             </svg>
                         </div>
                         <div>
-                            <h4 className="font-serif font-bold text-xs text-[#07132B]">Buku Tamu</h4>
+                            <h4 className="font-bold text-xs text-[#07132B]">Buku Tamu</h4>
                             <p className="text-[11px] text-[#3F4E64] mt-0.5 leading-snug">Formulir mandiri untuk wali murid, dinas, dan umum</p>
                         </div>
                     </div>
@@ -448,7 +422,7 @@ export default function GateScan() {
                             </svg>
                         </div>
                         <div>
-                            <h4 className="font-serif font-bold text-xs text-[#07132B]">Aman & Terenkripsi</h4>
+                            <h4 className="font-bold text-xs text-[#07132B]">Aman & Terenkripsi</h4>
                             <p className="text-[11px] text-[#3F4E64] mt-0.5 leading-snug">Token acak 40 karakter tanpa membocorkan data pribadi</p>
                         </div>
                     </div>
@@ -464,7 +438,7 @@ export default function GateScan() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
                             </svg>
                         </div>
-                        <h3 className="font-serif text-xl font-bold text-[#07132B] mb-1">Input Token QR Manual</h3>
+                        <h3 className="text-xl font-bold text-[#07132B] mb-1">Input Token QR Manual</h3>
                         <p className="text-xs text-[#475569] mb-4 leading-relaxed">
                             Gunakan opsi ini jika QR code pada kartu fisik rusak atau kamera perangkat tidak aktif.
                         </p>
@@ -509,7 +483,6 @@ export default function GateScan() {
                         message: 'Terima kasih telah berkunjung ke perpustakaan MTsN 32 Jakarta.',
                         visitor: visitor,
                     });
-                    setTimeout(() => setScanFeedback(null), 4000);
                 }}
             />
 
@@ -524,7 +497,6 @@ export default function GateScan() {
                         message: 'Kunjungan telah dicatat secara manual oleh staf.',
                         visitor: visitor,
                     });
-                    setTimeout(() => setScanFeedback(null), 4000);
                 }}
             />
         </div>

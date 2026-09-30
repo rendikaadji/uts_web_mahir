@@ -34,7 +34,7 @@ export default function Navbar() {
     const handleLogout = async () => {
         await logout();
         setUser(null);
-        navigate('/gate');
+        navigate('/scan');
     };
 
     const roleBadge = (role) => {
@@ -74,12 +74,12 @@ export default function Navbar() {
             <div className="border-b border-[#182F60] bg-[#0B1B3D]/98 backdrop-blur-md px-4 sm:px-8 md:px-12 py-3.5 sm:py-4">
                 <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
                     {/* Brand Logo (Serif & Purelis Minimalist Style) */}
-                    <Link to="/gate" className="flex items-center gap-3 group">
+                    <Link to="/scan" className="flex items-center gap-3 group">
                         <div className="w-10 h-10 rounded-xl bg-white p-1 flex items-center justify-center shadow-xs group-hover:scale-105 transition">
                             <img src="/images/logo-mtsn32.png" alt="Logo MTsN 32 Jakarta" className="w-full h-full object-contain" />
                         </div>
                         <div className="flex flex-col">
-                            <span className="font-serif text-lg sm:text-xl font-bold tracking-[0.14em] uppercase text-[#FAF8F5] leading-none">
+                            <span className="text-lg sm:text-xl font-bold tracking-[0.14em] uppercase text-[#FAF8F5] leading-none">
                                 MTsN 32
                             </span>
                             <span className="text-[9px] uppercase tracking-[0.26em] text-[#8EBCD7] font-semibold mt-1">
@@ -91,7 +91,7 @@ export default function Navbar() {
                     {/* Desktop Navigation Links */}
                     <nav className="hidden md:flex items-center gap-8">
                         <NavLink
-                            to="/gate"
+                            to="/scan"
                             className={({ isActive }) =>
                                 `text-xs uppercase tracking-[0.16em] transition-all py-1 border-b-2 ${
                                     isActive
@@ -178,7 +178,7 @@ export default function Navbar() {
                 {mobileMenuOpen && (
                     <div className="md:hidden mt-3 pt-3 border-t border-[#182F60] space-y-1">
                         <NavLink
-                            to="/gate"
+                            to="/scan"
                             className={({ isActive }) =>
                                 `block px-4 py-2.5 rounded text-xs uppercase tracking-[0.16em] font-semibold transition ${
                                     isActive

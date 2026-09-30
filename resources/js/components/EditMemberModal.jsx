@@ -73,7 +73,7 @@ export default function EditMemberModal({ isOpen, onClose, onSuccess, member }) 
                         <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#01ABE8]">
                             Edit Data Anggota #{member.id}
                         </span>
-                        <h3 className="font-serif text-xl sm:text-2xl font-bold text-white mt-0.5">
+                        <h3 className="text-xl sm:text-2xl font-bold text-white mt-0.5">
                             Perbarui Profil Anggota
                         </h3>
                     </div>

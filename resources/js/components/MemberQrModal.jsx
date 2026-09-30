@@ -63,7 +63,7 @@ export default function MemberQrModal({ isOpen, onClose, userId, memberInfo }) {
                             <img src="/images/logo-mtsn32.png" alt="Logo MTsN 32 Jakarta" className="w-full h-full object-contain" />
                         </div>
                         <div>
-                            <h3 className="font-serif font-bold text-base tracking-wide text-white leading-tight">
+                            <h3 className="font-bold text-base tracking-wide text-white leading-tight">
                                 Kartu QR Anggota
                             </h3>
                             <span className="text-[10px] text-[#01ABE8] font-semibold uppercase tracking-[0.16em]">
@@ -108,7 +108,7 @@ export default function MemberQrModal({ isOpen, onClose, userId, memberInfo }) {
                         <>
                             {/* Member Details */}
                             <div className="text-center">
-                                <h2 className="font-serif text-xl sm:text-2xl font-bold text-white tracking-tight">
+                                <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
                                     {currentUser?.name}
                                 </h2>
                                 <p className="text-xs text-[#99C4DD] font-mono mt-0.5">

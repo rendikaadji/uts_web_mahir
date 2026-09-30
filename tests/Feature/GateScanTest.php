@@ -23,12 +23,38 @@ class GateScanTest extends TestCase
         ])->fresh();
     }
 
+    private function librarian(): User
+    {
+        return User::factory()->create(['role' => 'pustakawan']);
+    }
+
+    public function test_scan_is_forbidden_for_guests_and_students(): void
+    {
+        $this->postJson('/api/v1/gate/scan', ['token' => 'x'])->assertStatus(401);
+
+        $student = User::factory()->create(['role' => 'siswa_guru']);
+        $this->actingAs($student)->postJson('/api/v1/gate/scan', ['token' => 'x'])->assertStatus(403);
+        $this->actingAs($student)->postJson('/api/v1/gate/guest', ['name' => 'Budi'])->assertStatus(403);
+    }
+
+    public function test_presensi_pages_are_scoped_by_role(): void
+    {
+        $this->get('/presensi/scan')->assertRedirect('/login');
+
+        $this->actingAs($this->librarian())->get('/presensi/scan')
+            ->assertOk()->assertSee('id="root"', false);
+
+        $student = User::factory()->create(['role' => 'siswa_guru']);
+        $this->actingAs($student)->get('/presensi/scan')->assertForbidden();
+        $this->actingAs($student)->get('/presensi/my-qr')->assertOk();
+    }
+
     public function test_valid_qr_scan_records_visit_successfully(): void
     {
         $student = $this->enrollMember('Ahmad Santoso', '1111111111');
         $qrToken = $student->activeQrToken;
 
-        $response = $this->postJson('/api/v1/gate/scan', [
+        $response = $this->actingAs($this->librarian())->postJson('/api/v1/gate/scan', [
             'token' => $qrToken->token,
             'device_note' => 'Kiosk Pintu Masuk 1',
         ]);
@@ -58,10 +84,10 @@ class GateScanTest extends TestCase
         $student = $this->enrollMember('Fatimah Zahra', '2222222222');
         $qrToken = $student->activeQrToken;
 
-        $this->postJson('/api/v1/gate/scan', ['token' => $qrToken->token])->assertStatus(201);
+        $this->actingAs($this->librarian())->postJson('/api/v1/gate/scan', ['token' => $qrToken->token])->assertStatus(201);
         $this->assertEquals(1, Visit::count());
 
-        $this->postJson('/api/v1/gate/scan', ['token' => $qrToken->token])
+        $this->actingAs($this->librarian())->postJson('/api/v1/gate/scan', ['token' => $qrToken->token])
             ->assertStatus(200)
             ->assertJson(['status' => 'already_checked_in']);
 
@@ -74,7 +100,7 @@ class GateScanTest extends TestCase
         $qrToken = $student->activeQrToken;
         $qrToken->update(['is_active' => false]);
 
-        $this->postJson('/api/v1/gate/scan', ['token' => $qrToken->token])->assertStatus(404);
+        $this->actingAs($this->librarian())->postJson('/api/v1/gate/scan', ['token' => $qrToken->token])->assertStatus(404);
         $this->assertEquals(0, Visit::count());
     }
 
@@ -83,7 +109,7 @@ class GateScanTest extends TestCase
         $student = $this->enrollMember('Budi Kadaluarsa', '5555555555');
         $qrToken = $student->generateQrToken(now()->subHour());
 
-        $this->postJson('/api/v1/gate/scan', ['token' => $qrToken->token])->assertStatus(410);
+        $this->actingAs($this->librarian())->postJson('/api/v1/gate/scan', ['token' => $qrToken->token])->assertStatus(410);
         $this->assertEquals(0, Visit::count());
     }
 
@@ -92,13 +118,13 @@ class GateScanTest extends TestCase
         $user = User::factory()->create(['role' => 'siswa_guru']);
         $qrToken = $user->generateQrToken();
 
-        $this->postJson('/api/v1/gate/scan', ['token' => $qrToken->token])->assertStatus(404);
+        $this->actingAs($this->librarian())->postJson('/api/v1/gate/scan', ['token' => $qrToken->token])->assertStatus(404);
         $this->assertEquals(0, Visit::count());
     }
 
-    public function test_guest_can_check_in_via_kiosk_form(): void
+    public function test_librarian_can_check_in_guest_via_form(): void
     {
-        $response = $this->postJson('/api/v1/gate/guest', [
+        $response = $this->actingAs($this->librarian())->postJson('/api/v1/gate/guest', [
             'name' => 'Budi Utomo',
             'origin' => 'Universitas Negeri Jakarta',
             'purpose' => 'Studi Banding Literasi',

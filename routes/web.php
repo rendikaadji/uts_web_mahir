@@ -66,8 +66,9 @@ Route::get('/opac/{slug}', [PublicController::class, 'bookDetail'])->name('opac.
 Route::get('/gate', [KioskController::class, 'index'])->name('gate');
 Route::post('/gate/check-in', [KioskController::class, 'checkIn'])->name('gate.checkin');
 
-// 2b. SPA presensi QR (scan kamera, dashboard kunjungan pustakawan, kartu QR anggota)
-Route::view('/presensi/{path?}', 'app')->where('path', '.*')->name('presensi');
+// 2b. SPA presensi QR (scan kamera + dashboard hanya untuk pustakawan; kartu QR untuk semua yang login)
+Route::view('/presensi/my-qr', 'app')->middleware('auth')->name('presensi.my-qr');
+Route::view('/presensi/{path?}', 'admin.presensi')->where('path', '.*')->middleware(['auth', 'role:pustakawan'])->name('presensi');
 
 // 3. Autentikasi Satu Pintu & Pemulihan Akun
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');

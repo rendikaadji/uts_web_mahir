@@ -115,7 +115,7 @@ class VisitsDashboardTest extends TestCase
             ]);
     }
 
-    public function test_staff_can_export_visits_as_csv(): void
+    public function test_staff_can_export_visits_as_excel(): void
     {
         /** @var User $librarian */
         $librarian = User::factory()->create(['role' => 'pustakawan']);
@@ -132,8 +132,10 @@ class VisitsDashboardTest extends TestCase
         $response = $this->actingAs($librarian)->get('/api/v1/visits/export');
 
         $response->assertStatus(200);
-        $this->assertStringContainsString('text/csv', $response->headers->get('content-type'));
-        $this->assertStringContainsString('filename=laporan-presensi-', $response->headers->get('content-disposition'));
+        $this->assertStringContainsString('application/vnd.ms-excel', $response->headers->get('content-type'));
+        $this->assertStringContainsString('filename="laporan-presensi-', $response->headers->get('content-disposition'));
+        $response->assertSee("mso-number-format:'\\@'", false);
+        $response->assertSee(['Waktu Presensi', 'Dicatat Oleh', 'Dr. H. Subagyo', 'Tamu', 'Manual', 'Kiosk Mandiri']);
     }
 
     public function test_admin_madrasah_is_forbidden_from_visit_reports(): void
