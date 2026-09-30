@@ -66,6 +66,9 @@ Route::get('/opac/{slug}', [PublicController::class, 'bookDetail'])->name('opac.
 Route::get('/gate', [KioskController::class, 'index'])->name('gate');
 Route::post('/gate/check-in', [KioskController::class, 'checkIn'])->name('gate.checkin');
 
+// 2b. SPA presensi QR (scan kamera, dashboard kunjungan pustakawan, kartu QR anggota)
+Route::view('/presensi/{path?}', 'app')->where('path', '.*')->name('presensi');
+
 // 3. Autentikasi Satu Pintu & Pemulihan Akun
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
@@ -78,89 +81,97 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('
 // 4. Panel Admin & Pustakawan
 Route::middleware(['auth', 'role:admin_madrasah,pustakawan'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/portal-siswa-guru', [DashboardController::class, 'portalStudents'])->name('portal.students');
-    Route::post('/portal-siswa-guru/{member}/toggle', [DashboardController::class, 'toggleMemberStatus'])->name('portal.students.toggle');
-    Route::get('/portal-wali-murid', [DashboardController::class, 'portalGuardians'])->name('portal.guardians');
-    Route::post('/portal-wali-murid/{user}/toggle', [DashboardController::class, 'toggleGuardianStatus'])->name('portal.guardians.toggle');
 
-    // Sirkulasi Perpustakaan (Peminjaman & Pengembalian ACID)
-    Route::get('/sirkulasi', [CirculationController::class, 'index'])->name('circulation.index');
-    Route::post('/sirkulasi/pinjam', [CirculationController::class, 'borrow'])->name('circulation.borrow');
-    Route::post('/sirkulasi/kembali', [CirculationController::class, 'returnBook'])->name('circulation.return');
+    // Admin Website (CMS & pengguna): hanya admin_madrasah
+    Route::middleware('role:admin_madrasah')->group(function () {
+        Route::get('/portal-siswa-guru', [DashboardController::class, 'portalStudents'])->name('portal.students');
+        Route::post('/portal-siswa-guru/{member}/toggle', [DashboardController::class, 'toggleMemberStatus'])->name('portal.students.toggle');
+        Route::get('/portal-wali-murid', [DashboardController::class, 'portalGuardians'])->name('portal.guardians');
+        Route::post('/portal-wali-murid/{user}/toggle', [DashboardController::class, 'toggleGuardianStatus'])->name('portal.guardians.toggle');
 
-    // Katalog & Eksemplar Buku
-    Route::get('/buku', [BookController::class, 'index'])->name('books.index');
-    Route::get('/buku/tambah', [BookController::class, 'create'])->name('books.create');
-    Route::post('/buku', [BookController::class, 'store'])->name('books.store');
-    Route::get('/buku/{book}', [BookController::class, 'show'])->name('books.show');
-    Route::get('/buku/{book}/edit', [BookController::class, 'edit'])->name('books.edit');
-    Route::put('/buku/{book}', [BookController::class, 'update'])->name('books.update');
-    Route::delete('/buku/{book}', [BookController::class, 'destroy'])->name('books.destroy');
-    Route::post('/buku/{book}/eksemplar', [BookController::class, 'addCopy'])->name('books.addCopy');
+        // CMS Berita & Pengumuman
+        Route::get('/berita', [AdminArticleController::class, 'index'])->name('articles.index');
+        Route::get('/berita/tambah', [AdminArticleController::class, 'create'])->name('articles.create');
+        Route::post('/berita', [AdminArticleController::class, 'store'])->name('articles.store');
+        Route::get('/berita/{article}/edit', [AdminArticleController::class, 'edit'])->name('articles.edit');
+        Route::put('/berita/{article}', [AdminArticleController::class, 'update'])->name('articles.update');
+        Route::delete('/berita/{article}', [AdminArticleController::class, 'destroy'])->name('articles.destroy');
 
-    // Denda
-    Route::get('/denda', [FineController::class, 'index'])->name('fines.index');
-    Route::post('/denda/{fine}/lunas', [FineController::class, 'pay'])->name('fines.pay');
+        // Profil Sekolah & Kepemimpinan Dinamis
+        Route::get('/profil-sekolah', [SchoolProfileController::class, 'edit'])->name('school.profile');
+        Route::put('/profil-sekolah', [SchoolProfileController::class, 'update'])->name('school.profile.update');
 
-    // Log Kunjungan
-    Route::get('/kunjungan', [VisitController::class, 'index'])->name('visits.index');
+        // Dewan Guru & Staf
+        Route::get('/guru', [TeacherController::class, 'index'])->name('teachers.index');
+        Route::get('/guru/tambah', [TeacherController::class, 'create'])->name('teachers.create');
+        Route::post('/guru', [TeacherController::class, 'store'])->name('teachers.store');
+        Route::get('/guru/{teacher}/edit', [TeacherController::class, 'edit'])->name('teachers.edit');
+        Route::put('/guru/{teacher}', [TeacherController::class, 'update'])->name('teachers.update');
+        Route::delete('/guru/{teacher}', [TeacherController::class, 'destroy'])->name('teachers.destroy');
 
-    // CMS Berita & Pengumuman
-    Route::get('/berita', [AdminArticleController::class, 'index'])->name('articles.index');
-    Route::get('/berita/tambah', [AdminArticleController::class, 'create'])->name('articles.create');
-    Route::post('/berita', [AdminArticleController::class, 'store'])->name('articles.store');
-    Route::get('/berita/{article}/edit', [AdminArticleController::class, 'edit'])->name('articles.edit');
-    Route::put('/berita/{article}', [AdminArticleController::class, 'update'])->name('articles.update');
-    Route::delete('/berita/{article}', [AdminArticleController::class, 'destroy'])->name('articles.destroy');
+        // Ekstrakurikuler
+        Route::get('/ekskul', [ExtracurricularController::class, 'index'])->name('extracurriculars.index');
+        Route::get('/ekskul/tambah', [ExtracurricularController::class, 'create'])->name('extracurriculars.create');
+        Route::post('/ekskul', [ExtracurricularController::class, 'store'])->name('extracurriculars.store');
+        Route::get('/ekskul/{extracurricular}/edit', [ExtracurricularController::class, 'edit'])->name('extracurriculars.edit');
+        Route::put('/ekskul/{extracurricular}', [ExtracurricularController::class, 'update'])->name('extracurriculars.update');
+        Route::delete('/ekskul/{extracurricular}', [ExtracurricularController::class, 'destroy'])->name('extracurriculars.destroy');
 
-    // Profil Sekolah & Kepemimpinan Dinamis
-    Route::get('/profil-sekolah', [SchoolProfileController::class, 'edit'])->name('school.profile');
-    Route::put('/profil-sekolah', [SchoolProfileController::class, 'update'])->name('school.profile.update');
+        // Galeri & Dokumentasi Kegiatan / Akademik
+        Route::get('/galeri', [GalleryController::class, 'index'])->name('galleries.index');
+        Route::get('/galeri/tambah', [GalleryController::class, 'create'])->name('galleries.create');
+        Route::post('/galeri', [GalleryController::class, 'store'])->name('galleries.store');
+        Route::get('/galeri/{gallery}/edit', [GalleryController::class, 'edit'])->name('galleries.edit');
+        Route::put('/galeri/{gallery}', [GalleryController::class, 'update'])->name('galleries.update');
+        Route::delete('/galeri/{gallery}', [GalleryController::class, 'destroy'])->name('galleries.destroy');
 
-    // Dewan Guru & Staf
-    Route::get('/guru', [TeacherController::class, 'index'])->name('teachers.index');
-    Route::get('/guru/tambah', [TeacherController::class, 'create'])->name('teachers.create');
-    Route::post('/guru', [TeacherController::class, 'store'])->name('teachers.store');
-    Route::get('/guru/{teacher}/edit', [TeacherController::class, 'edit'])->name('teachers.edit');
-    Route::put('/guru/{teacher}', [TeacherController::class, 'update'])->name('teachers.update');
-    Route::delete('/guru/{teacher}', [TeacherController::class, 'destroy'])->name('teachers.destroy');
+        // Sarana & Prasarana
+        Route::get('/fasilitas', [FacilityController::class, 'index'])->name('facilities.index');
+        Route::get('/fasilitas/tambah', [FacilityController::class, 'create'])->name('facilities.create');
+        Route::post('/fasilitas', [FacilityController::class, 'store'])->name('facilities.store');
+        Route::get('/fasilitas/{facility}/edit', [FacilityController::class, 'edit'])->name('facilities.edit');
+        Route::put('/fasilitas/{facility}', [FacilityController::class, 'update'])->name('facilities.update');
+        Route::delete('/fasilitas/{facility}', [FacilityController::class, 'destroy'])->name('facilities.destroy');
 
-    // Ekstrakurikuler
-    Route::get('/ekskul', [ExtracurricularController::class, 'index'])->name('extracurriculars.index');
-    Route::get('/ekskul/tambah', [ExtracurricularController::class, 'create'])->name('extracurriculars.create');
-    Route::post('/ekskul', [ExtracurricularController::class, 'store'])->name('extracurriculars.store');
-    Route::get('/ekskul/{extracurricular}/edit', [ExtracurricularController::class, 'edit'])->name('extracurriculars.edit');
-    Route::put('/ekskul/{extracurricular}', [ExtracurricularController::class, 'update'])->name('extracurriculars.update');
-    Route::delete('/ekskul/{extracurricular}', [ExtracurricularController::class, 'destroy'])->name('extracurriculars.destroy');
+    });
 
-    // Galeri & Dokumentasi Kegiatan / Akademik
-    Route::get('/galeri', [GalleryController::class, 'index'])->name('galleries.index');
-    Route::get('/galeri/tambah', [GalleryController::class, 'create'])->name('galleries.create');
-    Route::post('/galeri', [GalleryController::class, 'store'])->name('galleries.store');
-    Route::get('/galeri/{gallery}/edit', [GalleryController::class, 'edit'])->name('galleries.edit');
-    Route::put('/galeri/{gallery}', [GalleryController::class, 'update'])->name('galleries.update');
-    Route::delete('/galeri/{gallery}', [GalleryController::class, 'destroy'])->name('galleries.destroy');
+    // Admin Perpustakaan (buku, sirkulasi, denda, kunjungan, laporan): hanya pustakawan
+    Route::middleware('role:pustakawan')->group(function () {
+        // Sirkulasi Perpustakaan (Peminjaman & Pengembalian ACID)
+        Route::get('/sirkulasi', [CirculationController::class, 'index'])->name('circulation.index');
+        Route::post('/sirkulasi/pinjam', [CirculationController::class, 'borrow'])->name('circulation.borrow');
+        Route::post('/sirkulasi/kembali', [CirculationController::class, 'returnBook'])->name('circulation.return');
 
-    // Sarana & Prasarana
-    Route::get('/fasilitas', [FacilityController::class, 'index'])->name('facilities.index');
-    Route::get('/fasilitas/tambah', [FacilityController::class, 'create'])->name('facilities.create');
-    Route::post('/fasilitas', [FacilityController::class, 'store'])->name('facilities.store');
-    Route::get('/fasilitas/{facility}/edit', [FacilityController::class, 'edit'])->name('facilities.edit');
-    Route::put('/fasilitas/{facility}', [FacilityController::class, 'update'])->name('facilities.update');
-    Route::delete('/fasilitas/{facility}', [FacilityController::class, 'destroy'])->name('facilities.destroy');
+        // Katalog & Eksemplar Buku
+        Route::get('/buku', [BookController::class, 'index'])->name('books.index');
+        Route::get('/buku/tambah', [BookController::class, 'create'])->name('books.create');
+        Route::post('/buku', [BookController::class, 'store'])->name('books.store');
+        Route::get('/buku/{book}', [BookController::class, 'show'])->name('books.show');
+        Route::get('/buku/{book}/edit', [BookController::class, 'edit'])->name('books.edit');
+        Route::put('/buku/{book}', [BookController::class, 'update'])->name('books.update');
+        Route::delete('/buku/{book}', [BookController::class, 'destroy'])->name('books.destroy');
+        Route::post('/buku/{book}/eksemplar', [BookController::class, 'addCopy'])->name('books.addCopy');
 
-    // Pusat Laporan & Ekspor (Excel & PDF Resmi)
-    Route::get('/laporan', [ReportController::class, 'index'])->name('reports.index');
-    Route::get('/laporan/export-excel', [ReportController::class, 'exportExcel'])->name('reports.export');
-    Route::get('/laporan/cetak-pdf', [ReportController::class, 'printPdf'])->name('reports.print');
+        // Denda
+        Route::get('/denda', [FineController::class, 'index'])->name('fines.index');
+        Route::post('/denda/{fine}/lunas', [FineController::class, 'pay'])->name('fines.pay');
+
+        // Log Kunjungan
+        Route::get('/kunjungan', [VisitController::class, 'index'])->name('visits.index');
+
+        // Pusat Laporan & Ekspor (Excel & PDF Resmi)
+        Route::get('/laporan', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('/laporan/export-excel', [ReportController::class, 'exportExcel'])->name('reports.export');
+        Route::get('/laporan/cetak-pdf', [ReportController::class, 'printPdf'])->name('reports.print');
+    });
 });
 
 // 5. Area Anggota (Siswa & Guru)
-Route::middleware(['auth', 'role:siswa_guru,admin_madrasah,pustakawan'])->prefix('member')->name('member.')->group(function () {
+Route::middleware(['auth', 'role:siswa_guru'])->prefix('member')->name('member.')->group(function () {
     Route::get('/', [MemberController::class, 'dashboard'])->name('dashboard');
 });
 
 // 6. Area Pemantauan Wali Murid
-Route::middleware(['auth', 'role:wali_murid,admin_madrasah,pustakawan'])->prefix('wali')->name('guardian.')->group(function () {
+Route::middleware(['auth', 'role:wali_murid'])->prefix('wali')->name('guardian.')->group(function () {
     Route::get('/', [GuardianController::class, 'dashboard'])->name('dashboard');
 });

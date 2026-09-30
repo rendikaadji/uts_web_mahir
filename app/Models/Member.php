@@ -65,4 +65,36 @@ class Member extends Model
     {
         return $this->getIdentifierAttribute();
     }
+
+    /**
+     * Daftarkan atau perbarui akun siswa/guru beserta data anggotanya.
+     * Peran akun selalu siswa_guru; hak admin/pustakawan tidak bisa dibuat dari sini.
+     *
+     * @param  array{name: string, username: string, email: string, password_hash: string, member_type: string}  $data
+     */
+    public static function enroll(array $data, ?User $user = null): User
+    {
+        $user = $user ?? new User;
+        $user->fill([
+            'name' => $data['name'],
+            'username' => $data['username'],
+            'email' => $data['email'],
+            'role' => 'siswa_guru',
+            'is_active' => true,
+        ]);
+        $user->password = $data['password_hash'];
+        $user->saveQuietly();
+
+        $isTeacher = $data['member_type'] === 'guru';
+        static::updateOrCreate(['user_id' => $user->id], [
+            'member_type' => $data['member_type'],
+            'nisn' => $isTeacher ? null : $data['username'],
+            'nip' => $isTeacher ? $data['username'] : null,
+            'barcode' => $data['username'],
+            'is_active' => true,
+        ]);
+        $user->getOrCreateQrToken();
+
+        return $user;
+    }
 }

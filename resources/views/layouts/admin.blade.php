@@ -74,6 +74,7 @@
                 </div>
             </div>
 
+@if(auth()->user()->isLibrarian())
             <!-- Center: Search Input -->
             <div class="hidden md:block max-w-xs w-full mx-2">
                 <form action="{{ route('admin.books.index') }}" method="GET" class="relative">
@@ -83,6 +84,7 @@
                     </button>
                 </form>
             </div>
+@endif
 
             <!-- Right: Quick Actions & User Profile -->
             <div class="flex items-center gap-3 shrink-0">
@@ -93,6 +95,7 @@
                     <span>Web Publik</span>
                 </a>
 
+@if(auth()->user()->isAdmin())
                 <!-- Message Badge & Dropdown -->
                 <div class="relative">
                     <button type="button" id="messages-toggle-btn" class="relative p-2 text-slate-500 hover:text-slate-800 transition rounded-full hover:bg-slate-100 hidden sm:block focus:outline-none cursor-pointer" title="Warta & Pengumuman">
@@ -124,7 +127,9 @@
                         </div>
                     </div>
                 </div>
+@endif
 
+@if(auth()->user()->isLibrarian())
                 <!-- Notification Bell Badge & Dropdown -->
                 <div class="relative">
                     <button type="button" id="notif-toggle-btn" class="relative p-2 text-slate-500 hover:text-slate-800 transition rounded-full hover:bg-slate-100 focus:outline-none cursor-pointer" title="Pemberitahuan Sistem">
@@ -162,6 +167,7 @@
                         </div>
                     </div>
                 </div>
+@endif
 
                 <!-- User Profile Pill -->
                 <div class="relative pl-3 border-l border-slate-200 shrink-0">
@@ -186,6 +192,7 @@
                             </span>
                         </div>
                         <div class="py-1 text-xs">
+@if(auth()->user()->isAdmin())
                             <a href="{{ route('admin.portal.students') }}" class="flex items-center gap-2.5 px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#0B1B3D] font-medium transition">
                                 <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                                 <span>Portal Siswa & Guru</span>
@@ -194,6 +201,7 @@
                                 <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                                 <span>Portal Wali Murid</span>
                             </a>
+@endif
                             @if(auth()->user()->isAdmin())
                                 <a href="{{ route('admin.school.profile') }}" class="flex items-center gap-2.5 px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#0B1B3D] font-medium transition">
                                     <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>

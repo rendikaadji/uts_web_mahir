@@ -623,32 +623,32 @@ class PortalAndLibraryTest extends TestCase
         Storage::disk('public')->assertMissing($deletedImagePath);
     }
 
-    public function test_admin_can_view_reports_and_export_data(): void
+    public function test_librarian_can_view_reports_and_export_data(): void
     {
-        $admin = User::create([
-            'name' => 'Admin Test',
-            'username' => 'adminrep',
-            'email' => 'adminrep@test.com',
+        $pustakawan = User::create([
+            'name' => 'Pustakawan Test',
+            'username' => 'pustakawanrep',
+            'email' => 'pustakawanrep@test.com',
             'password' => Hash::make('admin123'),
-            'role' => 'admin_madrasah',
+            'role' => 'pustakawan',
             'is_active' => true,
         ]);
 
         // Access reports dashboard
-        $this->actingAs($admin)
+        $this->actingAs($pustakawan)
             ->get('/admin/laporan')
             ->assertStatus(200)
             ->assertSee('Pusat Laporan & Ekspor Data');
 
         // Test Official PDF Print View
-        $this->actingAs($admin)
+        $this->actingAs($pustakawan)
             ->get('/admin/laporan/cetak-pdf?type=sirkulasi&period=all')
             ->assertStatus(200)
             ->assertSee('KEMENTERIAN AGAMA REPUBLIK INDONESIA')
             ->assertSee('MADRASAH TSANAWIYAH NEGERI 32 JAKARTA');
 
         // Test Formatted Excel (.xls) Export
-        $exportResponse = $this->actingAs($admin)
+        $exportResponse = $this->actingAs($pustakawan)
             ->get('/admin/laporan/export-excel?type=sirkulasi&period=all');
 
         $exportResponse->assertStatus(200);
@@ -847,7 +847,7 @@ class PortalAndLibraryTest extends TestCase
         $this->assertTrue($guardian->fresh()->is_active);
     }
 
-    public function test_admin_can_preview_member_and_guardian_dashboards(): void
+    public function test_admin_is_forbidden_from_member_and_guardian_dashboards_but_owners_can_access(): void
     {
         $admin = User::create([
             'name' => 'Admin Utama',
@@ -892,18 +892,17 @@ class PortalAndLibraryTest extends TestCase
             'relationship' => 'Ibu Kandung',
         ]);
 
-        // Admin preview member dashboard
-        $this->actingAs($admin)
-            ->get('/member?member_id='.$member->id)
-            ->assertStatus(200)
-            ->assertSee('Farhan Kamil')
-            ->assertSee('Panel Kontrol');
+        $this->actingAs($admin)->get('/member')->assertStatus(403);
+        $this->actingAs($admin)->get('/wali')->assertStatus(403);
 
-        // Admin preview guardian dashboard
-        $this->actingAs($admin)
-            ->get('/wali?guardian_id='.$guardian->id)
+        $this->actingAs($studentUser)
+            ->get('/member')
             ->assertStatus(200)
-            ->assertSee('Ibu Fatimah')
-            ->assertSee('Panel Kontrol');
+            ->assertSee('Farhan Kamil');
+
+        $this->actingAs($guardian)
+            ->get('/wali')
+            ->assertStatus(200)
+            ->assertSee('Ibu Fatimah');
     }
 }

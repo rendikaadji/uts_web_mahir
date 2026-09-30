@@ -32,6 +32,7 @@
                 <span class="text-[9px] text-[#01ABE8]">&rsaquo;</span>
                 <span>Admin Utama</span>
             </a>
+@if(auth()->user()->isAdmin())
             <a href="{{ route('admin.portal.students') }}" class="flex items-center gap-2 px-2.5 py-1 rounded-md text-[11px] font-semibold transition {{ request()->routeIs('admin.portal.students*') ? 'text-[#01ABE8] bg-[#0E244D] font-bold' : 'text-slate-300 hover:text-white hover:bg-[#0E244D]/50' }}">
                 <span class="text-[9px] {{ request()->routeIs('admin.portal.students*') ? 'text-[#01ABE8]' : 'text-slate-400' }}">&rsaquo;</span>
                 <span>Portal Siswa & Guru</span>
@@ -40,9 +41,11 @@
                 <span class="text-[9px] {{ request()->routeIs('admin.portal.guardians*') ? 'text-[#01ABE8]' : 'text-slate-400' }}">&rsaquo;</span>
                 <span>Portal Wali Murid</span>
             </a>
+@endif
         </div>
     </div>
 
+@if(auth()->user()->isAdmin())
     <div class="pt-2 pb-0.5">
         <span class="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider px-2.5 block">Manajemen Civitas</span>
     </div>
@@ -55,7 +58,9 @@
         </div>
         <span class="text-slate-500 text-[10px]">&rsaquo;</span>
     </a>
+@endif
 
+@if(auth()->user()->isLibrarian())
     <!-- Perpustakaan Digital Section -->
     <div class="pt-2 pb-0.5">
         <span class="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider px-2.5 block">Perpustakaan Digital</span>
@@ -105,6 +110,7 @@
         </div>
         <span class="text-slate-500 text-[10px]">&rsaquo;</span>
     </a>
+@endif
 
     @if(auth()->user()->isAdmin())
         <div class="pt-2 pb-0.5">
