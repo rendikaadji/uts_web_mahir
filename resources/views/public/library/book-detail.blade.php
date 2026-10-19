@@ -161,9 +161,9 @@
 
                 <div class="prose prose-slate max-w-none text-slate-600 text-sm leading-relaxed space-y-4">
                     @if($book->description)
-                        <p class="text-base text-slate-800 leading-relaxed font-normal bg-slate-50 border-l-4 border-amber-400 p-4 rounded-r-2xl italic">
-                            &ldquo;{{ $book->description }}&rdquo;
-                        </p>
+                        <div class="text-base text-slate-800 leading-relaxed font-normal bg-slate-50 border-l-4 border-amber-400 p-5 rounded-r-2xl prose prose-slate max-w-none not-italic">
+                            {!! $book->description !!}
+                        </div>
                     @endif
                     <p>
                         Koleksi pustaka <strong>{{ $book->title }}</strong> merupakan salah satu referensi resmi yang dikurasi oleh tim pustakawan MTs Negeri 32 Jakarta untuk menunjang kegiatan belajar mengajar, pengayaan sains dan teknologi, serta pembinaan akhlak santri.
@@ -243,24 +243,124 @@
                         </div>
                     </div>
 
-                    <!-- Embedded PDF Iframe -->
-                    <div class="w-full rounded-2xl overflow-hidden border border-slate-200/90 shadow-sm bg-slate-900">
-                        <iframe 
-                            src="{{ $book->pdf_url }}#toolbar=1" 
-                            class="w-full h-[620px] sm:h-[750px] border-0"
-                            title="Penampil PDF - {{ $book->title }}"
-                        >
-                            <p class="p-6 text-white text-xs">
-                                Peramban Anda tidak mendukung penampil PDF langsung. Silakan 
-                                <a href="{{ $book->pdf_url }}" target="_blank" class="text-amber-300 underline font-bold">klik di sini untuk membuka file PDF e-book</a>.
-                            </p>
-                        </iframe>
+                    <!-- Modern Responsive Interactive PDF Reader (Cross-Platform Mobile & Desktop) -->
+                    <div id="pdf-container-wrapper" class="w-full rounded-2xl overflow-hidden border border-slate-200/90 shadow-sm bg-slate-900 flex flex-col">
+                        
+                        <!-- Top Toolbar Bar -->
+                        <div class="px-3 sm:px-5 py-2.5 bg-slate-950 border-b border-white/10 flex flex-wrap items-center justify-between gap-2.5 text-white select-none">
+                            
+                            <!-- Paging Controls -->
+                            <div class="flex items-center gap-1.5 sm:gap-2">
+                                <button type="button" 
+                                        id="pdf-prev-btn" 
+                                        aria-label="Halaman Sebelumnya"
+                                        class="h-8 px-2.5 sm:px-3 rounded-lg bg-white/10 hover:bg-white/20 active:bg-white/30 text-white text-xs font-bold flex items-center gap-1 transition disabled:opacity-30 disabled:pointer-events-none cursor-pointer">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                                    <span class="hidden sm:inline">Sebelumnya</span>
+                                </button>
+
+                                <div class="flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 font-mono">
+                                    <span class="text-slate-400 hidden xs:inline">Hal</span>
+                                    <span id="pdf-current-page" class="font-bold text-amber-300 min-w-4 text-center">1</span>
+                                    <span class="text-slate-500">/</span>
+                                    <span id="pdf-total-pages" class="text-slate-300 min-w-4 text-center">--</span>
+                                </div>
+
+                                <button type="button" 
+                                        id="pdf-next-btn" 
+                                        aria-label="Halaman Berikutnya"
+                                        class="h-8 px-2.5 sm:px-3 rounded-lg bg-white/10 hover:bg-white/20 active:bg-white/30 text-white text-xs font-bold flex items-center gap-1 transition disabled:opacity-30 disabled:pointer-events-none cursor-pointer">
+                                    <span class="hidden sm:inline">Selanjutnya</span>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                </button>
+                            </div>
+
+                            <!-- Zoom & Display Mode Controls -->
+                            <div class="flex items-center gap-1.5 sm:gap-2">
+                                <button type="button" 
+                                        id="pdf-zoom-out-btn" 
+                                        title="Perkecil Tampilan"
+                                        aria-label="Perkecil"
+                                        class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 active:bg-white/30 text-white text-sm font-bold flex items-center justify-center transition cursor-pointer">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>
+                                </button>
+
+                                <button type="button" 
+                                        id="pdf-fit-width-btn" 
+                                        title="Sesuaikan dengan Lebar Layar (Sangat disarankan di HP)"
+                                        class="h-8 px-2.5 rounded-lg bg-[#01ABE8] hover:bg-sky-600 active:bg-sky-700 text-white text-[11px] font-bold flex items-center gap-1 transition shadow-xs cursor-pointer">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                                    <span id="pdf-zoom-level-text">Pas Layar</span>
+                                </button>
+
+                                <button type="button" 
+                                        id="pdf-zoom-in-btn" 
+                                        title="Perbesar Tampilan"
+                                        aria-label="Perbesar"
+                                        class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 active:bg-white/30 text-white text-sm font-bold flex items-center justify-center transition cursor-pointer">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                </button>
+
+                                <button type="button" 
+                                        id="pdf-fullscreen-btn" 
+                                        title="Layar Penuh"
+                                        aria-label="Layar Penuh"
+                                        class="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 active:bg-white/30 text-amber-300 text-sm font-bold flex items-center justify-center transition cursor-pointer">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4h6M4 4v6M20 4h-6m6 0v6M4 20h6m-6 0v-6m16 6h-6m6 0v-6"/></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Canvas Stage Container -->
+                        <div id="pdf-stage" 
+                             class="relative w-full overflow-auto bg-slate-900 min-h-[460px] sm:min-h-[640px] max-h-[75vh] flex flex-col items-center justify-start p-2 sm:p-5 select-none touch-pan-y scrollbar-thin">
+                            
+                            <!-- Loading Indicator -->
+                            <div id="pdf-loading" class="absolute inset-0 z-20 bg-slate-900/90 backdrop-blur-xs flex flex-col items-center justify-center p-6 text-center space-y-3">
+                                <div class="w-10 h-10 border-3 border-[#01ABE8]/30 border-t-[#01ABE8] rounded-full animate-spin"></div>
+                                <div class="space-y-1">
+                                    <p class="text-xs sm:text-sm font-bold text-white tracking-wide">Memuat Lembar E-Book Digital...</p>
+                                    <p class="text-[11px] text-slate-400">Menyiapkan teks &amp; ilustrasi agar nyaman dibaca di layar HP &amp; laptop</p>
+                                </div>
+                            </div>
+
+                            <!-- Error Fallback (Tampil jika dokumen gagal dimuat) -->
+                            <div id="pdf-error" class="hidden absolute inset-0 z-20 bg-slate-900 flex flex-col items-center justify-center p-6 text-center space-y-3">
+                                <div class="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-400 flex items-center justify-center mx-auto">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                </div>
+                                <div class="space-y-1 max-w-sm">
+                                    <p class="text-xs sm:text-sm font-bold text-white">Gagal Menampilkan Pratinjau Dokumen</p>
+                                    <p class="text-[11px] text-slate-400">Dokumen PDF tetap dapat dibaca dengan membukanya langsung di tab baru atau mengunduhnya.</p>
+                                </div>
+                                <div class="flex flex-wrap items-center justify-center gap-2 pt-2">
+                                    <a href="{{ $book->pdf_url }}" target="_blank" class="px-4 py-2 rounded-xl bg-[#01ABE8] text-white text-xs font-bold hover:bg-sky-600 transition">
+                                        Buka di Tab Baru
+                                    </a>
+                                    <a href="{{ $book->pdf_url }}" download="{{ $book->slug }}.pdf" class="px-4 py-2 rounded-xl bg-white/10 text-white text-xs font-bold hover:bg-white/20 transition">
+                                        Unduh File PDF
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- High-DPI Crisp Render Canvas -->
+                            <canvas id="pdf-render-canvas" class="shadow-2xl rounded-lg max-w-none transition-transform duration-100"></canvas>
+                        </div>
+
+                        <!-- Bottom Mobile Touch Hint Bar -->
+                        <div class="px-4 py-2 bg-slate-950/90 border-t border-white/5 flex items-center justify-between text-[11px] text-slate-400">
+                            <span class="flex items-center gap-1.5">
+                                <svg class="w-3.5 h-3.5 text-amber-400 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm1 11H9v-2h2v2zm0-4H9V5h2v4z"/></svg>
+                                <span>Geser layar / gunakan tombol panah untuk ganti halaman. Gunakan "Pas Layar" agar nyaman dibaca di ponsel.</span>
+                            </span>
+                            <span class="hidden sm:inline font-mono text-[10px] text-slate-500">PDF.js Canvas Engine</span>
+                        </div>
                     </div>
 
-                    <div class="pt-2 text-[11px] text-slate-400 flex items-center justify-between">
-                        <span>Format Dokumen: Adobe PDF Standard 1.4 &bull; Perpustakaan Digital MTsN 32</span>
+                    <div class="pt-2 text-[11px] text-slate-400 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
+                        <span>Format Dokumen: Adobe PDF Standard &bull; Perpustakaan Digital MTsN 32 Jakarta</span>
                         <a href="{{ $book->pdf_url }}" target="_blank" class="text-blue-700 font-bold hover:underline">
-                            Mengalami kendala tampilan? Buka dokumen di tab baru &rarr;
+                            Buka dokumen PDF di tab browser baru &rarr;
                         </a>
                     </div>
                 </div>
@@ -290,6 +390,7 @@
                                 <th class="py-3 px-4">Nomor Barcode</th>
                                 <th class="py-3 px-4">Status Ketersediaan</th>
                                 <th class="py-3 px-4">Lokasi Rak</th>
+                                <th class="py-3 px-4 text-right">Aksi Pinjam</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
@@ -298,8 +399,10 @@
                                     <td class="py-3 px-4 font-bold text-[#0B1B3D] font-mono">
                                         {{ $copy->copy_code }}
                                     </td>
-                                    <td class="py-3 px-4 font-mono text-slate-600">
-                                        {{ $copy->barcode }}
+                                    <td class="py-3 px-4">
+                                        <span class="font-mono font-bold text-slate-800 text-xs px-2.5 py-1 rounded-lg bg-slate-100 border border-slate-200 inline-block shadow-2xs">
+                                            {{ $copy->barcode }}
+                                        </span>
                                     </td>
                                     <td class="py-3 px-4">
                                         @if($copy->status === 'tersedia')
@@ -317,10 +420,34 @@
                                     <td class="py-3 px-4 text-slate-600 font-medium">
                                         Lt. 2 &bull; Rak Koleksi {{ $book->category_badge }}
                                     </td>
+                                    <td class="py-3 px-4 text-right">
+                                        @if($copy->status === 'tersedia')
+                                            <!-- Hidden Pre-rendered QR SVG (100% offline & local) -->
+                                            <div id="copy-qr-svg-{{ $copy->id }}" class="hidden">
+                                                {!! \SimpleSoftwareIO\QrCode\Facades\QrCode::size(192)->margin(1)->color(11, 27, 61)->generate($copy->barcode) !!}
+                                            </div>
+
+                                            <button 
+                                                type="button" 
+                                                onclick="openBorrowModal(this)"
+                                                data-copy-id="{{ $copy->id }}"
+                                                data-copy-code="{{ $copy->copy_code }}"
+                                                data-barcode="{{ $copy->barcode }}"
+                                                data-title="{{ $book->title }}"
+                                                class="px-2.5 py-1.5 rounded-lg bg-[#01ABE8]/15 hover:bg-[#01ABE8] text-[#0B1B3D] hover:text-[#07132D] font-bold text-[11px] transition inline-flex items-center gap-1.5 cursor-pointer border border-[#01ABE8]/40 shadow-2xs"
+                                                title="Tampilkan QR untuk Meminjam"
+                                            >
+                                                <svg class="w-3.5 h-3.5 text-[#0B1B3D]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 19h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+                                                <span>QR Pinjam</span>
+                                            </button>
+                                        @else
+                                            <span class="text-[10px] text-slate-400 font-medium italic">Tidak Tersedia</span>
+                                        @endif
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="py-4 text-center text-slate-400">
+                                    <td colspan="5" class="py-4 text-center text-slate-400">
                                         Belum ada eksemplar fisik yang terdaftar.
                                     </td>
                                 </tr>
@@ -486,4 +613,283 @@
     @endif
 
 </div>
+
+<!-- ======================================================== -->
+<!-- MODAL: BARCODE PEMINJAMAN EKSEMPLAR FISIK                -->
+<!-- ======================================================== -->
+<div id="borrowCopyModal" style="z-index: 9999;" class="fixed inset-0 hidden overflow-y-auto bg-slate-900/80 backdrop-blur-sm transition-opacity">
+    <div class="flex min-h-full items-center justify-center p-4 sm:p-6 text-center">
+        <div class="relative w-full max-w-sm bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200 p-6 sm:p-8 space-y-5">
+            <button type="button" onclick="closeBorrowModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 transition p-1 cursor-pointer">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+
+            <div>
+                <span class="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-900 text-[10px] font-bold uppercase tracking-wider">
+                    QR EKSEMPLAR BUKU
+                </span>
+                <h3 id="borrowModalBookTitle" class="text-base font-bold text-slate-900 mt-1 line-clamp-2 leading-snug">Judul Buku</h3>
+                <p class="text-xs text-slate-500 font-mono mt-0.5">Kode Eksemplar: <span id="borrowModalCopyCode" class="font-bold text-[#0B1B3D]"></span></p>
+            </div>
+
+            <!-- Dynamic QR Code Container -->
+            <div class="p-4 bg-white rounded-2xl border-2 border-slate-200 shadow-xs inline-flex flex-col items-center justify-center mx-auto space-y-2">
+                <span class="text-[9px] font-bold uppercase tracking-wider text-slate-400 block">QR CODE EKSEMPLAR</span>
+                <div id="borrowModalQrContainer" class="w-40 h-40 flex items-center justify-center">
+                    <!-- SVG inserted dynamically -->
+                </div>
+                <span id="borrowModalBarcodeText" class="font-mono text-sm font-black text-[#01ABE8] tracking-widest block"></span>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-blue-50 text-[#0B1B3D] text-xs text-center border border-blue-200/80 space-y-1">
+                <p class="font-bold">Sodorkan QR Code ke Petugas Sirkulasi</p>
+                <p class="text-[11px] text-slate-500 leading-relaxed">
+                    Tunjukkan QR code eksemplar ini bersama Kartu Anggota Anda di meja sirkulasi perpustakaan untuk konfirmasi peminjaman buku fisik.
+                </p>
+            </div>
+
+            <button type="button" onclick="closeBorrowModal()" class="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition cursor-pointer">
+                Tutup
+            </button>
+        </div>
+    </div>
+</div>
+
+@push('scripts')
+<script>
+    function openBorrowModal(btnOrId, copyCode, barcode, bookTitle) {
+        let copyId;
+        if (typeof btnOrId === 'object' && btnOrId !== null) {
+            copyId = btnOrId.getAttribute('data-copy-id');
+            copyCode = btnOrId.getAttribute('data-copy-code');
+            barcode = btnOrId.getAttribute('data-barcode');
+            bookTitle = btnOrId.getAttribute('data-title');
+        } else {
+            copyId = btnOrId;
+        }
+
+        document.getElementById('borrowModalBookTitle').textContent = bookTitle || '';
+        document.getElementById('borrowModalCopyCode').textContent = copyCode ? '#' + copyCode : '';
+        document.getElementById('borrowModalBarcodeText').textContent = barcode || '';
+
+        // Render from local pre-rendered QR SVG (100% offline & instantaneous)
+        const localQrEl = document.getElementById('copy-qr-svg-' + copyId);
+
+        if (localQrEl) {
+            document.getElementById('borrowModalQrContainer').innerHTML = localQrEl.innerHTML;
+        }
+
+        document.getElementById('borrowCopyModal').classList.remove('hidden');
+    }
+
+    function closeBorrowModal() {
+        document.getElementById('borrowCopyModal').classList.add('hidden');
+    }
+</script>
+
+@if($book->pdf_url)
+<script src="{{ asset('vendor/pdfjs/pdf.min.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const url = @json($book->pdf_url);
+        if (!url || typeof pdfjsLib === 'undefined') return;
+
+        pdfjsLib.GlobalWorkerOptions.workerSrc = "{{ asset('vendor/pdfjs/pdf.worker.min.js') }}";
+
+        let pdfDoc = null;
+        let pageNum = 1;
+        let pageRendering = false;
+        let pageNumPending = null;
+        let currentScale = 1.0;
+        let isFitWidth = true;
+
+        const canvas = document.getElementById('pdf-render-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const stage = document.getElementById('pdf-stage');
+        const loadingEl = document.getElementById('pdf-loading');
+        const errorEl = document.getElementById('pdf-error');
+        const currentPageEl = document.getElementById('pdf-current-page');
+        const totalPagesEl = document.getElementById('pdf-total-pages');
+        const prevBtn = document.getElementById('pdf-prev-btn');
+        const nextBtn = document.getElementById('pdf-next-btn');
+        const zoomInBtn = document.getElementById('pdf-zoom-in-btn');
+        const zoomOutBtn = document.getElementById('pdf-zoom-out-btn');
+        const fitWidthBtn = document.getElementById('pdf-fit-width-btn');
+        const zoomTextEl = document.getElementById('pdf-zoom-level-text');
+        const fullscreenBtn = document.getElementById('pdf-fullscreen-btn');
+        const wrapper = document.getElementById('pdf-container-wrapper');
+
+        function renderPage(num) {
+            pageRendering = true;
+
+            pdfDoc.getPage(num).then(function (page) {
+                let viewport = page.getViewport({ scale: 1.0 });
+
+                if (isFitWidth && stage) {
+                    const isMobile = window.innerWidth < 640;
+                    const padding = isMobile ? 16 : 40;
+                    const stageWidth = Math.max(260, stage.clientWidth - padding);
+                    currentScale = stageWidth / viewport.width;
+                    if (zoomTextEl) zoomTextEl.textContent = 'Pas Layar';
+                } else {
+                    if (zoomTextEl) zoomTextEl.textContent = Math.round(currentScale * 100) + '%';
+                }
+
+                const pixelRatio = window.devicePixelRatio || 1;
+                viewport = page.getViewport({ scale: currentScale });
+
+                canvas.width = Math.floor(viewport.width * pixelRatio);
+                canvas.height = Math.floor(viewport.height * pixelRatio);
+                canvas.style.width = Math.floor(viewport.width) + 'px';
+                canvas.style.height = Math.floor(viewport.height) + 'px';
+
+                const transform = pixelRatio !== 1
+                    ? [pixelRatio, 0, 0, pixelRatio, 0, 0]
+                    : null;
+
+                const renderContext = {
+                    canvasContext: ctx,
+                    transform: transform,
+                    viewport: viewport
+                };
+
+                const renderTask = page.render(renderContext);
+
+                renderTask.promise.then(function () {
+                    pageRendering = false;
+                    if (loadingEl) loadingEl.classList.add('hidden');
+
+                    if (pageNumPending !== null) {
+                        renderPage(pageNumPending);
+                        pageNumPending = null;
+                    }
+                }).catch(function (err) {
+                    pageRendering = false;
+                    console.error("Render page error:", err);
+                });
+            }).catch(function (err) {
+                pageRendering = false;
+                console.error("Get page error:", err);
+            });
+
+            if (currentPageEl) currentPageEl.textContent = num;
+            if (prevBtn) prevBtn.disabled = (num <= 1);
+            if (nextBtn) nextBtn.disabled = (pdfDoc && num >= pdfDoc.numPages);
+        }
+
+        function queueRenderPage(num) {
+            if (pageRendering) {
+                pageNumPending = num;
+            } else {
+                renderPage(num);
+            }
+        }
+
+        function onPrevPage() {
+            if (pageNum <= 1) return;
+            pageNum--;
+            queueRenderPage(pageNum);
+        }
+
+        function onNextPage() {
+            if (!pdfDoc || pageNum >= pdfDoc.numPages) return;
+            pageNum++;
+            queueRenderPage(pageNum);
+        }
+
+        if (prevBtn) prevBtn.addEventListener('click', onPrevPage);
+        if (nextBtn) nextBtn.addEventListener('click', onNextPage);
+
+        if (zoomInBtn) {
+            zoomInBtn.addEventListener('click', function () {
+                isFitWidth = false;
+                currentScale = Math.min(3.0, currentScale + 0.15);
+                queueRenderPage(pageNum);
+            });
+        }
+
+        if (zoomOutBtn) {
+            zoomOutBtn.addEventListener('click', function () {
+                isFitWidth = false;
+                currentScale = Math.max(0.4, currentScale - 0.15);
+                queueRenderPage(pageNum);
+            });
+        }
+
+        if (fitWidthBtn) {
+            fitWidthBtn.addEventListener('click', function () {
+                isFitWidth = true;
+                queueRenderPage(pageNum);
+            });
+        }
+
+        if (fullscreenBtn && wrapper) {
+            fullscreenBtn.addEventListener('click', function () {
+                if (!document.fullscreenElement) {
+                    wrapper.requestFullscreen().catch(err => {
+                        console.log("Fullscreen not supported/allowed", err);
+                    });
+                } else {
+                    document.exitFullscreen();
+                }
+            });
+        }
+
+        let resizeTimer = null;
+        window.addEventListener('resize', function () {
+            if (isFitWidth) {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(() => {
+                    queueRenderPage(pageNum);
+                }, 150);
+            }
+        });
+
+        // Touch swipe gestures for mobile reading
+        let touchStartX = 0;
+        let touchEndX = 0;
+        if (stage) {
+            stage.addEventListener('touchstart', function (e) {
+                touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+
+            stage.addEventListener('touchend', function (e) {
+                touchEndX = e.changedTouches[0].screenX;
+                const diff = touchEndX - touchStartX;
+                if (Math.abs(diff) > 50) {
+                    if (diff < 0) {
+                        onNextPage();
+                    } else {
+                        onPrevPage();
+                    }
+                }
+            }, { passive: true });
+        }
+
+        document.addEventListener('keydown', function (e) {
+            if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+            if (e.key === 'ArrowLeft') onPrevPage();
+            if (e.key === 'ArrowRight') onNextPage();
+        });
+
+        const loadingTask = pdfjsLib.getDocument({
+            url: url,
+            cMapUrl: 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/',
+            cMapPacked: true,
+        });
+
+        loadingTask.promise.then(function (pdf) {
+            pdfDoc = pdf;
+            if (totalPagesEl) totalPagesEl.textContent = pdf.numPages;
+            renderPage(pageNum);
+        }).catch(function (reason) {
+            console.error("Error loading PDF: ", reason);
+            if (loadingEl) loadingEl.classList.add('hidden');
+            if (errorEl) errorEl.classList.remove('hidden');
+        });
+    });
+</script>
+@endif
+@endpush
 @endsection

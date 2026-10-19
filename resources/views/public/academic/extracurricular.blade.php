@@ -37,10 +37,10 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             @forelse($extracurriculars as $ekskul)
-                <div class="bg-white rounded-3xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-lg transition group flex flex-col justify-between">
+                <a href="{{ route('academic.extracurricular-detail', $ekskul) }}" class="bg-white rounded-3xl border border-slate-200/90 overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between hover:-translate-y-1 group">
                     <div class="aspect-16/10 w-full bg-slate-100 relative overflow-hidden">
-                        @if($ekskul->image)
-                            <img src="{{ str_starts_with($ekskul->image, 'http') ? $ekskul->image : asset('storage/'.$ekskul->image) }}" alt="{{ $ekskul->name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                        @if($ekskul->icon_or_photo)
+                            <img src="{{ $ekskul->image_url }}" alt="{{ $ekskul->name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                         @else
                             <div class="w-full h-full bg-gradient-to-tr from-[#0B1B3D] to-blue-900 flex items-center justify-center text-amber-300 font-black text-2xl font-editorial">
                                 {{ strtoupper(substr($ekskul->name, 0, 3)) }}
@@ -48,7 +48,7 @@
                         @endif
                         @if($ekskul->category)
                             <span class="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#0B1B3D]/80 backdrop-blur-xs text-amber-300 uppercase shadow-xs">
-                                {{ $ekskul->category }}
+                                {{ $ekskul->category_badge }}
                             </span>
                         @endif
                     </div>
@@ -59,16 +59,31 @@
                                 {{ $ekskul->name }}
                             </h3>
                             <p class="text-xs text-slate-600 leading-relaxed line-clamp-3">
-                                {{ $ekskul->description ?? 'Kegiatan pembinaan minat dan bakat santri untuk mencetak prestasi gemilang di tingkat kota, provinsi, dan nasional.' }}
+                                {{ $ekskul->description ? strip_tags($ekskul->description) : 'Kegiatan pembinaan minat dan bakat santri untuk mencetak prestasi gemilang di tingkat kota, provinsi, dan nasional.' }}
                             </p>
                         </div>
 
-                        <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-                            <span>Jadwal: {{ $ekskul->schedule ?? 'Sore Hari' }}</span>
-                            <span class="font-semibold text-blue-700">Aktif</span>
+                        @if($ekskul->achievements)
+                            <div class="pt-1">
+                                <span class="inline-flex items-center gap-1.5 text-[11px] text-amber-900 bg-amber-50 px-2.5 py-1 rounded-lg border border-amber-200/80 font-medium line-clamp-1">
+                                    <span>🏆</span>
+                                    <span>{{ strip_tags($ekskul->achievements) }}</span>
+                                </span>
+                            </div>
+                        @endif
+
+                        <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
+                            <span class="inline-flex items-center gap-1.5 font-bold text-blue-700 group-hover:text-blue-800 transition">
+                                <span>Lihat Profil &amp; Rincian</span>
+                                <span>&rarr;</span>
+                            </span>
+                            <span class="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
+                                <svg class="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                Aktif
+                            </span>
                         </div>
                     </div>
-                </div>
+                </a>
             @empty
                 <div class="col-span-full text-center py-12 text-slate-400 text-sm bg-white rounded-3xl border border-slate-200">
                     Data ekstrakurikuler sedang dimutakhirkan.

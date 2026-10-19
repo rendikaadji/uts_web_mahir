@@ -22,7 +22,7 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         
         <!-- Card 1: Students / Siswa -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md transition flex items-center justify-between">
+        <a href="{{ route('admin.portal.students') }}" class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md transition flex items-center justify-between">
             <div class="flex flex-col items-center justify-center pr-4">
                 <div class="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mb-1.5 shadow-2xs">
                     <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
@@ -38,10 +38,10 @@
                 </span>
                 <span class="text-[11px] text-slate-400 font-medium">Siswa Terdaftar</span>
             </div>
-        </div>
+        </a>
 
         <!-- Card 2: Teachers / Dewan Guru -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md transition flex items-center justify-between">
+        <a href="{{ route('admin.teachers.index') }}" class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md transition flex items-center justify-between">
             <div class="flex flex-col items-center justify-center pr-4">
                 <div class="w-12 h-12 rounded-full bg-sky-50 text-[#01ABE8] flex items-center justify-center mb-1.5 shadow-2xs">
                     <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
@@ -57,10 +57,10 @@
                 </span>
                 <span class="text-[11px] text-slate-400 font-medium">Dewan Guru & Staf</span>
             </div>
-        </div>
+        </a>
 
         <!-- Card 3: Parents / Wali Murid -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md transition flex items-center justify-between">
+        <a href="{{ route('admin.portal.guardians') }}" class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md transition flex items-center justify-between">
             <div class="flex flex-col items-center justify-center pr-4">
                 <div class="w-12 h-12 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center mb-1.5 shadow-2xs">
                     <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
@@ -76,10 +76,10 @@
                 </span>
                 <span class="text-[11px] text-slate-400 font-medium">Wali Murid Terhubung</span>
             </div>
-        </div>
+        </a>
 
         <!-- Card 4: Library / Koleksi Buku -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md transition flex items-center justify-between">
+        <a href="{{ route('admin.books.index') }}" class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md transition flex items-center justify-between">
             <div class="flex flex-col items-center justify-center pr-4">
                 <div class="w-12 h-12 rounded-full bg-cyan-50 text-cyan-600 flex items-center justify-center mb-1.5 shadow-2xs">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
@@ -93,7 +93,7 @@
                 </span>
                 <span class="text-[11px] text-slate-400 font-medium">Koleksi Perpustakaan</span>
             </div>
-        </div>
+        </a>
 
     </div>
 
@@ -196,7 +196,7 @@
         <div class="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
             
             <!-- Block 1: Dark Navy (Sirkulasi Aktif) -->
-            <div class="bg-gradient-to-br from-[#061329] to-[#0B1B3D] text-white p-5 rounded-2xl shadow-sm border border-slate-800 flex items-center justify-between group hover:shadow-md transition">
+            <a href="{{ route('admin.circulation.index') }}" class="bg-gradient-to-br from-[#061329] to-[#0B1B3D] text-white p-5 rounded-2xl shadow-sm border border-slate-800 flex items-center justify-between group hover:shadow-md transition">
                 <div>
                     <span class="text-xs font-extrabold text-[#01ABE8] block uppercase tracking-wider">Sirkulasi</span>
                     <span class="text-[11px] text-slate-300 block">Peminjaman Berjalan</span>
@@ -206,10 +206,10 @@
                     <span class="text-2xl sm:text-3xl font-black block">{{ number_format($metrics['active_loans']) }}</span>
                     <span class="text-[10px] text-slate-300 block">Buku</span>
                 </div>
-            </div>
+            </a>
 
             <!-- Block 2: MTsN 32 Light Blue (Kunjungan Hari Ini) -->
-            <div class="bg-gradient-to-br from-[#01ABE8] to-[#0096cc] text-white p-5 rounded-2xl shadow-sm flex items-center justify-between group hover:shadow-md transition">
+            <a href="/presensi/visits" class="bg-gradient-to-br from-[#01ABE8] to-[#0096cc] text-white p-5 rounded-2xl shadow-sm flex items-center justify-between group hover:shadow-md transition">
                 <div>
                     <span class="text-xs font-extrabold text-white/90 block uppercase tracking-wider">Buku Tamu</span>
                     <span class="text-[11px] text-white/80 block">Kunjungan Hari Ini</span>
@@ -219,7 +219,7 @@
                     <span class="text-2xl sm:text-3xl font-black block">{{ number_format($metrics['today_visits']) }}</span>
                     <span class="text-[10px] text-white/80 block">Orang</span>
                 </div>
-            </div>
+            </a>
 
             <!-- Block 3: Coral Red (Denda Belum Lunas) -->
             <div class="bg-gradient-to-br from-[#DC2626] to-[#B91C1C] text-white p-5 rounded-2xl shadow-sm flex items-center justify-between group hover:shadow-md transition">
@@ -250,6 +250,95 @@
         </div>
 
     </div>
+
+    @if(auth()->user()->isAdmin())
+    <!-- 3b. Quick Visibility & Module Controls (Dewan Guru & PPDB) -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-100 pb-3 mb-4">
+            <div>
+                <h3 class="font-bold text-sm sm:text-base text-slate-900 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-[#01ABE8]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                    <span>Pusat Kontrol Visibilitas Website Publik</span>
+                </h3>
+                <p class="text-xs text-slate-500 mt-0.5">Kelola aktif/tidaknya fitur publik yang dapat diakses oleh pengunjung website secara instan.</p>
+            </div>
+            <a href="{{ route('home') }}" target="_blank" class="text-xs font-bold text-[#01ABE8] hover:underline flex items-center gap-1 shrink-0">
+                <span>Lihat Web Frontend</span>
+                <span class="text-slate-400">&rarr;</span>
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Modul 1: Dewan Guru & Staf -->
+            <div class="p-4 rounded-xl border {{ ($profile->is_teachers_active ?? true) ? 'border-emerald-200 bg-emerald-50/20' : 'border-amber-200 bg-amber-50/20' }} flex flex-col justify-between gap-3">
+                <div class="flex items-start justify-between gap-3">
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-bold text-slate-900">Dewan Guru &amp; Staf</span>
+                            @if($profile->is_teachers_active ?? true)
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Aktif di Web</span>
+                            @else
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">Disembunyikan</span>
+                            @endif
+                        </div>
+                        <p class="text-[11px] text-slate-500 leading-tight">Direktori pengajar, profil biodata, dan menu navigasi dewan guru.</p>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between gap-2 pt-2 border-t border-slate-200/60">
+                    <a href="{{ route('admin.teachers.index') }}" class="text-[11px] font-bold text-slate-600 hover:text-slate-900 transition">
+                        Kelola Data Guru &rarr;
+                    </a>
+                    <form action="{{ route('admin.teachers.toggle-module') }}" method="POST" class="inline">
+                        @csrf
+                        @if($profile->is_teachers_active ?? true)
+                            <button type="submit" onclick="return confirm('Sembunyikan Dewan Guru dari web publik?')" class="px-3 py-1 rounded-lg text-xs font-bold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 transition cursor-pointer">
+                                Sembunyikan
+                            </button>
+                        @else
+                            <button type="submit" class="px-3 py-1 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition cursor-pointer">
+                                Aktifkan
+                            </button>
+                        @endif
+                    </form>
+                </div>
+            </div>
+
+            <!-- Modul 2: PPDB Online -->
+            <div class="p-4 rounded-xl border {{ ($profile->is_ppdb_active ?? true) ? 'border-emerald-200 bg-emerald-50/20' : 'border-amber-200 bg-amber-50/20' }} flex flex-col justify-between gap-3">
+                <div class="flex items-start justify-between gap-3">
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-bold text-slate-900">PPDB / PMBM Online</span>
+                            @if($profile->is_ppdb_active ?? true)
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Aktif di Web</span>
+                            @else
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">Disembunyikan</span>
+                            @endif
+                        </div>
+                        <p class="text-[11px] text-slate-500 leading-tight">Banner pendaftaran beranda, menu PPDB di navbar, dan alur pendaftaran siswa baru.</p>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between gap-2 pt-2 border-t border-slate-200/60">
+                    <a href="{{ route('admin.ppdb.index') }}" class="text-[11px] font-bold text-slate-600 hover:text-slate-900 transition">
+                        Kelola PPDB &rarr;
+                    </a>
+                    <form action="{{ route('admin.ppdb.toggle') }}" method="POST" class="inline">
+                        @csrf
+                        @if($profile->is_ppdb_active ?? true)
+                            <button type="submit" onclick="return confirm('Nonaktifkan dan sembunyikan PPDB dari web publik?')" class="px-3 py-1 rounded-lg text-xs font-bold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 transition cursor-pointer">
+                                Nonaktifkan
+                            </button>
+                        @else
+                            <button type="submit" class="px-3 py-1 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white transition cursor-pointer">
+                                Aktifkan
+                            </button>
+                        @endif
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
 
     <!-- 4. Bottom Section: Event Calendar, Notice Board, & Recent Activities (Akkhor 3-Column Layout) -->
     <!-- 4. Bottom Section: Event Calendar, Notice Board, & Recent Activities (Akkhor 3-Column Layout) -->
@@ -358,17 +447,8 @@
                             </p>
                         </div>
                     @empty
-                        <div class="space-y-3 pt-2">
-                            <div class="space-y-1">
-                                <span class="text-[10px] text-slate-400">22 Sep, 2026</span>
-                                <span class="font-bold text-[#01ABE8] block text-[11px]">Kepala Madrasah &bull; Baru Saja</span>
-                                <p class="text-slate-800 font-semibold leading-tight">Pengumuman Pelaksanaan Asesmen Tengah Semester Ganjil MTsN 32 Jakarta.</p>
-                            </div>
-                            <div class="space-y-1 pt-2 border-t border-slate-100">
-                                <span class="text-[10px] text-slate-400">20 Sep, 2026</span>
-                                <span class="font-bold text-sky-600 block text-[11px]">Pustakawan Digital &bull; 2 hari lalu</span>
-                                <p class="text-slate-800 font-semibold leading-tight">Penambahan 150 judul buku pengayaan Kurikulum Cambridge di perpustakaan.</p>
-                            </div>
+                        <div class="py-8 text-center">
+                            <span class="block text-[11px] text-slate-400 font-medium">Belum ada papan pengumuman.</span>
                         </div>
                     @endforelse
                 </div>
@@ -421,15 +501,8 @@
                             </p>
                         </div>
                     @empty
-                        <div class="relative pl-3 space-y-0.5 activity-item" data-type="sirkulasi">
-                            <span class="absolute -left-[14px] top-1.5 w-3 h-3 rounded-full bg-white border-2 border-purple-600"></span>
-                            <span class="text-[10px] text-slate-400">5 menit lalu</span>
-                            <p class="text-xs text-slate-800 font-semibold">Siswa meminjam buku Sirkulasi Perpustakaan.</p>
-                        </div>
-                        <div class="relative pl-3 space-y-0.5 activity-item" data-type="kunjungan">
-                            <span class="absolute -left-[14px] top-1.5 w-3 h-3 rounded-full bg-white border-2 border-amber-500"></span>
-                            <span class="text-[10px] text-slate-400">20 menit lalu</span>
-                            <p class="text-xs text-slate-800 font-semibold">Pengunjung mengisi buku tamu perpustakaan.</p>
+                        <div class="py-8 text-center">
+                            <span class="block text-[11px] text-slate-400 font-medium">Belum ada riwayat aktivitas.</span>
                         </div>
                     @endforelse
                 </div>
@@ -437,8 +510,8 @@
 
             <!-- Footer Action -->
             <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs mt-3">
-                <span class="text-slate-400 text-[11px]">Sirkulasi &amp; Presensi</span>
-                <a href="{{ route('admin.circulation.index') }}" class="text-[#0B1B3D] hover:underline font-bold text-xs">Lihat Log &rarr;</a>
+                <span class="text-slate-400 text-[11px]">Log Aktivitas Website</span>
+                <a href="{{ route('admin.logs.index') }}" class="text-[#0B1B3D] hover:text-[#01ABE8] hover:underline font-bold text-xs transition">Lihat Log &rarr;</a>
             </div>
         </div>
 

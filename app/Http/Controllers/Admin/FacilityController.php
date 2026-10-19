@@ -12,11 +12,18 @@ use Illuminate\View\View;
 
 class FacilityController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $facilities = Facility::latest()->paginate(12);
+        $category = $request->query('kategori');
+        $query = Facility::query();
 
-        return view('admin.facilities.index', compact('facilities'));
+        if ($category && in_array($category, ['akademik', 'olahraga', 'penunjang', 'ibadah'])) {
+            $query->where('category', $category);
+        }
+
+        $facilities = $query->latest()->paginate(12)->withQueryString();
+
+        return view('admin.facilities.index', compact('facilities', 'category'));
     }
 
     public function create(): View

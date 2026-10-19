@@ -41,7 +41,7 @@
                             <td class="py-3 px-4 max-w-xs">
                                 <div class="flex items-center gap-3">
                                     @if($book->cover_image)
-                                        <img src="{{ str_starts_with($book->cover_image, 'http') ? $book->cover_image : asset('storage/' . $book->cover_image) }}" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="w-10 h-14 object-cover rounded-lg border border-slate-200 shrink-0 shadow-xs">
+                                        <img src="{{ $book->cover_url }}" alt="" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" class="w-10 h-14 object-cover rounded-lg border border-slate-200 shrink-0 shadow-xs">
                                         <div class="w-10 h-14 rounded-lg bg-slate-100 text-slate-400 items-center justify-center border border-dashed border-slate-200 shrink-0 hidden">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                                         </div>
@@ -53,6 +53,12 @@
                                     <div class="truncate">
                                         <a href="{{ route('admin.books.show', $book) }}" class="font-bold text-slate-900 hover:text-[#01ABE8] block truncate">{{ $book->title }}</a>
                                         <span class="text-[11px] text-slate-500 block truncate">Penulis: {{ $book->author }}</span>
+                                        @if($book->pdf_url)
+                                            <span class="inline-flex items-center gap-1 text-[10px] font-bold text-rose-600 bg-rose-50 border border-rose-200/60 px-1.5 py-0.2 rounded mt-0.5">
+                                                <svg class="w-2.5 h-2.5 text-rose-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/></svg>
+                                                <span>PDF E-Book</span>
+                                            </span>
+                                        @endif
                                     </div>
                                 </div>
                             </td>
@@ -69,12 +75,15 @@
                                 {{ $book->isbn ?? '-' }}
                             </td>
                             <td class="py-3.5 px-4 text-center whitespace-nowrap">
-                                <span class="inline-flex items-center gap-1">
-                                    <span class="font-bold {{ $book->available_copies_count > 0 ? 'text-emerald-700' : 'text-rose-600' }}">
+                                <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg {{ $book->available_copies_count > 0 ? 'bg-emerald-50 border border-emerald-200/80' : 'bg-rose-50 border border-rose-200/80' }}">
+                                    <span class="font-extrabold text-xs {{ $book->available_copies_count > 0 ? 'text-emerald-700' : 'text-rose-600' }}">
                                         {{ $book->available_copies_count }}
                                     </span>
-                                    <span class="text-slate-400 text-[11px]">/ {{ $book->total_copies_count }}</span>
-                                </span>
+                                    <span class="text-slate-400 font-semibold text-[11px]">/ {{ $book->total_copies_count }}</span>
+                                    <span class="text-[10px] uppercase font-bold {{ $book->available_copies_count > 0 ? 'text-emerald-600' : 'text-rose-500' }}">
+                                        {{ $book->available_copies_count > 0 ? 'Tersedia' : 'Habis' }}
+                                    </span>
+                                </div>
                             </td>
                             <td class="py-3.5 px-4 text-right whitespace-nowrap">
                                 <div class="inline-flex items-center justify-end gap-1.5">

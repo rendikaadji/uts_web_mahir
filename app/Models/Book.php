@@ -101,4 +101,26 @@ class Book extends Model
     {
         return $this->category?->name ?? 'Koleksi Umum';
     }
+
+    public function getAvailableCopiesCountAttribute(): int
+    {
+        if ($this->relationLoaded('availableCopies')) {
+            return $this->availableCopies->count();
+        }
+
+        if ($this->relationLoaded('copies')) {
+            return $this->copies->where('status', 'tersedia')->count();
+        }
+
+        return $this->availableCopies()->count();
+    }
+
+    public function getTotalCopiesCountAttribute(): int
+    {
+        if ($this->relationLoaded('copies')) {
+            return $this->copies->count();
+        }
+
+        return $this->copies()->count();
+    }
 }

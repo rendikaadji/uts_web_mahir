@@ -25,21 +25,6 @@
         </p>
     </div>
 
-    <!-- Quick Category Filter Links -->
-    <div class="flex items-center justify-center gap-2 overflow-x-auto pb-2 border-b border-slate-200">
-        <a href="{{ route('information.news') }}" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 transition">
-            Berita Madrasah
-        </a>
-        <a href="{{ route('information.announcements') }}" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 transition">
-            Pengumuman Resmi
-        </a>
-        <a href="{{ route('information.events') }}" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 transition">
-            Agenda Kegiatan
-        </a>
-        <a href="{{ route('information.gallery') }}" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 transition">
-            Galeri Dokumentasi
-        </a>
-    </div>
 
     <!-- Article Cards Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

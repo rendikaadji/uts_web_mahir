@@ -53,7 +53,7 @@
     </div>
 
     <!-- Book Grid List (Clean Academic White Cards) -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 3xl:grid-cols-5 4xl:grid-cols-6 gap-6">
         @forelse($books as $book)
             <div class="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs hover:shadow-md transition flex flex-col justify-between group">
                 <div class="space-y-3">
@@ -98,7 +98,7 @@
                     </div>
 
                     @if($book->description)
-                        <p class="text-[11px] text-slate-500 line-clamp-2 italic">{{ $book->description }}</p>
+                        <p class="text-[11px] text-slate-500 line-clamp-2 italic">{{ strip_tags($book->description) }}</p>
                     @endif
 
                     <a href="{{ route('opac.detail', $book->slug) }}" class="w-full py-2.5 px-3 rounded-xl bg-[#0B1B3D] hover:bg-[#152e66] text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition shadow-xs group-hover:bg-[#152e66]">

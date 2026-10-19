@@ -25,6 +25,7 @@ class SchoolProfileController extends Controller
             'headmaster_name' => ['required', 'string', 'max:255'],
             'headmaster_nip' => ['nullable', 'string', 'max:50'],
             'headmaster_welcome' => ['required', 'string'],
+            'headmaster_motto' => ['nullable', 'string', 'max:255'],
             'headmaster_photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:3072'],
             'headmaster_photo_url' => ['nullable', 'string', 'max:500'],
 
@@ -49,6 +50,7 @@ class SchoolProfileController extends Controller
             'email' => ['nullable', 'email', 'max:100'],
             'address' => ['nullable', 'string'],
             'maps_embed_url' => ['nullable', 'string'],
+            'facebook_url' => ['nullable', 'string', 'max:500'],
             'instagram_url' => ['nullable', 'string', 'max:255'],
             'tiktok_url' => ['nullable', 'string', 'max:255'],
             'youtube_url' => ['nullable', 'string', 'max:255'],

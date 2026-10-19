@@ -81,7 +81,13 @@
 
                 <div class="text-slate-700 text-sm sm:text-base leading-relaxed space-y-4 text-justify">
                     @if($profile->headmaster_welcome)
-                        {!! nl2br(e($profile->headmaster_welcome)) !!}
+                        @if(str_contains($profile->headmaster_welcome, '<p>') || str_contains($profile->headmaster_welcome, '<div'))
+                            <div class="prose prose-slate max-w-none text-slate-700 text-sm sm:text-base leading-relaxed">
+                                {!! $profile->headmaster_welcome !!}
+                            </div>
+                        @else
+                            {!! nl2br(e($profile->headmaster_welcome)) !!}
+                        @endif
                     @else
                         <p>Bismillahirrohmanirrohim. Assalamu'alaikum Warahmatullahi Wabarakatuh.</p>
                         <p>Puji dan syukur senantiasa kita panjatkan ke hadirat Allah SWT, Tuhan Yang Maha Esa, karena atas limpahan rahmat, hidayah, dan inayah-Nya, website resmi MTs Negeri 32 Jakarta dapat hadir sebagai media informasi, komunikasi, dan pelayanan digital bagi seluruh civitas akademika dan masyarakat luas.</p>
@@ -95,7 +101,7 @@
                 <div class="pt-6 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div class="space-y-1">
                         <span class="text-xs text-slate-400 uppercase tracking-wider font-bold">Moto Pimpinan</span>
-                        <p class="text-xs sm:text-sm text-slate-600 font-medium italic">"Maju Bermutu, Mendunia Bersama MTsN 32 Jakarta"</p>
+                        <p class="text-xs sm:text-sm text-slate-600 font-medium italic">"{!! e($profile->headmaster_motto ?? 'Maju Bermutu, Mendunia Bersama MTsN 32 Jakarta') !!}"</p>
                     </div>
                     <div class="text-left sm:text-right">
                         <span class="text-sm font-bold text-[#0B1B3D] block">{{ $profile->headmaster_name }}</span>

@@ -23,29 +23,9 @@
         </p>
     </div>
 
-    <!-- 3 Pintu Layanan Utama -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Pintu 1: Presensi Gate Mandiri -->
-        <div class="bg-[#0B1B3D] text-white rounded-3xl p-8 shadow-xl border border-[#1A2E5A] space-y-5 flex flex-col justify-between">
-            <div class="space-y-3">
-                <div class="w-12 h-12 rounded-2xl bg-amber-400 text-slate-950 flex items-center justify-center font-bold text-xl shadow-sm">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
-                </div>
-                <span class="text-[10px] font-bold text-amber-300 uppercase tracking-wider bg-[#132A58] px-2.5 py-1 rounded-full border border-amber-400/30 inline-block">GATE SCANNER</span>
-                <h3 class="text-xl font-extrabold font-editorial">Presensi Gate Mandiri</h3>
-                <p class="text-xs text-blue-200 leading-relaxed">
-                    Kiosk mode pemindaian kartu barcode/QR anggota untuk pencatatan kehadiran santri dan kunjungan perpustakaan secara real-time.
-                </p>
-            </div>
-            <div class="pt-2">
-                <a href="{{ route('gate') }}" class="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs uppercase tracking-wider transition">
-                    <span>BUKA GATE MANDIRI</span>
-                    <span>&rarr;</span>
-                </a>
-            </div>
-        </div>
-
-        <!-- Pintu 2: Portal Siswa & Guru -->
+    <!-- 2 Pintu Layanan Utama -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+        <!-- Pintu 1: Portal Siswa & Guru -->
         <div class="bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm space-y-5 flex flex-col justify-between">
             <div class="space-y-3">
                 <div class="w-12 h-12 rounded-2xl bg-blue-50 text-[#0B1B3D] flex items-center justify-center font-bold text-xl">
@@ -65,7 +45,7 @@
             </div>
         </div>
 
-        <!-- Pintu 3: Portal Wali Murid -->
+        <!-- Pintu 2: Portal Wali Murid -->
         <div class="bg-white rounded-3xl p-8 border border-slate-200/90 shadow-sm space-y-5 flex flex-col justify-between">
             <div class="space-y-3">
                 <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-800 flex items-center justify-center font-bold text-xl">

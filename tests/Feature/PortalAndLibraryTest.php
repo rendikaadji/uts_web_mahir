@@ -10,10 +10,12 @@ use App\Models\Extracurricular;
 use App\Models\Facility;
 use App\Models\Gallery;
 use App\Models\GuardianStudent;
+use App\Models\Loan;
 use App\Models\Member;
 use App\Models\SchoolProfile;
 use App\Models\TeacherStaff;
 use App\Models\User;
+use App\Services\MemberQrZipExporter;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
@@ -49,7 +51,6 @@ class PortalAndLibraryTest extends TestCase
         $this->get('/perpustakaan')->assertStatus(200);
         $this->get('/perpustakaan/layanan')->assertStatus(200);
         $this->get('/opac')->assertStatus(200);
-        $this->get('/gate')->assertStatus(200);
         $this->get('/login')->assertStatus(200);
     }
 
@@ -181,55 +182,6 @@ class PortalAndLibraryTest extends TestCase
         $this->assertEquals('tersedia', $copy->fresh()->status);
     }
 
-    public function test_kiosk_gate_presence_logging(): void
-    {
-        $studentUser = User::create([
-            'name' => 'Siti Aisyah',
-            'username' => 'siti_aisyah',
-            'email' => 'siti@test.com',
-            'password' => bcrypt('password'),
-            'role' => 'siswa_guru',
-            'is_active' => true,
-        ]);
-
-        $member = Member::create([
-            'user_id' => $studentUser->id,
-            'barcode' => 'MTS32-S-888',
-            'nisn' => '0088887771',
-            'member_type' => 'siswa',
-            'class_or_unit' => 'Kelas VIII-2',
-            'is_active' => true,
-        ]);
-
-        // Scan barcode anggota
-        $response = $this->post('/gate/check-in', [
-            'visitor_type' => 'anggota',
-            'barcode' => 'MTS32-S-888',
-            'purpose' => 'Membaca buku referensi',
-        ]);
-
-        $response->assertSessionHas('kiosk_success');
-        $this->assertDatabaseHas('visits', [
-            'member_id' => $member->id,
-            'visitor_type' => 'anggota',
-            'purpose' => 'Membaca buku referensi',
-        ]);
-
-        // Presensi Tamu Luar
-        $guestResponse = $this->post('/gate/check-in', [
-            'visitor_type' => 'tamu',
-            'guest_name' => 'Drs. H. Mulyadi',
-            'guest_institution' => 'Kemenag Jakarta Selatan',
-            'purpose' => 'Kunjungan Studi Banding',
-        ]);
-
-        $guestResponse->assertSessionHas('kiosk_success');
-        $this->assertDatabaseHas('visits', [
-            'visitor_type' => 'tamu',
-            'guest_name' => 'Drs. H. Mulyadi',
-        ]);
-    }
-
     public function test_member_and_guardian_dashboards(): void
     {
         $studentUser = User::create([
@@ -264,12 +216,37 @@ class PortalAndLibraryTest extends TestCase
             'student_member_id' => $member->id,
         ]);
 
+        $category = Category::create(['name' => 'Fiksi', 'slug' => 'fiksi-test']);
+        $book = Book::create([
+            'title' => 'Laskar Pelangi',
+            'author' => 'Andrea Hirata',
+            'publisher' => 'Bentang Pustaka',
+            'publication_year' => 2005,
+            'category_id' => $category->id,
+            'slug' => 'laskar-pelangi-test',
+        ]);
+        $copy1 = BookCopy::create([
+            'book_id' => $book->id,
+            'copy_code' => 'LP-001',
+            'barcode' => 'BC-LP-001',
+            'status' => 'dipinjam',
+        ]);
+        Loan::create([
+            'book_copy_id' => $copy1->id,
+            'member_id' => $member->id,
+            'loan_date' => now()->subDays(10),
+            'due_date' => now()->subDays(3),
+            'status' => 'aktif',
+        ]);
+
         // Member dashboard
         $this->actingAs($studentUser)
             ->get('/member')
             ->assertStatus(200)
             ->assertSee('KARTU ANGGOTA PERPUSTAKAAN')
-            ->assertSee('MTS32-S-777');
+            ->assertSee('MTS32-S-777')
+            ->assertSee('TERLAMBAT 3 HARI')
+            ->assertSee('LP-001');
 
         // Guardian dashboard
         $this->actingAs($guardianUser)
@@ -555,6 +532,18 @@ class PortalAndLibraryTest extends TestCase
         $this->assertNotNull($ekskul);
         $this->assertEquals('Juara 1 Kompetisi Robotik Madrasah Nasional (RC 2025)', $ekskul->achievements);
         Storage::disk('public')->assertExists($ekskul->icon_or_photo);
+
+        // Verify Public List and Public Detail Page
+        $this->get('/akademik/ekstrakurikuler')
+            ->assertStatus(200)
+            ->assertSee('Robotik &amp; Artificial Intelligence', false)
+            ->assertSee(route('academic.extracurricular-detail', $ekskul));
+
+        $this->get('/akademik/ekstrakurikuler/'.$ekskul->id)
+            ->assertStatus(200)
+            ->assertSee('Robotik &amp; Artificial Intelligence', false)
+            ->assertSee('Juara 1 Kompetisi Robotik Madrasah Nasional (RC 2025)')
+            ->assertSee('Rizki Ramadhan, M.Ed.');
     }
 
     public function test_admin_can_manage_articles_with_photo_and_crud(): void
@@ -623,32 +612,32 @@ class PortalAndLibraryTest extends TestCase
         Storage::disk('public')->assertMissing($deletedImagePath);
     }
 
-    public function test_admin_can_view_reports_and_export_data(): void
+    public function test_librarian_can_view_reports_and_export_data(): void
     {
-        $admin = User::create([
-            'name' => 'Admin Test',
-            'username' => 'adminrep',
-            'email' => 'adminrep@test.com',
+        $pustakawan = User::create([
+            'name' => 'Pustakawan Test',
+            'username' => 'pustakawanrep',
+            'email' => 'pustakawanrep@test.com',
             'password' => Hash::make('admin123'),
-            'role' => 'admin_madrasah',
+            'role' => 'pustakawan',
             'is_active' => true,
         ]);
 
         // Access reports dashboard
-        $this->actingAs($admin)
+        $this->actingAs($pustakawan)
             ->get('/admin/laporan')
             ->assertStatus(200)
             ->assertSee('Pusat Laporan & Ekspor Data');
 
         // Test Official PDF Print View
-        $this->actingAs($admin)
+        $this->actingAs($pustakawan)
             ->get('/admin/laporan/cetak-pdf?type=sirkulasi&period=all')
             ->assertStatus(200)
             ->assertSee('KEMENTERIAN AGAMA REPUBLIK INDONESIA')
             ->assertSee('MADRASAH TSANAWIYAH NEGERI 32 JAKARTA');
 
         // Test Formatted Excel (.xls) Export
-        $exportResponse = $this->actingAs($admin)
+        $exportResponse = $this->actingAs($pustakawan)
             ->get('/admin/laporan/export-excel?type=sirkulasi&period=all');
 
         $exportResponse->assertStatus(200);
@@ -779,6 +768,17 @@ class PortalAndLibraryTest extends TestCase
             ->post('/admin/portal-siswa-guru/'.$member->id.'/toggle');
 
         $this->assertTrue($member->fresh()->is_active);
+
+        // Filter by class
+        $this->actingAs($admin)
+            ->get('/admin/portal-siswa-guru?kelas=71')
+            ->assertStatus(200)
+            ->assertDontSee('0091234567');
+
+        $this->actingAs($admin)
+            ->get('/admin/portal-siswa-guru?kelas=IX-A')
+            ->assertStatus(200)
+            ->assertSee('0091234567');
     }
 
     public function test_admin_can_access_guardian_portal_management_and_toggle_status(): void
@@ -847,7 +847,7 @@ class PortalAndLibraryTest extends TestCase
         $this->assertTrue($guardian->fresh()->is_active);
     }
 
-    public function test_admin_can_preview_member_and_guardian_dashboards(): void
+    public function test_admin_is_forbidden_from_member_and_guardian_dashboards_but_owners_can_access(): void
     {
         $admin = User::create([
             'name' => 'Admin Utama',
@@ -892,18 +892,309 @@ class PortalAndLibraryTest extends TestCase
             'relationship' => 'Ibu Kandung',
         ]);
 
-        // Admin preview member dashboard
-        $this->actingAs($admin)
-            ->get('/member?member_id='.$member->id)
-            ->assertStatus(200)
-            ->assertSee('Farhan Kamil')
-            ->assertSee('Panel Kontrol');
+        $this->actingAs($admin)->get('/member?member_id='.$member->id)->assertStatus(200)->assertSee('Farhan Kamil');
+        $this->actingAs($admin)->get('/wali?guardian_id='.$guardian->id)->assertStatus(200)->assertSee('Ibu Fatimah');
+        $this->actingAs($guardian)->get('/member')->assertStatus(403);
 
-        // Admin preview guardian dashboard
-        $this->actingAs($admin)
-            ->get('/wali?guardian_id='.$guardian->id)
+        $this->actingAs($studentUser)
+            ->get('/member')
             ->assertStatus(200)
-            ->assertSee('Ibu Fatimah')
-            ->assertSee('Panel Kontrol');
+            ->assertSee('Farhan Kamil');
+
+        $this->actingAs($guardian)
+            ->get('/wali')
+            ->assertStatus(200)
+            ->assertSee('Ibu Fatimah');
+    }
+
+    public function test_member_can_update_password_from_dashboard(): void
+    {
+        $studentUser = User::create([
+            'name' => 'Siswa Test',
+            'username' => '0089998888',
+            'email' => 'siswa.test@siswa.mtsn32.sch.id',
+            'password' => Hash::make('password'),
+            'role' => 'siswa_guru',
+            'is_active' => true,
+        ]);
+
+        Member::create([
+            'user_id' => $studentUser->id,
+            'nisn' => '0089998888',
+            'member_type' => 'siswa',
+            'class_or_unit' => '71',
+            'barcode' => '0089998888',
+            'is_active' => true,
+        ]);
+
+        // Wrong current password fails
+        $response = $this->actingAs($studentUser)->post('/member/ubah-password', [
+            'current_password' => 'wrongpassword',
+            'password' => 'newpassword123',
+            'password_confirmation' => 'newpassword123',
+        ]);
+        $response->assertSessionHasErrors(['current_password']);
+
+        // Mismatched confirmation fails
+        $response = $this->actingAs($studentUser)->post('/member/ubah-password', [
+            'current_password' => 'password',
+            'password' => 'newpassword123',
+            'password_confirmation' => 'different123',
+        ]);
+        $response->assertSessionHasErrors(['password']);
+
+        // Correct credentials successfully updates password
+        $response = $this->actingAs($studentUser)->post('/member/ubah-password', [
+            'current_password' => 'password',
+            'password' => 'newsecretpassword',
+            'password_confirmation' => 'newsecretpassword',
+        ]);
+        $response->assertSessionHas('success');
+
+        $studentUser->refresh();
+        $this->assertTrue(Hash::check('newsecretpassword', $studentUser->password));
+
+        // Can log in with new password
+        $this->post('/logout');
+        $loginResponse = $this->post('/login', [
+            'login' => '0089998888',
+            'password' => 'newsecretpassword',
+        ]);
+        $loginResponse->assertRedirect('/member');
+    }
+
+    public function test_credentials_guide_is_generated_for_qr_zip_export(): void
+    {
+        $guide = MemberQrZipExporter::buildCredentialsGuide();
+        $this->assertStringContainsString('PANDUAN AKUN DASHBOARD & KREDENSIAL ANGGOTA', $guide);
+        $this->assertStringContainsString('KREDENSIAL LOGIN SISWA', $guide);
+        $this->assertStringContainsString('KREDENSIAL LOGIN DEWAN GURU', $guide);
+        $this->assertStringContainsString('CARA MENGUBAH KATA SANDI', $guide);
+    }
+
+    public function test_portal_students_export_excel_filtered_by_class_71(): void
+    {
+        $admin = User::create([
+            'name' => 'Admin Test',
+            'username' => 'adm_portal_test',
+            'email' => 'admin_portal@test.com',
+            'password' => Hash::make('password'),
+            'role' => 'admin_madrasah',
+            'is_active' => true,
+        ]);
+
+        $student71 = User::create([
+            'name' => 'Budi Kelas 71',
+            'username' => '0091112222',
+            'email' => 'budi71@test.com',
+            'password' => Hash::make('password'),
+            'role' => 'siswa_guru',
+            'is_active' => true,
+        ]);
+        Member::create([
+            'user_id' => $student71->id,
+            'nisn' => '0091112222',
+            'member_type' => 'siswa',
+            'class_or_unit' => '71',
+            'barcode' => '0091112222',
+            'is_active' => true,
+        ]);
+
+        $student72 = User::create([
+            'name' => 'Doni Kelas 72',
+            'username' => '0093334444',
+            'email' => 'doni72@test.com',
+            'password' => Hash::make('password'),
+            'role' => 'siswa_guru',
+            'is_active' => true,
+        ]);
+        Member::create([
+            'user_id' => $student72->id,
+            'nisn' => '0093334444',
+            'member_type' => 'siswa',
+            'class_or_unit' => '72',
+            'barcode' => '0093334444',
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($admin)->get('/admin/portal-siswa-guru/export-excel?kelas=71');
+        $response->assertStatus(200);
+        $response->assertHeader('content-type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $this->assertStringContainsString('rekap-akun-kelas-71-mtsn32.xlsx', $response->headers->get('content-disposition'));
+
+        // Inspect XLSX content
+        $content = $response->streamedContent();
+        $tempPath = tempnam(sys_get_temp_dir(), 'test_xlsx_');
+        file_put_contents($tempPath, $content);
+
+        $zip = new \ZipArchive;
+        $this->assertTrue($zip->open($tempPath));
+        $sheetXml = $zip->getFromName('xl/worksheets/sheet1.xml');
+        $zip->close();
+        @unlink($tempPath);
+
+        $this->assertStringContainsString('Budi Kelas 71', $sheetXml);
+        $this->assertStringContainsString('0091112222', $sheetXml);
+        $this->assertStringNotContainsString('Doni Kelas 72', $sheetXml);
+    }
+
+    public function test_portal_students_export_excel_filtered_by_teachers(): void
+    {
+        $librarian = User::create([
+            'name' => 'Pustakawan Test',
+            'username' => 'pustakawan_exp_test',
+            'email' => 'librarian_exp@test.com',
+            'password' => Hash::make('password'),
+            'role' => 'pustakawan',
+            'is_active' => true,
+        ]);
+
+        $teacherUser = User::create([
+            'name' => 'Guru Matematika',
+            'username' => '198701012015011001',
+            'email' => 'guru.mtk@test.com',
+            'password' => Hash::make('password'),
+            'role' => 'siswa_guru',
+            'is_active' => true,
+        ]);
+        Member::create([
+            'user_id' => $teacherUser->id,
+            'nip' => '198701012015011001',
+            'member_type' => 'guru',
+            'class_or_unit' => null,
+            'barcode' => '198701012015011001',
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($librarian)->get('/admin/portal-siswa-guru/export-excel?tipe=guru');
+        $response->assertStatus(200);
+        $this->assertStringContainsString('rekap-akun-dewan-guru-mtsn32.xlsx', $response->headers->get('content-disposition'));
+
+        $content = $response->streamedContent();
+        $tempPath = tempnam(sys_get_temp_dir(), 'test_xlsx_g_');
+        file_put_contents($tempPath, $content);
+
+        $zip = new \ZipArchive;
+        $this->assertTrue($zip->open($tempPath));
+        $sheetXml = $zip->getFromName('xl/worksheets/sheet1.xml');
+        $zip->close();
+        @unlink($tempPath);
+
+        $this->assertStringContainsString('Guru Matematika', $sheetXml);
+        $this->assertStringContainsString('198701012015011001', $sheetXml);
+        $this->assertStringContainsString('Dewan Guru', $sheetXml);
+    }
+
+    public function test_sync_guardians_command_generates_accounts_with_option_a_username(): void
+    {
+        $studentUser = User::create([
+            'name' => 'Santri Cerdas',
+            'username' => '0098765432',
+            'email' => 'santri@test.com',
+            'password' => Hash::make('password'),
+            'role' => 'siswa_guru',
+            'is_active' => true,
+        ]);
+
+        $student = Member::create([
+            'user_id' => $studentUser->id,
+            'member_type' => 'siswa',
+            'nisn' => '0098765432',
+            'barcode' => '0098765432',
+            'class_or_unit' => '71',
+            'is_active' => true,
+        ]);
+
+        $this->artisan('portal:sync-guardians')->assertSuccessful();
+
+        $guardianUser = User::where('username', 'wali_0098765432')->first();
+        $this->assertNotNull($guardianUser);
+        $this->assertSame('wali_murid', $guardianUser->role);
+        $this->assertTrue($guardianUser->students->contains('id', $student->id));
+        $this->assertTrue(Hash::check('password', $guardianUser->password));
+    }
+
+    public function test_guardian_can_update_password_from_dashboard(): void
+    {
+        $guardian = User::create([
+            'name' => 'Wali Murid Santri',
+            'username' => 'wali_0011223344',
+            'email' => 'wali.santri@test.com',
+            'password' => Hash::make('password'),
+            'role' => 'wali_murid',
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($guardian)->post('/wali/ubah-password', [
+            'current_password' => 'password',
+            'password' => 'newpassword123',
+            'password_confirmation' => 'newpassword123',
+        ]);
+
+        $response->assertSessionHas('password_success');
+        $this->assertTrue(Hash::check('newpassword123', $guardian->fresh()->password));
+    }
+
+    public function test_admin_can_export_guardian_credentials_excel_with_class_filter(): void
+    {
+        $admin = User::create([
+            'name' => 'Admin Test',
+            'username' => 'admin_wali_export',
+            'email' => 'admin_wali_export@test.com',
+            'password' => Hash::make('password'),
+            'role' => 'admin_madrasah',
+            'is_active' => true,
+        ]);
+
+        $studentUser = User::create([
+            'name' => 'Siswa Kelas 71',
+            'username' => '1122334455',
+            'email' => 'siswa71@test.com',
+            'password' => Hash::make('password'),
+            'role' => 'siswa_guru',
+            'is_active' => true,
+        ]);
+
+        $student = Member::create([
+            'user_id' => $studentUser->id,
+            'member_type' => 'siswa',
+            'nisn' => '1122334455',
+            'barcode' => '1122334455',
+            'class_or_unit' => '71',
+            'is_active' => true,
+        ]);
+
+        $guardian = User::create([
+            'name' => 'Wali dari Siswa 71',
+            'username' => 'wali_1122334455',
+            'email' => 'wali71@test.com',
+            'password' => Hash::make('password'),
+            'role' => 'wali_murid',
+            'is_active' => true,
+        ]);
+
+        GuardianStudent::create([
+            'guardian_user_id' => $guardian->id,
+            'student_member_id' => $student->id,
+        ]);
+
+        $response = $this->actingAs($admin)->get('/admin/portal-wali-murid/export-excel?kelas=71');
+        $response->assertStatus(200);
+        $this->assertStringContainsString('rekap-akun-wali-murid-kelas-71-mtsn32.xlsx', $response->headers->get('content-disposition'));
+
+        $content = $response->streamedContent();
+        $tempPath = tempnam(sys_get_temp_dir(), 'test_xlsx_w_');
+        file_put_contents($tempPath, $content);
+
+        $zip = new \ZipArchive;
+        $this->assertTrue($zip->open($tempPath));
+        $sheetXml = $zip->getFromName('xl/worksheets/sheet1.xml');
+        $zip->close();
+        @unlink($tempPath);
+
+        $this->assertStringContainsString('Wali dari Siswa 71', $sheetXml);
+        $this->assertStringContainsString('wali_1122334455', $sheetXml);
+        $this->assertStringContainsString('1122334455', $sheetXml);
+        $this->assertStringContainsString('Kelas 71', $sheetXml);
     }
 }

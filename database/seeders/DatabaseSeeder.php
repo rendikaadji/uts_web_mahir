@@ -41,10 +41,10 @@ class DatabaseSeeder extends Seeder
             'cambridge_coordinator' => 'Rizki Ramadhan, M.Ed.',
             'head_library' => 'Siti Nurbaeti, S.Hum.',
             'phone' => '(021) 58906414',
-            'whatsapp' => '081298765432',
+            'whatsapp' => '+62 857-1560-2930',
             'email' => 'info@mtsn32jkt.sch.id',
             'address' => 'Jl. H. Liun, RT.13/RW.11, Petukangan Utara, Kec. Pesanggrahan, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12260',
-            'maps_embed_url' => 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.195328224534!2d106.7571343749905!3d-6.237970893750244!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f0e137c35f0f%3A0x6280b2a8d672957e!2sMTsN%2032%20Jakarta!5e0!3m2!1sid!2sid!4v1711000000000!5m2!1sid!2sid',
+            'maps_embed_url' => 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1983.0!2d106.7408207!3d-6.2245871!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f0b3f964b499%3A0x97d10ea1980633b!2sMTsN%2032%20Jakarta%20Selatan!5e0!3m2!1sid!2sid!4v1790000000000!5m2!1sid!2sid',
             'instagram_url' => 'https://www.instagram.com/official_mtsn32_jakarta?stkn=bmNjczQ0cGsyaTJt',
             'tiktok_url' => 'https://www.tiktok.com/@mtsn32jkt?_r=1&_t=ZS-9A1zRv1txZe',
             'youtube_url' => 'https://www.youtube.com/@mtsn32jkt?si=SToEPJsg7pJjxySB',
@@ -133,17 +133,17 @@ class DatabaseSeeder extends Seeder
             'user_id' => $guruUser->id,
             'member_type' => 'guru',
             'nip' => '198501012010011001',
-            'barcode' => 'MTS32-G-001',
+            'barcode' => '198501012010011001',
             'phone' => '081312345678',
-            'class_or_unit' => 'Guru Cambridge Math & Koord. Kurikulum',
+            'class_or_unit' => null,
             'is_active' => true,
         ]);
 
-        // Wali Murid
+        // Wali Murid (Format Opsi A: wali_[NISN])
         $waliUser = User::create([
-            'name' => 'Bambang Suryo, S.T.',
-            'username' => 'walimurid',
-            'email' => 'bambang.suryo@gmail.com',
+            'name' => 'Bambang Suryo, S.T. (Wali Raihan & Aisyah)',
+            'username' => 'wali_0081234567',
+            'email' => 'wali_0081234567@wali.mtsn32.sch.id',
             'password' => Hash::make('password'),
             'role' => 'wali_murid',
             'is_active' => true,

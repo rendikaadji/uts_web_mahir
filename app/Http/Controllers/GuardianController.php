@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Loan;
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
 class GuardianController extends Controller
@@ -61,5 +63,30 @@ class GuardianController extends Controller
             'studentLoans' => $studentLoans,
             'studentVisits' => $studentVisits,
         ]);
+    }
+
+    public function updatePassword(Request $request): RedirectResponse
+    {
+        $user = auth()->user();
+
+        $validated = $request->validate([
+            'current_password' => ['required', 'string'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ], [
+            'current_password.required' => 'Kata sandi saat ini wajib diisi.',
+            'password.required' => 'Kata sandi baru wajib diisi.',
+            'password.min' => 'Kata sandi baru minimal 8 karakter.',
+            'password.confirmed' => 'Konfirmasi kata sandi baru tidak cocok.',
+        ]);
+
+        if (! Hash::check($validated['current_password'], $user->password)) {
+            return back()->withErrors(['current_password' => 'Kata sandi saat ini tidak sesuai.'])->withInput();
+        }
+
+        $user->update([
+            'password' => Hash::make($validated['password']),
+        ]);
+
+        return back()->with('password_success', 'Kata sandi akun wali murid Anda berhasil diperbarui!');
     }
 }

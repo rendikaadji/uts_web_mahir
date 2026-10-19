@@ -28,10 +28,19 @@
 
         <!-- Submenu items -->
         <div class="pl-6 pr-1 py-0.5 space-y-0.5 transition-all duration-200 overflow-hidden accordion-menu {{ request()->routeIs('admin.dashboard*') || request()->routeIs('admin.portal*') ? '' : 'hidden' }}">
+@if(auth()->user()->isAdmin())
             <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2 px-2.5 py-1 rounded-md text-[11px] font-semibold transition {{ request()->routeIs('admin.dashboard') ? 'text-[#01ABE8] bg-[#0E244D] font-bold' : 'text-slate-300 hover:text-white hover:bg-[#0E244D]/50' }}">
-                <span class="text-[9px] text-[#01ABE8]">&rsaquo;</span>
-                <span>Admin Utama</span>
+                <span class="text-[9px] {{ request()->routeIs('admin.dashboard') ? 'text-[#01ABE8]' : 'text-slate-400' }}">&rsaquo;</span>
+                <span>{{ auth()->user()->role_badge }}</span>
             </a>
+@endif
+@if(auth()->user()->isLibrarian())
+            <a href="{{ route('admin.library.dashboard') }}" class="flex items-center gap-2 px-2.5 py-1 rounded-md text-[11px] font-semibold transition {{ request()->routeIs('admin.library.dashboard') ? 'text-[#01ABE8] bg-[#0E244D] font-bold' : 'text-slate-300 hover:text-white hover:bg-[#0E244D]/50' }}">
+                <span class="text-[9px] {{ request()->routeIs('admin.library.dashboard') ? 'text-[#01ABE8]' : 'text-slate-400' }}">&rsaquo;</span>
+                <span>{{ auth()->user()->role_badge }}</span>
+            </a>
+@endif
+@if(auth()->user()->isAdmin() || auth()->user()->isLibrarian())
             <a href="{{ route('admin.portal.students') }}" class="flex items-center gap-2 px-2.5 py-1 rounded-md text-[11px] font-semibold transition {{ request()->routeIs('admin.portal.students*') ? 'text-[#01ABE8] bg-[#0E244D] font-bold' : 'text-slate-300 hover:text-white hover:bg-[#0E244D]/50' }}">
                 <span class="text-[9px] {{ request()->routeIs('admin.portal.students*') ? 'text-[#01ABE8]' : 'text-slate-400' }}">&rsaquo;</span>
                 <span>Portal Siswa & Guru</span>
@@ -40,9 +49,22 @@
                 <span class="text-[9px] {{ request()->routeIs('admin.portal.guardians*') ? 'text-[#01ABE8]' : 'text-slate-400' }}">&rsaquo;</span>
                 <span>Portal Wali Murid</span>
             </a>
+@endif
         </div>
     </div>
 
+    <!-- Log Aktivitas Terpadu (Akses: Admin Utama & Pustakawan) -->
+    <a href="{{ route('admin.logs.index') }}" class="group flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-semibold transition {{ request()->routeIs('admin.logs*') ? 'bg-[#0E244D] text-white border-l-2 border-[#01ABE8] font-bold shadow-xs' : 'text-slate-300 hover:text-white hover:bg-[#10244C]' }}">
+        <div class="flex items-center gap-2.5">
+            <svg class="w-3.5 h-3.5 {{ request()->routeIs('admin.logs*') ? 'text-[#01ABE8]' : 'text-slate-400 group-hover:text-[#01ABE8]' }} transition shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+            </svg>
+            <span class="truncate">Log Aktivitas Website</span>
+        </div>
+        <span class="text-slate-500 text-[10px]">&rsaquo;</span>
+    </a>
+
+@if(auth()->user()->isAdmin())
     <div class="pt-2 pb-0.5">
         <span class="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider px-2.5 block">Manajemen Civitas</span>
     </div>
@@ -56,6 +78,21 @@
         <span class="text-slate-500 text-[10px]">&rsaquo;</span>
     </a>
 
+    @if(auth()->user()->isAdminUtama())
+        <!-- Kelola Akun Admin -->
+        <a href="{{ route('admin.admins.index') }}" class="group flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-semibold transition {{ request()->routeIs('admin.admins*') ? 'bg-[#0E244D] text-white border-l-2 border-[#01ABE8] font-bold shadow-xs' : 'text-slate-300 hover:text-white hover:bg-[#10244C]' }}">
+            <div class="flex items-center gap-2.5">
+                <svg class="w-3.5 h-3.5 {{ request()->routeIs('admin.admins*') ? 'text-[#01ABE8]' : 'text-slate-400 group-hover:text-[#01ABE8]' }} transition shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+                <span class="truncate">Kelola Akun Admin</span>
+            </div>
+            <span class="text-slate-500 text-[10px]">&rsaquo;</span>
+        </a>
+    @endif
+@endif
+
+@if(auth()->user()->isLibrarian())
     <!-- Perpustakaan Digital Section -->
     <div class="pt-2 pb-0.5">
         <span class="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider px-2.5 block">Perpustakaan Digital</span>
@@ -79,14 +116,24 @@
         <span class="text-slate-500 text-[10px]">&rsaquo;</span>
     </a>
 
-    <!-- Presensi Pengunjung -->
-    <a href="{{ route('admin.visits.index') }}" class="group flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-semibold transition {{ request()->routeIs('admin.visits*') ? 'bg-[#0E244D] text-white border-l-2 border-[#01ABE8] font-bold shadow-xs' : 'text-slate-300 hover:text-white hover:bg-[#10244C]' }}">
-        <div class="flex items-center gap-2.5">
-            <svg class="w-3.5 h-3.5 {{ request()->routeIs('admin.visits*') ? 'text-[#01ABE8]' : 'text-slate-400 group-hover:text-[#01ABE8]' }} transition shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-            <span class="truncate">Buku Tamu / Presensi</span>
+    <!-- Presensi QR & Anggota (SPA /presensi) -->
+    <div class="space-y-0.5 accordion-group" data-accordion="presensi">
+        <button type="button"
+                class="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-slate-200 font-semibold {{ request()->is('presensi*') ? 'bg-[#10244C] text-[#01ABE8]' : 'hover:bg-[#10244C]/70' }} transition focus:outline-none select-none accordion-btn cursor-pointer"
+                aria-expanded="{{ request()->is('presensi*') ? 'true' : 'false' }}">
+            <div class="flex items-center gap-2.5">
+                <svg class="w-3.5 h-3.5 text-[#01ABE8] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4h6v6H4V4zm10 0h6v6h-6V4zM4 14h6v6H4v-6zm10 0h2m4 0h0m-6 3h2v3m4-3v3"/></svg>
+                <span class="text-xs">Presensi QR &amp; Anggota</span>
+            </div>
+            <svg class="w-3 h-3 text-slate-400 transform transition-transform duration-200 {{ request()->is('presensi*') ? 'rotate-90' : '' }} accordion-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </button>
+        <div class="pl-6 pr-1 py-0.5 space-y-0.5 transition-all duration-200 overflow-hidden accordion-menu {{ request()->is('presensi*') ? '' : 'hidden' }}">
+            <a href="/presensi/scan" data-presensi-nav="/scan" class="flex items-center gap-2 px-2.5 py-1 rounded-md text-[11px] font-semibold transition text-slate-300 hover:text-white hover:bg-[#0E244D]/50"><span class="text-[9px] text-[#01ABE8]">&rsaquo;</span><span>Scan QR Presensi</span></a>
+            <a href="/presensi/visits?tab=dashboard" data-presensi-nav="/visits?tab=dashboard" class="flex items-center gap-2 px-2.5 py-1 rounded-md text-[11px] font-semibold transition text-slate-300 hover:text-white hover:bg-[#0E244D]/50"><span class="text-[9px] text-[#01ABE8]">&rsaquo;</span><span>Ringkasan &amp; Riwayat</span></a>
+            <a href="/presensi/visits?action=directory" data-presensi-action="directory" class="flex items-center gap-2 px-2.5 py-1 rounded-md text-[11px] font-semibold transition text-slate-300 hover:text-white hover:bg-[#0E244D]/50"><span class="text-[9px] text-[#01ABE8]">&rsaquo;</span><span>Kelola Anggota</span></a>
+            <a href="/presensi/visits?action=manual" data-presensi-action="manual" class="flex items-center gap-2 px-2.5 py-1 rounded-md text-[11px] font-semibold transition text-slate-300 hover:text-white hover:bg-[#0E244D]/50"><span class="text-[9px] text-[#01ABE8]">&rsaquo;</span><span>Presensi Manual</span></a>
         </div>
-        <span class="text-slate-500 text-[10px]">&rsaquo;</span>
-    </a>
+    </div>
 
     <!-- Denda Keterlambatan -->
     <a href="{{ route('admin.fines.index') }}" class="group flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-semibold transition {{ request()->routeIs('admin.fines*') ? 'bg-[#0E244D] text-white border-l-2 border-[#01ABE8] font-bold shadow-xs' : 'text-slate-300 hover:text-white hover:bg-[#10244C]' }}">
@@ -105,6 +152,20 @@
         </div>
         <span class="text-slate-500 text-[10px]">&rsaquo;</span>
     </a>
+
+    @if(auth()->user()->isLibrarianUtama())
+        <!-- Kelola Akun Pustakawan -->
+        <a href="{{ route('admin.librarians.index') }}" class="group flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-semibold transition {{ request()->routeIs('admin.librarians*') ? 'bg-[#0E244D] text-white border-l-2 border-[#01ABE8] font-bold shadow-xs' : 'text-slate-300 hover:text-white hover:bg-[#10244C]' }}">
+            <div class="flex items-center gap-2.5">
+                <svg class="w-3.5 h-3.5 {{ request()->routeIs('admin.librarians*') ? 'text-[#01ABE8]' : 'text-slate-400 group-hover:text-[#01ABE8]' }} transition shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                </svg>
+                <span class="truncate">Kelola Akun Pustakawan</span>
+            </div>
+            <span class="text-slate-500 text-[10px]">&rsaquo;</span>
+        </a>
+    @endif
+@endif
 
     @if(auth()->user()->isAdmin())
         <div class="pt-2 pb-0.5">
@@ -125,6 +186,42 @@
             <div class="flex items-center gap-2.5">
                 <svg class="w-3.5 h-3.5 {{ request()->routeIs('admin.school.profile') ? 'text-[#01ABE8]' : 'text-slate-400 group-hover:text-[#01ABE8]' }} transition shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                 <span class="truncate">Profil Madrasah</span>
+            </div>
+            <span class="text-slate-500 text-[10px]">&rsaquo;</span>
+        </a>
+
+        <!-- Video Profil Madrasah -->
+        <a href="{{ route('admin.video.index') }}" class="group flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-semibold transition {{ request()->routeIs('admin.video*') ? 'bg-[#0E244D] text-white border-l-2 border-[#01ABE8] font-bold shadow-xs' : 'text-slate-300 hover:text-white hover:bg-[#10244C]' }}">
+            <div class="flex items-center gap-2.5">
+                <svg class="w-3.5 h-3.5 {{ request()->routeIs('admin.video*') ? 'text-[#01ABE8]' : 'text-slate-400 group-hover:text-[#01ABE8]' }} transition shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                <span class="truncate">Video Profil Madrasah</span>
+            </div>
+            <span class="text-slate-500 text-[10px]">&rsaquo;</span>
+        </a>
+
+        <!-- Slider Foto Beranda Awal -->
+        <a href="{{ route('admin.hero-slides.index') }}" class="group flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-semibold transition {{ request()->routeIs('admin.hero-slides*') ? 'bg-[#0E244D] text-white border-l-2 border-[#01ABE8] font-bold shadow-xs' : 'text-slate-300 hover:text-white hover:bg-[#10244C]' }}">
+            <div class="flex items-center gap-2.5">
+                <svg class="w-3.5 h-3.5 {{ request()->routeIs('admin.hero-slides*') ? 'text-[#01ABE8]' : 'text-slate-400 group-hover:text-[#01ABE8]' }} transition shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                <span class="truncate">Slider Foto Beranda</span>
+            </div>
+            <span class="text-slate-500 text-[10px]">&rsaquo;</span>
+        </a>
+
+        <!-- Program Unggulan Beranda -->
+        <a href="{{ route('admin.featured-programs.index') }}" class="group flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-semibold transition {{ request()->routeIs('admin.featured-programs*') ? 'bg-[#0E244D] text-white border-l-2 border-[#01ABE8] font-bold shadow-xs' : 'text-slate-300 hover:text-white hover:bg-[#10244C]' }}">
+            <div class="flex items-center gap-2.5">
+                <svg class="w-3.5 h-3.5 {{ request()->routeIs('admin.featured-programs*') ? 'text-[#01ABE8]' : 'text-slate-400 group-hover:text-[#01ABE8]' }} transition shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                <span class="truncate">Program Unggulan Beranda</span>
+            </div>
+            <span class="text-slate-500 text-[10px]">&rsaquo;</span>
+        </a>
+
+        <!-- PPDB / PMBM Online -->
+        <a href="{{ route('admin.ppdb.index') }}" class="group flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-semibold transition {{ request()->routeIs('admin.ppdb*') ? 'bg-[#0E244D] text-white border-l-2 border-[#01ABE8] font-bold shadow-xs' : 'text-slate-300 hover:text-white hover:bg-[#10244C]' }}">
+            <div class="flex items-center gap-2.5">
+                <svg class="w-3.5 h-3.5 {{ request()->routeIs('admin.ppdb*') ? 'text-[#01ABE8]' : 'text-slate-400 group-hover:text-[#01ABE8]' }} transition shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+                <span class="truncate">PPDB Online</span>
             </div>
             <span class="text-slate-500 text-[10px]">&rsaquo;</span>
         </a>
