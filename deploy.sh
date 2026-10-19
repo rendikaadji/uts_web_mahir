@@ -30,6 +30,7 @@ main() {
     for k in APP_KEY APP_URL DB_HOST DB_DATABASE DB_USERNAME DB_PASSWORD; do
       grep -qE "^$k=.+" .env || { log ".env: $k kosong"; return 1; }
     done
+    grep -q 'ea-php84' "$DOCROOT/.htaccess" 2> /dev/null || { log "$DOCROOT/.htaccess belum memuat handler ea-php84: set PHP 8.4 di MultiPHP Manager dan tunggu beberapa menit"; return 1; }
     grep -q '^APP_ENV=production' .env || { log ".env: APP_ENV bukan production"; return 1; }
     if grep -q '^APP_DEBUG=true' .env; then log ".env: APP_DEBUG=true"; return 1; fi
   }
@@ -54,16 +55,17 @@ main() {
   }
 
   # Hosting (LiteSpeed) tidak mengikuti symlink, jadi isi public/ disalin ke docroot.
-  # Blok handler PHP dari cPanel (MultiPHP) di .htaccess docroot disimpan lalu ditempel lagi;
-  # tanpa itu situs jatuh ke PHP bawaan 7.4 sampai cPanel menulis ulang blok tersebut.
+  # .htaccess docroot tidak boleh ditimpa: cPanel menaruh handler PHP (MultiPHP) di dalamnya,
+  # dan tanpa itu situs jatuh ke PHP 7.4. Aturan Laravel hanya ditambahkan bila belum ada.
   sync_docroot() {
-    local keep
-    keep=$(awk '/^# (php -- BEGIN cpanel-dont-remove|BEGIN cPanel-generated handler)/{f=1} f{print} /^# (php -- END cpanel-dont-remove|END cPanel-generated handler)/{f=0}' "$DOCROOT/.htaccess" 2> /dev/null || true)
+    local ht="$DOCROOT/.htaccess" saved=""
+    [ -f "$ht" ] && saved=$(cat "$ht")
     rm -f public/storage
     mkdir -p "$DOCROOT/storage"
     cp -a public/. "$DOCROOT/"
     sed -i "s|__DIR__.'/../|'$PWD/|g" "$DOCROOT/index.php"
-    { [ -z "$keep" ] || printf '%s\n\n' "$keep"; cat public/.htaccess; } > "$DOCROOT/.htaccess"
+    if [ -n "$saved" ]; then printf '%s\n' "$saved" > "$ht"; fi
+    grep -qF 'RewriteRule ^ index.php [L]' "$ht" || cat public/.htaccess >> "$ht"
   }
 
   install_and_cache() {
