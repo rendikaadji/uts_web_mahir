@@ -11,7 +11,8 @@ git fetch -q origin deploy
 
 PHP=/opt/cpanel/ea-php84/root/usr/bin/php
 git checkout -q -f -B deploy origin/deploy
-$PHP "$HOME/bin/composer" install --no-dev --optimize-autoloader --no-interaction
+$PHP "$HOME/bin/composer" install --no-dev --optimize-autoloader --no-interaction --no-scripts
+$PHP artisan package:discover --ansi
 $PHP artisan migrate --force
 $PHP artisan optimize:clear
 $PHP artisan optimize
