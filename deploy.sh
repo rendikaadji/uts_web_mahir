@@ -9,7 +9,7 @@ flock -n 9 || exit 0
 git fetch -q origin deploy
 [ "$(git rev-parse HEAD)" = "$(git rev-parse origin/deploy)" ] && exit 0
 
-PHP=/opt/cpanel/ea-php83/root/usr/bin/php
+PHP=/opt/cpanel/ea-php84/root/usr/bin/php
 git checkout -q -f -B deploy origin/deploy
 $PHP "$HOME/bin/composer" install --no-dev --optimize-autoloader --no-interaction
 $PHP artisan migrate --force
