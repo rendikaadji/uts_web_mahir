@@ -11,6 +11,9 @@ use Illuminate\View\View;
 
 class SchoolProfileController extends Controller
 {
+    /** Angka dengan penanda opsional % atau +, agar bisa dianimasikan di beranda. */
+    private const STAT_PATTERN = '/^\d{1,5}(?:[.,]\d{1,2})?[%+]?$/';
+
     public function edit(): View
     {
         $profile = SchoolProfile::getActiveProfile();
@@ -55,10 +58,14 @@ class SchoolProfileController extends Controller
             'tiktok_url' => ['nullable', 'string', 'max:255'],
             'youtube_url' => ['nullable', 'string', 'max:255'],
             'cambridge_description' => ['nullable', 'string'],
+            'graduation_rate' => ['nullable', 'string', 'max:20', 'regex:'.self::STAT_PATTERN],
+            'national_achievements' => ['nullable', 'string', 'max:20', 'regex:'.self::STAT_PATTERN],
         ], [
             'school_name.required' => 'Nama madrasah wajib diisi.',
             'headmaster_name.required' => 'Nama kepala madrasah wajib diisi.',
             'headmaster_welcome.required' => 'Sambutan kepala madrasah wajib diisi.',
+            'graduation_rate.regex' => 'Isi dengan angka, boleh diakhiri % atau +. Contoh: 98% atau 50+.',
+            'national_achievements.regex' => 'Isi dengan angka, boleh diakhiri % atau +. Contoh: 98% atau 50+.',
         ]);
 
         $profile = SchoolProfile::getActiveProfile();

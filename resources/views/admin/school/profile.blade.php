@@ -405,6 +405,30 @@
             </div>
         </div>
 
+        <!-- Angka Ringkas Beranda -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="px-5 py-3 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <span class="w-1.5 h-4 rounded-full bg-[#01ABE8]"></span>
+                    <h3 class="text-sm font-bold text-[#0B1B3D]">Angka Ringkas Beranda</h3>
+                </div>
+                <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Statistik</span>
+            </div>
+            <div class="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    <label class="block text-[11px] font-bold text-slate-800">Kelulusan &amp; Lanjut SMA/MA</label>
+                    <input type="text" name="graduation_rate" value="{{ old('graduation_rate', $profile->graduation_rate) }}" placeholder="Contoh: 98%" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-[#01ABE8]/30 focus:border-[#01ABE8]">
+                    @error('graduation_rate') <p class="text-xs text-rose-500 font-medium">{{ $message }}</p> @enderror
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-[11px] font-bold text-slate-800">Prestasi Tingkat Nasional</label>
+                    <input type="text" name="national_achievements" value="{{ old('national_achievements', $profile->national_achievements) }}" placeholder="Contoh: 50+" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white text-slate-900 text-xs focus:outline-none focus:ring-2 focus:ring-[#01ABE8]/30 focus:border-[#01ABE8]">
+                    @error('national_achievements') <p class="text-xs text-rose-500 font-medium">{{ $message }}</p> @enderror
+                </div>
+                <p class="sm:col-span-2 text-[10px] text-slate-400 leading-relaxed">Kosongkan untuk menyembunyikan kartu itu dari beranda. Jumlah siswa, guru, dan eksemplar pustaka dihitung otomatis dari data.</p>
+            </div>
+        </div>
+
         <!-- Kontak & Media Sosial -->
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <div class="px-5 py-3 border-b border-slate-100 bg-slate-50/50">
