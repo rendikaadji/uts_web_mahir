@@ -426,7 +426,11 @@
         <div class="absolute -bottom-24 right-1/4 w-96 h-48 bg-[#01ABE8]/10 rounded-full blur-3xl pointer-events-none"></div>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-6 sm:gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-sky-900/40">
+            @php
+                $statColumns = [3 => 'md:grid-cols-3', 4 => 'md:grid-cols-4', 5 => 'md:grid-cols-5'];
+                $statCount = 3 + (int) filled($profile->graduation_rate) + (int) filled($profile->national_achievements);
+            @endphp
+            <div class="grid grid-cols-2 {{ $statColumns[$statCount] }} gap-6 sm:gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-sky-900/40">
                 
                 <!-- Stat 1: Siswa Terdaftar -->
                 <div class="pt-4 md:pt-0 px-2 flex flex-col items-center group">
@@ -467,31 +471,35 @@
                     <span class="text-xs sm:text-sm text-slate-300 font-medium block mt-1 tracking-wide">Koleksi Eksemplar Pustaka</span>
                 </div>
 
+                @if (filled($profile->graduation_rate))
                 <!-- Stat 4: Kelulusan -->
                 <div class="pt-4 md:pt-0 px-2 flex flex-col items-center group">
                     <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#01ABE8]/10 border border-[#01ABE8]/25 text-[#01ABE8] mb-3 shadow-inner group-hover:scale-110 group-hover:bg-[#01ABE8]/20 transition-all duration-300">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                     </div>
                     <div class="odometer-counter text-2xl sm:text-3xl lg:text-4xl font-black text-white font-serif tracking-tight"
-                         data-counter="100%"
-                         aria-label="100%">
-                        <span class="odometer-fallback">100%</span>
+                         data-counter="{{ $profile->graduation_rate }}"
+                         aria-label="{{ $profile->graduation_rate }}">
+                        <span class="odometer-fallback">{{ $profile->graduation_rate }}</span>
                     </div>
                     <span class="text-xs sm:text-sm text-slate-300 font-medium block mt-1 tracking-wide">Kelulusan & Lanjut SMA/MA</span>
                 </div>
+                @endif
 
+                @if (filled($profile->national_achievements))
                 <!-- Stat 5: Prestasi -->
                 <div class="col-span-2 md:col-span-1 pt-4 md:pt-0 px-2 flex flex-col items-center group">
                     <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#01ABE8]/10 border border-[#01ABE8]/25 text-[#01ABE8] mb-3 shadow-inner group-hover:scale-110 group-hover:bg-[#01ABE8]/20 transition-all duration-300">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
                     </div>
                     <div class="odometer-counter text-2xl sm:text-3xl lg:text-4xl font-black text-white font-serif tracking-tight"
-                         data-counter="50+"
-                         aria-label="50+">
-                        <span class="odometer-fallback">50+</span>
+                         data-counter="{{ $profile->national_achievements }}"
+                         aria-label="{{ $profile->national_achievements }}">
+                        <span class="odometer-fallback">{{ $profile->national_achievements }}</span>
                     </div>
                     <span class="text-xs sm:text-sm text-slate-300 font-medium block mt-1 tracking-wide">Prestasi Tingkat Nasional</span>
                 </div>
+                @endif
 
             </div>
         </div>

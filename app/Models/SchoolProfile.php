@@ -50,6 +50,8 @@ class SchoolProfile extends Model
         'video_profile_description',
         'cambridge_description',
         'cambridge_subjects',
+        'graduation_rate',
+        'national_achievements',
         'is_teachers_active',
         'is_ppdb_active',
         'ppdb_academic_year',
