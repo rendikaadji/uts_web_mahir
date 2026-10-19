@@ -15,13 +15,13 @@ jobs:
     runs-on: ubuntu-latest
     services:
       mysql:
-        image: mysql:8.0
+        image: mariadb:10.11
         env:
-          MYSQL_DATABASE: perpus
-          MYSQL_ROOT_PASSWORD: root
+          MARIADB_DATABASE: perpus
+          MARIADB_ROOT_PASSWORD: root
         ports: ['3306:3306']
         options: >-
-          --health-cmd="mysqladmin ping -proot"
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
           --health-interval=5s --health-timeout=5s --health-retries=20
     env:
       DB_HOST: 127.0.0.1
@@ -70,7 +70,7 @@ jobs:
       - name: Seluruh tes otomatis
         run: php artisan test
 
-      - name: Migrasi dan seeder di MySQL asli
+      - name: Migrasi dan seeder di MariaDB (sama dengan server)
         env:
           DB_CONNECTION: mysql
         run: |
