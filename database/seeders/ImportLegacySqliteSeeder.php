@@ -17,7 +17,10 @@ use RuntimeException;
  * Akun yang sudah ada di tujuan dipertahankan: password dan peran barunya menimpa akun lama
  * dengan username yang sama, akun tanpa pasangan ditambahkan.
  *
- * LEGACY_SQLITE_PATH=/path/database.sqlite [LEGACY_IMPORT=yes] php artisan db:seed --class=ImportLegacySqliteSeeder --force
+ * Dengan LEGACY_ONLY_ADMINS=yes hanya akun admin_madrasah dan pustakawan yang dipindahkan; tabel lain tidak disentuh
+ * dan akun yang username atau emailnya sudah ada dilewati.
+ *
+ * LEGACY_SQLITE_PATH=/path/database.sqlite [LEGACY_IMPORT=yes] [LEGACY_ONLY_ADMINS=yes] php artisan db:seed --class=ImportLegacySqliteSeeder --force
  */
 class ImportLegacySqliteSeeder extends Seeder
 {
@@ -26,6 +29,9 @@ class ImportLegacySqliteSeeder extends Seeder
         'migrations', 'sessions', 'cache', 'cache_locks', 'jobs', 'job_batches',
         'failed_jobs', 'password_reset_tokens', 'personal_access_tokens',
     ];
+
+    /** @var list<string> */
+    private const ADMIN_ROLES = ['admin_madrasah', 'pustakawan'];
 
     /** @var list<string> */
     private const COMMON_PASSWORDS = ['admin123', 'password', '12345678', '123456'];
@@ -47,13 +53,20 @@ class ImportLegacySqliteSeeder extends Seeder
         ]]);
 
         $legacySchema = Schema::connection('legacy');
+        $this->command->info($write ? 'MODE TULIS' : 'DRY-RUN (tidak ada yang ditulis; setel LEGACY_IMPORT=yes untuk menulis)');
+
+        if (getenv('LEGACY_ONLY_ADMINS') === 'yes') {
+            $this->importAdminsOnly($write);
+            $this->warnAboutWeakPrivilegedPasswords($write);
+
+            return;
+        }
+
         $targetTables = array_column(Schema::getTables(), 'name');
         $tables = array_diff(
             array_intersect(array_column($legacySchema->getTables(), 'name'), $targetTables),
             self::SKIPPED_TABLES,
         );
-
-        $this->command->info($write ? 'MODE TULIS' : 'DRY-RUN (tidak ada yang ditulis; setel LEGACY_IMPORT=yes untuk menulis)');
 
         $keptUsers = $write ? DB::table('users')->get() : collect();
 
@@ -96,6 +109,34 @@ class ImportLegacySqliteSeeder extends Seeder
         $this->warnAboutWeakPrivilegedPasswords($write);
     }
 
+    private function importAdminsOnly(bool $write): void
+    {
+        $columns = array_diff(
+            array_intersect(Schema::connection('legacy')->getColumnListing('users'), Schema::getColumnListing('users')),
+            ['id'],
+        );
+
+        DB::connection('legacy')->table('users')->whereIn('role', self::ADMIN_ROLES)->get()->each(
+            function (object $admin) use ($write, $columns): void {
+                $exists = DB::table('users')
+                    ->where('username', $admin->username)
+                    ->when($admin->email, fn ($query) => $query->orWhere('email', $admin->email))
+                    ->exists();
+
+                $this->command->line(sprintf(
+                    '%-20s %-16s %s',
+                    $admin->username,
+                    $admin->role,
+                    $exists ? 'sudah ada, dilewati' : 'ditambahkan',
+                ));
+
+                if ($write && ! $exists) {
+                    DB::table('users')->insert(array_intersect_key((array) $admin, array_flip($columns)));
+                }
+            },
+        );
+    }
+
     /**
      * @param  Collection<int, object>  $keptUsers
      */
@@ -123,7 +164,7 @@ class ImportLegacySqliteSeeder extends Seeder
         $this->command->info($write ? 'Akun admin/pustakawan di database sekarang:' : 'Akun admin/pustakawan di data LAMA (akan masuk saat import):');
 
         DB::connection($write ? null : 'legacy')->table('users')
-            ->whereIn('role', ['admin_madrasah', 'pustakawan'])
+            ->whereIn('role', self::ADMIN_ROLES)
             ->get()
             ->each(function (object $user): void {
                 $weak = collect(self::COMMON_PASSWORDS)->first(fn (string $p) => Hash::check($p, $user->password));
