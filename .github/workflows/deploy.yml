@@ -3,15 +3,107 @@ name: Deploy
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
 
-concurrency: deploy
-
-permissions:
-  contents: write
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  deploy:
+  verify:
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: perpus
+          MYSQL_ROOT_PASSWORD: root
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping -proot"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+    env:
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_DATABASE: perpus
+      DB_USERNAME: root
+      DB_PASSWORD: root
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, intl, bcmath, gd, zip, fileinfo, pdo_mysql, pdo_sqlite, sqlite3
+          tools: composer:v2
+          coverage: none
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Composer valid dan tanpa celah keamanan
+        run: |
+          composer validate --strict
+          composer install --prefer-dist --no-interaction
+          composer audit
+
+      - name: Gaya kode (Pint) dan sintaks deploy.sh
+        run: |
+          vendor/bin/pint --test
+          bash -n deploy.sh
+          shellcheck -S warning deploy.sh
+
+      - name: Build asset dan audit npm
+        run: |
+          npm ci
+          npm run build
+          npm audit --omit=dev --audit-level=critical
+
+      - name: Siapkan .env
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Seluruh tes otomatis
+        run: php artisan test
+
+      - name: Migrasi dan seeder di MySQL asli
+        env:
+          DB_CONNECTION: mysql
+        run: |
+          php artisan migrate:fresh --seed --force
+          php artisan migrate:status
+
+      - name: Uji boot seperti production (tanpa paket dev, semua cache aktif)
+        env:
+          APP_ENV: production
+          APP_DEBUG: 'false'
+          APP_URL: http://127.0.0.1:8000
+          DB_CONNECTION: mysql
+          LOG_LEVEL: error
+        run: |
+          composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+          php artisan package:discover
+          php artisan optimize
+          php artisan route:list --except-vendor > /dev/null
+          php artisan about --only=environment
+          php -S 127.0.0.1:8000 -t public > /tmp/server.log 2>&1 &
+          sleep 3
+          for path in /up / /login; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:8000$path")
+            echo "$path -> $code"
+            [ "$code" = 200 ] || { cat storage/logs/*.log /tmp/server.log 2>/dev/null | tail -40; exit 1; }
+          done
+
+  publish:
+    needs: verify
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
