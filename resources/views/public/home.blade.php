@@ -420,56 +420,64 @@
     </section>
 
     <!-- 3. Full-width Dark Navy Metric Stats Bar with Rolling Numbers Odometer Animation -->
+    @php
+        $statColumns = [1 => 'md:grid-cols-1', 2 => 'md:grid-cols-2', 3 => 'md:grid-cols-3', 4 => 'md:grid-cols-4', 5 => 'md:grid-cols-5'];
+        $statCount = (int) ($stats['students'] > 0) + (int) ($stats['teachers'] > 0) + (int) ($stats['copies'] > 0)
+            + (int) filled($profile->graduation_rate) + (int) filled($profile->national_achievements);
+    @endphp
+    @if ($statCount > 0)
     <section id="stats-metric-section" class="relative bg-gradient-to-b from-[#07132B] via-[#0B1B3D] to-[#07132B] text-white py-12 sm:py-16 border-y border-[#01ABE8]/20 overflow-hidden">
         <!-- Ambient Glowing Background Accents -->
         <div class="absolute -top-24 left-1/4 w-96 h-48 bg-[#01ABE8]/10 rounded-full blur-3xl pointer-events-none"></div>
         <div class="absolute -bottom-24 right-1/4 w-96 h-48 bg-[#01ABE8]/10 rounded-full blur-3xl pointer-events-none"></div>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            @php
-                $statColumns = [3 => 'md:grid-cols-3', 4 => 'md:grid-cols-4', 5 => 'md:grid-cols-5'];
-                $statCount = 3 + (int) filled($profile->graduation_rate) + (int) filled($profile->national_achievements);
-            @endphp
             <div class="grid grid-cols-2 {{ $statColumns[$statCount] }} gap-6 sm:gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-sky-900/40">
                 
+                @if ($stats['students'] > 0)
                 <!-- Stat 1: Siswa Terdaftar -->
                 <div class="pt-4 md:pt-0 px-2 flex flex-col items-center group">
                     <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#01ABE8]/10 border border-[#01ABE8]/25 text-[#01ABE8] mb-3 shadow-inner group-hover:scale-110 group-hover:bg-[#01ABE8]/20 transition-all duration-300">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
                     </div>
                     <div class="odometer-counter text-2xl sm:text-3xl lg:text-4xl font-black text-white font-serif tracking-tight"
-                         data-counter="{{ $stats['students'] > 0 ? $stats['students'] : '850+' }}"
-                         aria-label="{{ $stats['students'] > 0 ? $stats['students'] : '850+' }}">
-                        <span class="odometer-fallback">{{ $stats['students'] > 0 ? $stats['students'] : '850+' }}</span>
+                         data-counter="{{ $stats['students'] }}"
+                         aria-label="{{ $stats['students'] }}">
+                        <span class="odometer-fallback">{{ $stats['students'] }}</span>
                     </div>
                     <span class="text-xs sm:text-sm text-slate-300 font-medium block mt-1 tracking-wide">Siswa Terdaftar Aktif</span>
                 </div>
+                @endif
 
+                @if ($stats['teachers'] > 0)
                 <!-- Stat 2: Dewan Guru -->
                 <div class="pt-4 md:pt-0 px-2 flex flex-col items-center group">
                     <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#01ABE8]/10 border border-[#01ABE8]/25 text-[#01ABE8] mb-3 shadow-inner group-hover:scale-110 group-hover:bg-[#01ABE8]/20 transition-all duration-300">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                     </div>
                     <div class="odometer-counter text-2xl sm:text-3xl lg:text-4xl font-black text-white font-serif tracking-tight"
-                         data-counter="{{ $stats['teachers'] > 0 ? $stats['teachers'] : '48' }}"
-                         aria-label="{{ $stats['teachers'] > 0 ? $stats['teachers'] : '48' }}">
-                        <span class="odometer-fallback">{{ $stats['teachers'] > 0 ? $stats['teachers'] : '48' }}</span>
+                         data-counter="{{ $stats['teachers'] }}"
+                         aria-label="{{ $stats['teachers'] }}">
+                        <span class="odometer-fallback">{{ $stats['teachers'] }}</span>
                     </div>
                     <span class="text-xs sm:text-sm text-slate-300 font-medium block mt-1 tracking-wide">Dewan Guru & Tenaga Ahli</span>
                 </div>
+                @endif
 
+                @if ($stats['copies'] > 0)
                 <!-- Stat 3: Koleksi Buku -->
                 <div class="pt-4 md:pt-0 px-2 flex flex-col items-center group">
                     <div class="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#01ABE8]/10 border border-[#01ABE8]/25 text-[#01ABE8] mb-3 shadow-inner group-hover:scale-110 group-hover:bg-[#01ABE8]/20 transition-all duration-300">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                     </div>
                     <div class="odometer-counter text-2xl sm:text-3xl lg:text-4xl font-black text-white font-serif tracking-tight"
-                         data-counter="{{ $stats['copies'] > 0 ? $stats['copies'] : '2.500+' }}"
-                         aria-label="{{ $stats['copies'] > 0 ? $stats['copies'] : '2.500+' }}">
-                        <span class="odometer-fallback">{{ $stats['copies'] > 0 ? $stats['copies'] : '2.500+' }}</span>
+                         data-counter="{{ $stats['copies'] }}"
+                         aria-label="{{ $stats['copies'] }}">
+                        <span class="odometer-fallback">{{ $stats['copies'] }}</span>
                     </div>
                     <span class="text-xs sm:text-sm text-slate-300 font-medium block mt-1 tracking-wide">Koleksi Eksemplar Pustaka</span>
                 </div>
+                @endif
 
                 @if (filled($profile->graduation_rate))
                 <!-- Stat 4: Kelulusan -->
@@ -504,6 +512,7 @@
             </div>
         </div>
     </section>
+    @endif
 
     <!-- Odometer Reel Styles & Scroll Trigger Script -->
     <style>

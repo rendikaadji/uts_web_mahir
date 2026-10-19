@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\SchoolProfile;
+use App\Models\TeacherStaff;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -71,5 +72,34 @@ class HomeStatCardsTest extends TestCase
         $this->actingAs($this->admin())
             ->put(route('admin.school.profile.update'), $this->profilePayload('hampir semua', '<b>9</b>'))
             ->assertSessionHasErrors(['graduation_rate', 'national_achievements']);
+    }
+
+    public function test_empty_database_shows_no_placeholder_numbers_or_stats_bar(): void
+    {
+        $response = $this->get(route('home'));
+
+        $response->assertOk();
+        $response->assertDontSee('850+');
+        $response->assertDontSee('2.500+');
+        $response->assertDontSee('stats-metric-section');
+    }
+
+    public function test_cards_use_real_counts_and_only_appear_when_data_exists(): void
+    {
+        TeacherStaff::create([
+            'name' => 'Guru Satu, S.Pd.',
+            'nip' => '198708142012011003',
+            'role_type' => 'guru',
+            'position_or_subject' => 'Guru Kelas',
+            'is_active' => true,
+        ]);
+
+        $response = $this->get(route('home'));
+
+        $response->assertSee('stats-metric-section');
+        $response->assertSee('data-counter="1"', false);
+        $response->assertSee('Dewan Guru');
+        $response->assertDontSee('Siswa Terdaftar Aktif');
+        $response->assertDontSee('Koleksi Eksemplar Pustaka');
     }
 }
