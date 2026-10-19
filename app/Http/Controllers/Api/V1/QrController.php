@@ -8,12 +8,15 @@ use App\Http\Resources\QrTokenResource;
 use App\Models\Member;
 use App\Models\User;
 use App\Models\Visit;
+use App\Services\BarcodeGenerator;
+use App\Services\MemberQrZipExporter;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class QrController extends Controller
 {
@@ -35,6 +38,9 @@ class QrController extends Controller
             ->errorCorrection('M')
             ->generate($qrToken->token);
 
+        $barcode = $user->member?->barcode ?? $user->username;
+        $barcodeSvg = BarcodeGenerator::code128Svg($barcode, 44, 2, '#0B1B3D');
+
         return response()->json([
             'status' => 'success',
             'data' => [
@@ -43,8 +49,11 @@ class QrController extends Controller
                     'name' => $user->name,
                     'username' => $user->username,
                     'role' => $user->role,
+                    'barcode' => $barcode,
                 ],
                 'token' => $qrToken->token,
+                'barcode' => $barcode,
+                'barcode_svg' => $barcodeSvg,
                 'qr_svg' => (string) $svg,
                 'qr_token' => new QrTokenResource($qrToken),
             ],
@@ -104,6 +113,9 @@ class QrController extends Controller
             ->errorCorrection('M')
             ->generate($qrToken->token);
 
+        $barcode = $user->member?->barcode ?? $user->username;
+        $barcodeSvg = BarcodeGenerator::code128Svg($barcode, 44, 2, '#0B1B3D');
+
         return response()->json([
             'status' => 'success',
             'data' => [
@@ -112,8 +124,11 @@ class QrController extends Controller
                     'name' => $user->name,
                     'username' => $user->username,
                     'role' => $user->role,
+                    'barcode' => $barcode,
                 ],
                 'token' => $qrToken->token,
+                'barcode' => $barcode,
+                'barcode_svg' => $barcodeSvg,
                 'qr_svg' => (string) $svg,
                 'qr_token' => new QrTokenResource($qrToken),
             ],
@@ -301,6 +316,29 @@ class QrController extends Controller
             'status' => 'success',
             'message' => 'Data anggota berhasil dihapus.',
         ]);
+    }
+
+    /**
+     * Export all members (siswa & dewan guru) into a structured ZIP archive containing QR codes.
+     */
+    public function exportMembersQrZip(Request $request): BinaryFileResponse
+    {
+        $this->ensureStaff($request);
+
+        $exporter = new MemberQrZipExporter;
+        $zipPath = $exporter->buildZip();
+
+        return response()->download($zipPath, 'data_anggota.zip', [
+            'Content-Type' => 'application/zip',
+        ])->deleteFileAfterSend();
+    }
+
+    /**
+     * Backward-compatible alias for exportMembersQrZip.
+     */
+    public function exportStudentsQrZip(Request $request): BinaryFileResponse
+    {
+        return $this->exportMembersQrZip($request);
     }
 
     /**

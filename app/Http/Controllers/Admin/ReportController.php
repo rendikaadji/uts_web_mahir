@@ -9,8 +9,8 @@ use App\Models\Loan;
 use App\Models\Member;
 use App\Models\SchoolProfile;
 use App\Models\Visit;
+use App\Services\VisitExcelExporter;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
 use Illuminate\View\View;
 
@@ -30,7 +30,7 @@ class ReportController extends Controller
         return view('admin.reports.index', compact('category', 'period', 'periodLabel', 'start', 'end', 'data'));
     }
 
-    public function exportExcel(Request $request): Response
+    public function exportExcel(Request $request)
     {
         $category = $request->query('kategori') ?? $request->query('type', 'sirkulasi');
         $period = $request->query('periode') ?? $request->query('period', 'bulan_ini');
@@ -40,6 +40,15 @@ class ReportController extends Controller
         [$start, $end, $periodLabel] = $this->resolveDateRange($period, $startDate, $endDate);
         $data = $this->getReportData($category, $start, $end);
         $profile = SchoolProfile::getActiveProfile();
+
+        if ($category === 'kunjungan') {
+            $filename = 'laporan-'.$category.'-'.now()->format('Ymd-His').'.xlsx';
+            $path = VisitExcelExporter::build($data, $periodLabel);
+
+            return response()->download($path, $filename, [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            ])->deleteFileAfterSend();
+        }
 
         $filename = 'laporan-'.$category.'-'.now()->format('Ymd-His').'.xls';
 

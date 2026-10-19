@@ -28,6 +28,50 @@ class Visit extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::created(function (Visit $visit) {
+            try {
+                if ($visit->visitor_type === 'tamu') {
+                    $actorName = $visit->guest_name ?: 'Tamu Perpustakaan';
+                    $actorType = 'tamu';
+                    $actorIdentifier = $visit->guest_institution ?: ($visit->guest_phone ?: 'Tamu Luar');
+                    $eventName = 'Kunjungan Buku Tamu';
+                    $desc = 'Kunjungan buku tamu kiosk: '.$actorName.($visit->purpose ? ' (Tujuan: '.$visit->purpose.')' : '');
+                } else {
+                    $member = $visit->member ?: Member::with('user')->find($visit->member_id);
+                    $actorName = $member?->user?->name ?: 'Anggota Perpustakaan';
+                    $actorType = $member?->member_type ?: 'siswa';
+                    $actorIdentifier = $member?->barcode ?: ($member?->nisn ?: ($member?->nip ?: '-'));
+                    $eventName = $visit->method === 'qr' ? 'Presensi QR Kiosk' : 'Presensi Manual Gate';
+                    $desc = 'Presensi kunjungan perpustakaan: '.$actorName.' ('.$eventName.')';
+                }
+
+                ActivityLog::create([
+                    'log_type' => 'kunjungan',
+                    'event_name' => $eventName,
+                    'actor_name' => $actorName,
+                    'actor_type' => $actorType,
+                    'actor_identifier' => $actorIdentifier,
+                    'description' => $desc,
+                    'properties' => [
+                        'visit_id' => $visit->id,
+                        'method' => $visit->method,
+                        'purpose' => $visit->purpose,
+                        'device_note' => $visit->device_note,
+                    ],
+                    'ip_address' => request()->ip() ?? '127.0.0.1',
+                    'user_agent' => request()->userAgent() ? substr(request()->userAgent(), 0, 255) : 'Kiosk Perpustakaan',
+                    'created_at' => $visit->visited_at ?? now(),
+                    'updated_at' => $visit->visited_at ?? now(),
+                ]);
+            } catch (\Throwable $e) {
+                // Catat di log tanpa menggagalkan flow presensi
+                report($e);
+            }
+        });
+    }
+
     public function member()
     {
         return $this->belongsTo(Member::class);

@@ -6,8 +6,8 @@
     <!-- Header Section -->
     <div class="text-center space-y-4 max-w-3xl mx-auto">
         <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-50 border border-amber-200/80 text-amber-900 text-xs font-bold uppercase tracking-wider">
-            <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-            PPDB / PMBM TAHUN AJARAN 2026/2027
+            <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+            PPDB / PMBM TAHUN AJARAN {{ $profile->ppdb_academic_year ?? '2026/2027' }}
         </div>
         <h1 class="text-3xl sm:text-5xl font-extrabold text-[#0B1B3D] tracking-tight font-editorial leading-tight">
             Penerimaan Peserta Didik Baru
@@ -17,6 +17,14 @@
         <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
             Membuka kesempatan bagi putra-putri berprestasi untuk menempuh pendidikan madrasah tsanawiyah unggulan berstandar nasional dan internasional dengan bekal akhlakul karimah.
         </p>
+
+        @if(!empty($profile->ppdb_status_note))
+            <div class="p-3.5 sm:p-4 rounded-2xl bg-amber-50 border border-amber-200/80 text-amber-900 text-xs sm:text-sm text-center font-medium max-w-xl mx-auto shadow-2xs">
+                <span class="font-bold block mb-0.5">Informasi &amp; Catatan Panitia:</span>
+                <p class="text-slate-700">{{ $profile->ppdb_status_note }}</p>
+            </div>
+        @endif
+
         <div class="flex flex-wrap items-center justify-center gap-2 pt-2">
             <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">Akreditasi A (Unggul)</span>
             <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">Kurikulum Merdeka</span>
@@ -39,13 +47,19 @@
             </p>
         </div>
         <div class="flex flex-col sm:flex-row items-center gap-3 shrink-0 w-full sm:w-auto">
-            <a href="https://ppdb-madrasahdki.kemenag.go.id" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs sm:text-sm shadow-md transition transform hover:-translate-y-0.5 text-center flex items-center justify-center gap-2">
+            <a href="{{ $profile->ppdb_external_url ?? 'https://ppdb-madrasahdki.kemenag.go.id' }}" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs sm:text-sm shadow-md transition transform hover:-translate-y-0.5 text-center flex items-center justify-center gap-2">
                 <span>PORTAL PPDB ONLINE</span>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
             </a>
-            <a href="#jadwal" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm border border-white/30 backdrop-blur-xs transition text-center">
-                LIHAT JADWAL SELEKSI
-            </a>
+            @if(!empty($profile->ppdb_guide_url))
+                <a href="{{ $profile->ppdb_guide_url }}" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm border border-white/30 backdrop-blur-xs transition text-center">
+                    UNDUH PANDUAN PPDB
+                </a>
+            @else
+                <a href="#jadwal" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm border border-white/30 backdrop-blur-xs transition text-center">
+                    LIHAT JADWAL SELEKSI
+                </a>
+            @endif
         </div>
     </div>
 
@@ -320,7 +334,7 @@
         </div>
 
         <div class="shrink-0 flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
-            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $profile->whatsapp ?? '6285715602930') }}?text={{ urlencode('Halo Panitia PPDB MTsN 32 Jakarta, saya ingin bertanya seputar pendaftaran santri baru.') }}" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs sm:text-sm shadow-md transition inline-flex items-center justify-center gap-2">
+            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $profile->ppdb_whatsapp_helpdesk ?? ($profile->whatsapp ?? '6285715602930')) }}?text={{ urlencode('Halo Panitia PPDB MTsN 32 Jakarta, saya ingin bertanya seputar pendaftaran santri baru.') }}" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs sm:text-sm shadow-md transition inline-flex items-center justify-center gap-2">
                 <span>WHATSAPP HELPDESK PPDB</span>
             </a>
             <a href="{{ route('profile') }}#sarana" class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs sm:text-sm border border-white/20 transition text-center">

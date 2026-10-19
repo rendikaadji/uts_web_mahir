@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { fetchMembers, deleteMember, getStoredUser } from '../api/gate';
+import { fetchMembers, deleteMember, getStoredUser, downloadMembersQrZip } from '../api/gate';
 import EditMemberModal from './EditMemberModal';
 import ImportMemberModal from './ImportMemberModal';
 
@@ -17,6 +17,7 @@ export default function MemberDirectoryModal({ isOpen, onClose, onOpenQr, onOpen
     const [importModalOpen, setImportModalOpen] = useState(false);
     const [actionLoading, setActionLoading] = useState(false);
     const [actionMessage, setActionMessage] = useState(null);
+    const [exportingZip, setExportingZip] = useState(false);
     const currentUser = getStoredUser();
 
     const loadMembers = async () => {
@@ -104,6 +105,26 @@ export default function MemberDirectoryModal({ isOpen, onClose, onOpenQr, onOpen
         }
     };
 
+    const handleExportZip = async () => {
+        setExportingZip(true);
+        setActionMessage(null);
+        try {
+            await downloadMembersQrZip();
+            setActionMessage({
+                type: 'success',
+                text: 'Arsip data_anggota.zip berhasil diunduh (folder siswa & dewan guru).',
+            });
+        } catch (err) {
+            console.error('Failed to export members QR ZIP:', err);
+            setActionMessage({
+                type: 'error',
+                text: err.message || 'Gagal mengekspor arsip data_anggota.zip.',
+            });
+        } finally {
+            setExportingZip(false);
+        }
+    };
+
     if (!isOpen) return null;
 
     return (
@@ -124,6 +145,36 @@ export default function MemberDirectoryModal({ isOpen, onClose, onOpenQr, onOpen
                         </h3>
                     </div>
                     <div className="flex items-center gap-2">
+                        <a
+                            href="/admin/portal-siswa-guru"
+                            className="hidden lg:flex items-center gap-1.5 rounded-lg bg-[#01ABE8]/20 hover:bg-[#01ABE8] border border-[#01ABE8]/50 px-3 py-2 text-xs font-bold uppercase tracking-wider text-[#01ABE8] hover:text-[#07132D] transition shadow-xs"
+                            title="Buka Menu Kelulusan Siswa & Kenaikan Kelas Massal"
+                        >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l9-5-9-5-9 5 9 5z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                            </svg>
+                            <span>Kelulusan & Kenaikan</span>
+                        </a>
+                        <button
+                            type="button"
+                            onClick={handleExportZip}
+                            disabled={exportingZip}
+                            className="hidden sm:flex items-center gap-1.5 rounded-lg bg-[#0e3a5a] hover:bg-[#144970] border border-[#01ABE8]/50 px-3.5 py-2 text-xs font-semibold uppercase tracking-wider text-[#E0F2FE] hover:text-white transition cursor-pointer shadow-xs disabled:opacity-50 disabled:cursor-wait"
+                            title="Ekspor seluruh QR anggota (siswa & dewan guru) ke berkas ZIP (data_anggota.zip)"
+                        >
+                            {exportingZip ? (
+                                <svg className="w-4 h-4 animate-spin text-[#01ABE8]" viewBox="0 0 24 24" fill="none">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                </svg>
+                            ) : (
+                                <svg className="w-4 h-4 text-[#01ABE8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                            )}
+                            <span>{exportingZip ? 'Mengekspor...' : 'Ekspor ZIP QR'}</span>
+                        </button>
                         <button
                             type="button"
                             onClick={() => setImportModalOpen(true)}
@@ -253,21 +304,40 @@ export default function MemberDirectoryModal({ isOpen, onClose, onOpenQr, onOpen
                     <div className="sm:hidden flex items-center gap-2">
                         <button
                             type="button"
-                            onClick={() => setImportModalOpen(true)}
-                            className="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-[#11295D] border border-[#2A6283] px-3 py-2 text-xs font-semibold uppercase tracking-wider text-[#ACCFE3] transition cursor-pointer"
+                            onClick={handleExportZip}
+                            disabled={exportingZip}
+                            className="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-[#0e3a5a] border border-[#01ABE8]/50 px-2.5 py-2 text-[11px] font-semibold uppercase tracking-wider text-[#E0F2FE] transition cursor-pointer disabled:opacity-50 disabled:cursor-wait"
+                            title="Ekspor Seluruh QR Anggota (Siswa & Guru) ke ZIP"
                         >
-                            <svg className="w-4 h-4 text-[#01ABE8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            {exportingZip ? (
+                                <svg className="w-3.5 h-3.5 animate-spin text-[#01ABE8]" viewBox="0 0 24 24" fill="none">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                </svg>
+                            ) : (
+                                <svg className="w-3.5 h-3.5 text-[#01ABE8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                            )}
+                            <span>{exportingZip ? 'Ekspor...' : 'ZIP QR'}</span>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setImportModalOpen(true)}
+                            className="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-[#11295D] border border-[#2A6283] px-2.5 py-2 text-[11px] font-semibold uppercase tracking-wider text-[#ACCFE3] transition cursor-pointer"
+                        >
+                            <svg className="w-3.5 h-3.5 text-[#01ABE8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
-                            <span>Impor Excel</span>
+                            <span>Impor</span>
                         </button>
                         {onOpenAddMember && (
                             <button
                                 type="button"
                                 onClick={onOpenAddMember}
-                                className="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-[#01ABE8] hover:bg-[#0284C7] px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-[#07132D] transition cursor-pointer shadow-xs"
+                                className="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-[#01ABE8] hover:bg-[#0284C7] px-2.5 py-2 text-[11px] font-bold uppercase tracking-wider text-[#07132D] transition cursor-pointer shadow-xs"
                             >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                                 </svg>
                                 <span>+ Tambah</span>

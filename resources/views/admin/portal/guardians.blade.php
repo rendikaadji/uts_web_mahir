@@ -21,12 +21,6 @@
             </p>
         </div>
 
-        <div class="flex items-center gap-2.5 shrink-0">
-            <a href="{{ route('guardian.dashboard') }}" target="_blank" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#0B1B3D] hover:bg-[#132A58] text-white text-xs font-bold shadow-xs transition">
-                <svg class="w-4 h-4 text-[#01ABE8]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                <span>Buka Preview Portal Wali</span>
-            </a>
-        </div>
     </div>
 
     <!-- 2. KPI Metrics -->
@@ -75,21 +69,64 @@
     </div>
 
     <!-- 3. Search & Filter Bar -->
-    <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+    <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col md:flex-row items-center justify-between gap-3 text-xs">
         <span class="text-slate-500 font-semibold">
             Daftar Wali Murid &amp; Status Keterhubungan Santri
         </span>
 
-        <form action="{{ route('admin.portal.guardians') }}" method="GET" class="flex items-center gap-2 w-full sm:w-auto">
-            <div class="relative w-full sm:w-72">
-                <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama wali, santri, email..." class="w-full bg-slate-50 hover:bg-white focus:bg-white text-xs text-slate-700 pl-3 pr-8 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#01ABE8] transition">
+        <form action="{{ route('admin.portal.guardians') }}" method="GET" class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+            <div class="relative">
+                <select name="kelas" onchange="this.form.submit()" class="bg-slate-50 hover:bg-white text-xs font-semibold text-slate-700 py-2 pl-3 pr-8 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#01ABE8] transition appearance-none cursor-pointer">
+                    <option value="">Semua Tingkat Kelas</option>
+                    <optgroup label="Tingkat 7">
+                        <option value="71" {{ request('kelas') == '71' ? 'selected' : '' }}>Kelas 71</option>
+                        <option value="72" {{ request('kelas') == '72' ? 'selected' : '' }}>Kelas 72</option>
+                        <option value="73" {{ request('kelas') == '73' ? 'selected' : '' }}>Kelas 73</option>
+                        <option value="74" {{ request('kelas') == '74' ? 'selected' : '' }}>Kelas 74</option>
+                        <option value="75" {{ request('kelas') == '75' ? 'selected' : '' }}>Kelas 75</option>
+                        <option value="76" {{ request('kelas') == '76' ? 'selected' : '' }}>Kelas 76</option>
+                    </optgroup>
+                    <optgroup label="Tingkat 8">
+                        <option value="81" {{ request('kelas') == '81' ? 'selected' : '' }}>Kelas 81</option>
+                        <option value="82" {{ request('kelas') == '82' ? 'selected' : '' }}>Kelas 82</option>
+                        <option value="83" {{ request('kelas') == '83' ? 'selected' : '' }}>Kelas 83</option>
+                        <option value="84" {{ request('kelas') == '84' ? 'selected' : '' }}>Kelas 84</option>
+                        <option value="85" {{ request('kelas') == '85' ? 'selected' : '' }}>Kelas 85</option>
+                        <option value="86" {{ request('kelas') == '86' ? 'selected' : '' }}>Kelas 86</option>
+                    </optgroup>
+                    <optgroup label="Tingkat 9">
+                        <option value="91" {{ request('kelas') == '91' ? 'selected' : '' }}>Kelas 91</option>
+                        <option value="92" {{ request('kelas') == '92' ? 'selected' : '' }}>Kelas 92</option>
+                        <option value="93" {{ request('kelas') == '93' ? 'selected' : '' }}>Kelas 93</option>
+                        <option value="94" {{ request('kelas') == '94' ? 'selected' : '' }}>Kelas 94</option>
+                        <option value="95" {{ request('kelas') == '95' ? 'selected' : '' }}>Kelas 95</option>
+                        <option value="96" {{ request('kelas') == '96' ? 'selected' : '' }}>Kelas 96</option>
+                    </optgroup>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </div>
+            </div>
+
+            <div class="relative w-full sm:w-56">
+                <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama wali, santri, NISN..." class="w-full bg-slate-50 hover:bg-white focus:bg-white text-xs text-slate-700 pl-3 pr-8 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#01ABE8] transition">
                 @if(request('q'))
-                    <a href="{{ route('admin.portal.guardians') }}" class="absolute right-2.5 top-2 text-slate-400 hover:text-slate-600">&times;</a>
+                    <a href="{{ route('admin.portal.guardians', array_filter(['kelas' => request('kelas')])) }}" class="absolute right-2.5 top-2 text-slate-400 hover:text-slate-600">&times;</a>
                 @endif
             </div>
-            <button type="submit" class="px-3 py-2 rounded-xl bg-[#01ABE8] hover:bg-[#0096cc] text-white font-bold text-xs shadow-xs transition cursor-pointer">
+
+            <button type="submit" class="px-3.5 py-2 rounded-xl bg-[#01ABE8] hover:bg-[#0096cc] text-[#07132D] font-black text-xs shadow-xs transition cursor-pointer">
                 Cari
             </button>
+            <a href="{{ route('admin.portal.guardians.export-excel', request()->query()) }}" title="Unduh file Excel kredensial akun wali murid sesuai filter aktif" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition cursor-pointer">
+                <svg class="w-3.5 h-3.5 text-emerald-100" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM6 20V4h7v5h5v11H6z"/><path d="M8 12h2.5l1.5 2.5 1.5-2.5H16l-2.5 4 2.5 4h-2.5L12 15.5 10.5 18H8l2.5-4z"/></svg>
+                <span>Unduh Excel</span>
+            </a>
+            @if(request('kelas') || request('q'))
+                <a href="{{ route('admin.portal.guardians') }}" title="Reset Filter" class="px-2.5 py-2 rounded-xl bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-500 font-bold text-xs transition border border-slate-200">
+                    Reset
+                </a>
+            @endif
         </form>
     </div>
 
@@ -100,7 +137,6 @@
                 <thead class="bg-slate-50 text-slate-400 font-bold uppercase text-[10px] tracking-wider border-b border-slate-100">
                     <tr>
                         <th class="py-3.5 px-4">Nama Wali Murid</th>
-                        <th class="py-3.5 px-4">Kontak / Email</th>
                         <th class="py-3.5 px-4">Santri / Ananda Terhubung</th>
                         <th class="py-3.5 px-4 text-center">Status Akun</th>
                         <th class="py-3.5 px-4 text-right">Kontrol Aksi</th>
@@ -116,13 +152,8 @@
                                     </div>
                                     <div class="min-w-0">
                                         <span class="font-bold text-slate-900 block truncate">{{ $g->name }}</span>
-                                        <span class="text-[11px] text-slate-400 font-mono block truncate">&#64;{{ $g->username }}</span>
                                     </div>
                                 </div>
-                            </td>
-                            <td class="py-3.5 px-4 whitespace-nowrap">
-                                <span class="text-slate-800 font-medium block">{{ $g->email ?? '-' }}</span>
-                                <span class="text-[11px] text-slate-400 font-mono block">Terdaftar sejak {{ $g->created_at->format('d/m/Y') }}</span>
                             </td>
                             <td class="py-3.5 px-4">
                                 <div class="flex flex-wrap gap-1.5 items-center">
@@ -178,7 +209,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="py-12 text-center text-slate-400">
+                            <td colspan="4" class="py-12 text-center text-slate-400">
                                 Tidak ditemukan data wali murid dengan filter pencarian tersebut.
                             </td>
                         </tr>

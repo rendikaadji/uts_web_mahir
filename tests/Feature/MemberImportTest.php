@@ -182,6 +182,47 @@ class MemberImportTest extends TestCase
         @unlink($xlsxPath);
     }
 
+    public function test_import_supports_title_rows_and_indonesian_column_aliases_and_class(): void
+    {
+        $librarian = User::factory()->create([
+            'role' => 'pustakawan',
+            'is_active' => true,
+        ]);
+
+        $csvContent = "DATA SISWA MTsN 32 JAKARTA SELATAN\n";
+        $csvContent .= "TAHUN AJARAN 2025/2026\n";
+        $csvContent .= "No,Nama Peserta Didik,NISN,Kelas / Rombel\n";
+        $csvContent .= "1,Ahmad Maulana,0099887766,71\n";
+
+        $file = UploadedFile::fake()->createWithContent('emis_siswa.csv', $csvContent);
+
+        $response = $this->actingAs($librarian)->postJson('/api/v1/members/import', [
+            'file' => $file,
+            'default_role' => 'siswa',
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'status' => 'success',
+                'data' => [
+                    'imported' => 1,
+                    'skipped' => 0,
+                ],
+            ]);
+
+        $this->assertDatabaseHas('users', [
+            'name' => 'Ahmad Maulana',
+            'username' => '0099887766',
+            'role' => 'siswa_guru',
+        ]);
+
+        $this->assertDatabaseHas('members', [
+            'nisn' => '0099887766',
+            'member_type' => 'siswa',
+            'class_or_unit' => '71',
+        ]);
+    }
+
     protected function createFakeXlsx(array $rows): string
     {
         $tempPath = tempnam(sys_get_temp_dir(), 'xlsx_test_').'.xlsx';

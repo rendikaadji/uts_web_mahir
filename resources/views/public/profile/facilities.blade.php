@@ -54,7 +54,7 @@
                             {{ $facility->name }}
                         </h3>
                         <p class="text-xs text-slate-600 line-clamp-2 leading-relaxed">
-                            {{ $facility->description ?? 'Fasilitas penunjang kegiatan belajar mengajar dan pembinaan karakter santri dengan standar kenyamanan tinggi.' }}
+                            {{ $facility->description ? strip_tags($facility->description) : 'Fasilitas penunjang kegiatan belajar mengajar dan pembinaan karakter santri dengan standar kenyamanan tinggi.' }}
                         </p>
                     </div>
 

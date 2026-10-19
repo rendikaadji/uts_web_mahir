@@ -94,9 +94,9 @@
 
                 <div class="prose prose-slate max-w-none text-slate-600 text-sm leading-relaxed space-y-4">
                     @if($gallery->description)
-                        <p class="text-base text-slate-700 leading-relaxed font-normal">
-                            {{ $gallery->description }}
-                        </p>
+                        <div class="text-base text-slate-700 leading-relaxed font-normal">
+                            {!! $gallery->description !!}
+                        </div>
                     @endif
                     <p>
                         Dokumentasi ini merupakan bagian dari rekam jejak kegiatan dan pembinaan di lingkungan Madrasah Tsanawiyah Negeri (MTsN) 32 Jakarta. Madrasah terus berkomitmen mengabadikan setiap momen perkembangan peserta didik, inovasi pembelajaran para dewan guru, penguatan riset madrasah, serta pembinaan karakter Qur'ani.

@@ -57,6 +57,7 @@ class BookController extends Controller
             'isbn' => ['nullable', 'string', 'max:50'],
             'description' => ['nullable', 'string'],
             'cover_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            'digital_file' => ['nullable', 'file', 'mimes:pdf', 'max:51200'],
             'copies_count' => ['required', 'integer', 'min:1', 'max:50'],
         ], [
             'category_id.required' => 'Kategori buku wajib dipilih.',
@@ -65,6 +66,8 @@ class BookController extends Controller
             'publisher.required' => 'Penerbit buku wajib diisi.',
             'cover_image.image' => 'Sampul buku harus berupa file gambar (JPG, PNG, WebP).',
             'cover_image.max' => 'Ukuran file sampul buku maksimal 2MB.',
+            'digital_file.mimes' => 'File digital buku harus berformat PDF (.pdf).',
+            'digital_file.max' => 'Ukuran file PDF maksimal 50MB.',
             'copies_count.required' => 'Jumlah eksemplar fisik wajib diisi minimal 1.',
         ]);
 
@@ -80,6 +83,13 @@ class BookController extends Controller
             $coverPath = $request->file('cover_image')->store('books', 'public');
         }
 
+        $digitalPath = null;
+        $isDigitalAvailable = false;
+        if ($request->hasFile('digital_file')) {
+            $digitalPath = $request->file('digital_file')->store('books/pdfs', 'public');
+            $isDigitalAvailable = true;
+        }
+
         $book = Book::create([
             'category_id' => $validated['category_id'],
             'title' => $validated['title'],
@@ -90,6 +100,8 @@ class BookController extends Controller
             'isbn' => $validated['isbn'] ?? null,
             'description' => $validated['description'] ?? null,
             'cover_image' => $coverPath,
+            'digital_file_path' => $digitalPath,
+            'is_digital_available' => $isDigitalAvailable,
         ]);
 
         // Buat eksemplar fisik
@@ -134,6 +146,8 @@ class BookController extends Controller
             'isbn' => ['nullable', 'string', 'max:50'],
             'description' => ['nullable', 'string'],
             'cover_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            'digital_file' => ['nullable', 'file', 'mimes:pdf', 'max:51200'],
+            'remove_digital_file' => ['nullable', 'boolean'],
         ], [
             'category_id.required' => 'Kategori buku wajib dipilih.',
             'title.required' => 'Judul buku wajib diisi.',
@@ -141,6 +155,8 @@ class BookController extends Controller
             'publisher.required' => 'Penerbit buku wajib diisi.',
             'cover_image.image' => 'Sampul buku harus berupa file gambar (JPG, PNG, WebP).',
             'cover_image.max' => 'Ukuran file sampul buku maksimal 2MB.',
+            'digital_file.mimes' => 'File digital buku harus berformat PDF (.pdf).',
+            'digital_file.max' => 'Ukuran file PDF maksimal 50MB.',
         ]);
 
         $data = [
@@ -160,6 +176,20 @@ class BookController extends Controller
             $data['cover_image'] = $request->file('cover_image')->store('books', 'public');
         }
 
+        if ($request->boolean('remove_digital_file')) {
+            if ($book->digital_file_path && ! str_starts_with($book->digital_file_path, 'http') && Storage::disk('public')->exists($book->digital_file_path)) {
+                Storage::disk('public')->delete($book->digital_file_path);
+            }
+            $data['digital_file_path'] = null;
+            $data['is_digital_available'] = false;
+        } elseif ($request->hasFile('digital_file')) {
+            if ($book->digital_file_path && ! str_starts_with($book->digital_file_path, 'http') && Storage::disk('public')->exists($book->digital_file_path)) {
+                Storage::disk('public')->delete($book->digital_file_path);
+            }
+            $data['digital_file_path'] = $request->file('digital_file')->store('books/pdfs', 'public');
+            $data['is_digital_available'] = true;
+        }
+
         $book->update($data);
 
         return redirect()->route('admin.books.show', $book)->with('success', 'Informasi buku "'.$book->title.'" berhasil diperbarui.');
@@ -173,6 +203,10 @@ class BookController extends Controller
 
         if ($book->cover_image && ! str_starts_with($book->cover_image, 'http') && Storage::disk('public')->exists($book->cover_image)) {
             Storage::disk('public')->delete($book->cover_image);
+        }
+
+        if ($book->digital_file_path && ! str_starts_with($book->digital_file_path, 'http') && Storage::disk('public')->exists($book->digital_file_path)) {
+            Storage::disk('public')->delete($book->digital_file_path);
         }
 
         $book->copies()->delete();
@@ -196,5 +230,34 @@ class BookController extends Controller
         ]);
 
         return back()->with('success', 'Eksemplar baru (Barcode: '.$barcode.') berhasil ditambahkan.');
+    }
+
+    public function editCopy(BookCopy $copy): View
+    {
+        return view('admin.books.edit_copy', compact('copy'));
+    }
+
+    public function updateCopy(Request $request, BookCopy $copy): RedirectResponse
+    {
+        $request->validate([
+            'status' => 'required|in:tersedia,dipinjam,hilang,rusak',
+            'condition_notes' => 'nullable|string|max:255',
+        ]);
+
+        $copy->update($request->only(['status', 'condition_notes']));
+
+        return redirect()->route('admin.books.show', $copy->book_id)->with('success', 'Data eksemplar berhasil diperbarui.');
+    }
+
+    public function destroyCopy(BookCopy $copy): RedirectResponse
+    {
+        if ($copy->status === 'dipinjam') {
+            return back()->withErrors(['error' => 'Eksemplar tidak dapat dihapus karena sedang dipinjam.']);
+        }
+
+        $bookId = $copy->book_id;
+        $copy->delete();
+
+        return redirect()->route('admin.books.show', $bookId)->with('success', 'Eksemplar berhasil dihapus.');
     }
 }

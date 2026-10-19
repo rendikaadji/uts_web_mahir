@@ -21,6 +21,7 @@ Route::prefix('v1')->middleware('web')->group(function () {
         Route::put('/members/{user}', [QrController::class, 'updateMember']);
         Route::delete('/members/{user}', [QrController::class, 'destroyMember']);
         Route::get('/members/template', [MemberImportController::class, 'downloadTemplate']);
+        Route::get('/members/export-qr-zip', [QrController::class, 'exportMembersQrZip']);
         Route::post('/members/import', [MemberImportController::class, 'import']);
         Route::post('/qr/generate', [QrController::class, 'generate']);
 

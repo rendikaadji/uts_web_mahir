@@ -25,11 +25,24 @@ class GateController extends Controller
 
         $qrToken = QrToken::where('token', $token)->first();
 
+        // Fallback: check if token is a member NISN, NIP, barcode, or username
+        if (! $qrToken) {
+            $matchedMember = Member::where('nisn', $token)
+                ->orWhere('nip', $token)
+                ->orWhere('barcode', $token)
+                ->orWhereHas('user', fn ($q) => $q->where('username', $token))
+                ->first();
+
+            if ($matchedMember && $matchedMember->user) {
+                $qrToken = $matchedMember->user->getOrCreateQrToken();
+            }
+        }
+
         // 1. Validate existence and active status
         if (! $qrToken || ! $qrToken->is_active) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Token QR tidak valid atau sudah tidak aktif.',
+                'message' => 'Token QR / NISN tidak valid atau belum terdaftar aktif.',
             ], 404);
         }
 
@@ -92,14 +105,25 @@ class GateController extends Controller
     public function manual(ManualCheckinRequest $request): JsonResponse
     {
         $userId = $request->validated('user_id');
+        $identifier = $request->validated('identifier');
         $deviceNote = $request->validated('device_note');
         $staffId = $request->user()->id;
 
-        $memberId = $userId ? Member::where('user_id', $userId)->value('id') : null;
-        if ($userId && ! $memberId) {
+        $memberId = null;
+        if ($userId) {
+            $memberId = Member::where('user_id', $userId)->value('id');
+        } elseif ($identifier) {
+            $memberId = Member::where('nisn', $identifier)
+                ->orWhere('nip', $identifier)
+                ->orWhere('barcode', $identifier)
+                ->orWhereHas('user', fn ($q) => $q->where('username', $identifier))
+                ->value('id');
+        }
+
+        if (($userId || $identifier) && ! $memberId) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Pengguna tersebut bukan anggota perpustakaan.',
+                'message' => 'Anggota dengan ID atau NISN/NIP tersebut tidak ditemukan.',
             ], 422);
         }
 

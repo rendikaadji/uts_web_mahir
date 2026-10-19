@@ -30,7 +30,7 @@
         </div>
 
         <p class="relative z-10 text-xs sm:text-sm text-blue-100/90 leading-relaxed text-justify">
-            {{ $profile->cambridge_description }} Kurikulum Cambridge di MTsN 32 Jakarta bersifat pengayaan terpadu yang mematangkan keterampilan berbahasa Inggris ilmiah, daya analitis matematika berstandar internasional, serta eksperimen sains berbasis laboratorium.
+            {{ $profile->cambridge_description ? $profile->cambridge_description . ' ' : '' }}Kurikulum Cambridge di MTsN 32 Jakarta bersifat pengayaan terpadu yang mematangkan keterampilan berbahasa Inggris ilmiah, daya analitis matematika berstandar internasional, serta eksperimen sains berbasis laboratorium.
         </p>
 
         <div class="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">

@@ -14,6 +14,8 @@ export default function GateScan() {
     const [manualTokenInput, setManualTokenInput] = useState('');
     const [showManualInput, setShowManualInput] = useState(false);
 
+    const [retryTrigger, setRetryTrigger] = useState(0);
+
     const scannerRef = useRef(null);
     const scannerElementId = 'qr-reader-viewport';
     const storedUser = getStoredUser();
@@ -24,6 +26,9 @@ export default function GateScan() {
 
         const startScanner = async () => {
             try {
+                const el = document.getElementById(scannerElementId);
+                if (!el) return;
+
                 html5QrCode = new Html5Qrcode(scannerElementId);
                 scannerRef.current = html5QrCode;
 
@@ -45,8 +50,21 @@ export default function GateScan() {
                 setCameraError(null);
             } catch (err) {
                 console.warn('Camera initiation failed:', err);
-                setCameraError('Kamera tidak terdeteksi atau izin akses kamera belum diberikan.');
+                const isHttp = typeof window !== 'undefined' && window.location.protocol === 'http:' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+                const msg = isHttp
+                    ? 'Browser membatasi streaming kamera pada koneksi HTTP (memerlukan HTTPS). Silakan gunakan tombol input NISN/Token manual di bawah.'
+                    : 'Kamera tidak terdeteksi atau streaming kamera tidak didukung browser pada perangkat ini.';
+                setCameraError(msg);
                 setCameraActive(false);
+                if (html5QrCode) {
+                    try {
+                        if (html5QrCode.isScanning) {
+                            html5QrCode.stop().catch(() => {});
+                        }
+                        html5QrCode.clear();
+                    } catch (_) {}
+                }
+                scannerRef.current = null;
             }
         };
 
@@ -54,14 +72,21 @@ export default function GateScan() {
 
         return () => {
             clearTimeout(timer);
-            if (scannerRef.current) {
-                scannerRef.current.stop().catch(() => {}).finally(() => {
-                    scannerRef.current?.clear();
-                    scannerRef.current = null;
-                });
+            const scanner = scannerRef.current;
+            if (scanner) {
+                scannerRef.current = null;
+                try {
+                    if (scanner.isScanning) {
+                        scanner.stop().catch(() => {}).finally(() => {
+                            try { scanner.clear(); } catch (_) {}
+                        });
+                    } else {
+                        try { scanner.clear(); } catch (_) {}
+                    }
+                } catch (_) {}
             }
         };
-    }, []);
+    }, [retryTrigger]);
 
     const speakGreeting = (text) => {
         try {
@@ -211,12 +236,22 @@ export default function GateScan() {
                                 </div>
                                 <h3 className="font-bold text-lg text-[#07132B]">Akses Kamera Tidak Aktif</h3>
                                 <p className="text-xs text-[#475569] mt-1 mb-4 leading-relaxed max-w-xs">{cameraError}</p>
-                                <button
-                                    onClick={() => setShowManualInput(true)}
-                                    className="rounded-sm bg-[#0B1B3D] text-white px-5 py-2.5 text-xs font-semibold uppercase tracking-wider hover:bg-[#132A58] transition cursor-pointer"
-                                >
-                                    Ketik Token Manual
-                                </button>
+                                <div className="flex flex-wrap items-center justify-center gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowManualInput(true)}
+                                        className="rounded-xl bg-[#0B1B3D] text-white px-4 py-2.5 text-xs font-bold uppercase tracking-wider hover:bg-[#132A58] transition cursor-pointer shadow-xs"
+                                    >
+                                        Ketik NISN / Token
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setRetryTrigger((prev) => prev + 1)}
+                                        className="rounded-xl border border-slate-300 bg-white text-slate-700 px-4 py-2.5 text-xs font-bold hover:bg-slate-50 transition cursor-pointer"
+                                    >
+                                        Coba Kamera Lagi
+                                    </button>
+                                </div>
                             </div>
                         )}
 

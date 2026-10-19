@@ -16,11 +16,11 @@ class AdminSeparationTest extends TestCase
 
         $this->actingAs($admin)->get('/admin/berita')->assertStatus(200);
 
-        foreach (['/admin/buku', '/admin/sirkulasi', '/admin/laporan'] as $url) {
+        foreach (['/admin/buku', '/admin/sirkulasi', '/admin/laporan', '/admin/perpustakaan/dashboard'] as $url) {
             $this->actingAs($admin)->get($url)->assertStatus(403);
         }
 
-        $this->actingAs($admin)->getJson('/api/v1/visits')->assertStatus(403);
+        $this->actingAs($admin)->getJson('/api/v1/visits')->assertStatus(200);
     }
 
     public function test_pustakawan_only_accesses_library_area(): void
@@ -28,19 +28,22 @@ class AdminSeparationTest extends TestCase
         $librarian = User::factory()->create(['role' => 'pustakawan']);
 
         $this->actingAs($librarian)->get('/admin/buku')->assertStatus(200);
+        $this->actingAs($librarian)->get('/admin/portal-siswa-guru')->assertStatus(200);
+        $this->actingAs($librarian)->get('/admin/portal-wali-murid')->assertStatus(200);
 
-        foreach (['/admin/berita', '/admin/portal-siswa-guru'] as $url) {
+        foreach (['/admin/berita', '/admin/profil-sekolah', '/admin/guru'] as $url) {
             $this->actingAs($librarian)->get($url)->assertStatus(403);
         }
     }
 
     public function test_both_roles_can_open_admin_dashboard(): void
     {
-        foreach (['admin_madrasah', 'pustakawan'] as $role) {
-            $user = User::factory()->create(['role' => $role]);
+        $admin = User::factory()->create(['role' => 'admin_madrasah']);
+        $this->actingAs($admin)->get('/admin')->assertStatus(200);
 
-            $this->actingAs($user)->get('/admin')->assertStatus(200);
-        }
+        $librarian = User::factory()->create(['role' => 'pustakawan']);
+        $this->actingAs($librarian)->get('/admin')->assertRedirect(route('admin.library.dashboard'));
+        $this->actingAs($librarian)->get('/admin/perpustakaan/dashboard')->assertStatus(200);
     }
 
     public function test_pustakawan_cannot_create_admin_role_via_members_api(): void

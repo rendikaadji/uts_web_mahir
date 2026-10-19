@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\SchoolProfile;
 use App\Models\TeacherStaff;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -21,8 +22,36 @@ class TeacherController extends Controller
         }
 
         $teachers = $query->orderBy('sort_order')->orderBy('id')->paginate(15)->withQueryString();
+        $profile = SchoolProfile::getActiveProfile();
 
-        return view('admin.teachers.index', compact('teachers', 'type'));
+        return view('admin.teachers.index', compact('teachers', 'type', 'profile'));
+    }
+
+    /**
+     * Aktifkan / Nonaktifkan modul Dewan Guru & Staf di website frontend secara keseluruhan.
+     */
+    public function toggleModule(): RedirectResponse
+    {
+        $profile = SchoolProfile::getActiveProfile();
+        $newStatus = ! ($profile->is_teachers_active ?? true);
+        $profile->update(['is_teachers_active' => $newStatus]);
+
+        $statusText = $newStatus ? 'diaktifkan & ditampilkan' : 'dinonaktifkan & disembunyikan';
+
+        return back()->with('success', "Modul publik Dewan Guru & Staf berhasil {$statusText} di website frontend.");
+    }
+
+    /**
+     * Aktifkan / Nonaktifkan satu orang guru atau staf.
+     */
+    public function toggle(TeacherStaff $teacher): RedirectResponse
+    {
+        $newStatus = ! $teacher->is_active;
+        $teacher->update(['is_active' => $newStatus]);
+
+        $statusText = $newStatus ? 'diaktifkan' : 'dinonaktifkan (disembunyikan dari publik)';
+
+        return back()->with('success', "Status data \"{$teacher->name}\" berhasil {$statusText}.");
     }
 
     public function create(): View

@@ -44,10 +44,6 @@
                     <span>MASUK PORTAL SEKARANG</span>
                     <span>&rarr;</span>
                 </a>
-                <a href="{{ route('gate') }}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-wider border border-white/20 backdrop-blur-xs transition">
-                    <svg class="w-4 h-4 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
-                    <span>KIOSK GATE MANDIRI</span>
-                </a>
             </div>
         </div>
     </div>
@@ -153,8 +149,8 @@
                 <p class="leading-relaxed">Gunakan fitur pemulihan kata sandi di halaman masuk atau hubungi petugas Tata Usaha / Laboratorium Komputer dengan menunjukkan kartu pelajar aktif.</p>
             </div>
             <div class="p-4 rounded-xl bg-slate-50 border border-slate-100 space-y-1.5">
-                <span class="font-bold text-[#0B1B3D] text-sm block">Barcode di Gate Presensi tidak terdeteksi?</span>
-                <p class="leading-relaxed">Pastikan kecerahan layar ponsel Anda dinaikkan maksimal saat memindai di depan sensor scanner gate atau gunakan kartu fisik alternatif.</p>
+                <span class="font-bold text-[#0B1B3D] text-sm block">Barcode Kartu Anggota tidak terdeteksi?</span>
+                <p class="leading-relaxed">Pastikan kecerahan layar ponsel Anda dinaikkan maksimal saat memindai di scanner presensi perpustakaan atau gunakan kartu fisik alternatif.</p>
             </div>
         </div>
     </div>

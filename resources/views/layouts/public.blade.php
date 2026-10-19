@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'Portal Informasi & Perpustakaan Digital' }} - MTsN 32 Jakarta</title>
     <meta name="description" content="Sistem Informasi Terpadu & Perpustakaan Digital MTsN 32 Jakarta - Madrasah Unggul, Berkarakter Qur'ani, dan Berwawasan Global.">
     
@@ -19,8 +20,39 @@
         body { font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; }
         .font-editorial { font-family: 'Playfair Display', Georgia, serif; }
     </style>
+    <script>
+        document.documentElement.classList.add('js');
+    </script>
 </head>
 <body class="bg-[#F8FAFC] text-slate-800 antialiased flex flex-col min-h-screen">
+
+    <!-- 0. Page Preloader (Modern, Clean, Prestigious MTsN 32 Brand) -->
+    <div id="page-preloader" class="fixed inset-0 z-[99999] bg-white flex flex-col items-center justify-center select-none" aria-hidden="true">
+        <div class="relative flex flex-col items-center text-center px-6">
+            <!-- School Emblem with Gentle Halo -->
+            <div class="relative mb-5">
+                <div class="absolute -inset-3 rounded-full bg-gradient-to-r from-sky-400/25 via-[#01ABE8]/35 to-blue-600/25 blur-lg animate-pulse-halo"></div>
+                <div class="relative w-16 h-16 sm:w-20 sm:h-20 bg-white rounded-2xl p-2.5 shadow-xl border border-sky-100 flex items-center justify-center">
+                    <img src="{{ asset('images/logo-mtsn32.png') }}" alt="Logo MTsN 32 Jakarta" class="w-full h-full object-contain">
+                </div>
+            </div>
+            
+            <!-- School Name & Subtitle -->
+            <h2 class="text-base sm:text-lg font-black text-slate-900 tracking-tight font-serif mb-1">
+                MTsN 32 JAKARTA
+            </h2>
+            <p class="text-[11px] sm:text-xs text-slate-500 font-semibold tracking-wider uppercase mb-5">
+                Portal Informasi & Perpustakaan Digital
+            </p>
+
+            <!-- Loading indicator bar -->
+            <div class="w-44 sm:w-52 h-1.5 bg-slate-100 rounded-full overflow-hidden preloader-track shadow-inner border border-slate-200/50">
+                <div class="preloader-progress-bar bg-gradient-to-r from-[#01ABE8] via-[#0284C7] to-[#0B1B3D]"></div>
+            </div>
+            
+            <span class="text-[10px] text-slate-400 font-medium tracking-widest uppercase mt-3 animate-pulse">Memuat...</span>
+        </div>
+    </div>
 
     <!-- 1. Topbar Informasi (Biru Muda & Putih Sesuai Logo MTsN 32) -->
     <div class="bg-gradient-to-r from-[#01ABE8] via-[#0284C7] to-[#0275B1] text-white text-xs py-2 border-b border-sky-400/30 hidden sm:block shadow-2xs">
@@ -115,6 +147,7 @@
                                         <p class="text-[11px] text-slate-500 font-normal leading-tight">Manajemen madrasah & bidang</p>
                                     </div>
                                 </a>
+                                @if($profile->is_teachers_active ?? true)
                                 <a href="{{ route('profile.teachers') }}" class="flex items-start gap-3 p-2.5 rounded-xl hover:bg-sky-50/60 transition group/item">
                                     <div class="w-8 h-8 rounded-lg bg-sky-50 text-[#0284C7] flex items-center justify-center shrink-0 group-hover/item:bg-[#01ABE8] group-hover/item:text-white transition">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
@@ -124,6 +157,7 @@
                                         <p class="text-[11px] text-slate-500 font-normal leading-tight">Direktori civitas akademika</p>
                                     </div>
                                 </a>
+                                @endif
                                 <a href="{{ route('profile.facilities') }}" class="flex items-start gap-3 p-2.5 rounded-xl hover:bg-sky-50/60 transition group/item">
                                     <div class="w-8 h-8 rounded-lg bg-sky-50 text-[#0284C7] flex items-center justify-center shrink-0 group-hover/item:bg-[#01ABE8] group-hover/item:text-white transition">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
@@ -145,6 +179,7 @@
                         </button>
                         <div class="absolute top-full left-0 pt-1.5 w-72 transition-all duration-200 opacity-0 invisible -translate-y-1 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 pointer-events-none group-hover:pointer-events-auto z-50">
                             <div class="bg-white rounded-2xl shadow-xl border border-slate-200 p-2 space-y-0.5">
+                                @if($profile->is_ppdb_active ?? true)
                                 <a href="{{ route('ppdb') }}" class="flex items-start gap-3 p-2.5 rounded-xl hover:bg-sky-50/60 transition group/item">
                                     <div class="w-8 h-8 rounded-lg bg-sky-100 text-[#01ABE8] flex items-center justify-center shrink-0 group-hover/item:bg-[#01ABE8] group-hover/item:text-white transition">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
@@ -157,6 +192,7 @@
                                         <p class="text-[11px] text-slate-500 font-normal leading-tight">Informasi pendaftaran santri baru</p>
                                     </div>
                                 </a>
+                                @endif
                                 <a href="{{ route('academic.cambridge') }}" class="flex items-start gap-3 p-2.5 rounded-xl hover:bg-sky-50/60 transition group/item">
                                     <div class="w-8 h-8 rounded-lg bg-sky-50 text-[#0284C7] flex items-center justify-center shrink-0 group-hover/item:bg-[#01ABE8] group-hover/item:text-white transition">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
@@ -238,21 +274,12 @@
 
                     <!-- 5. Layanan & Portal Dropdown -->
                     <div class="group relative py-2">
-                        <button type="button" class="inline-flex items-center gap-1 xl:gap-1.5 px-2.5 xl:px-3 py-2 rounded-xl transition {{ (request()->routeIs('services*') || request()->routeIs('gate')) ? 'text-[#0284C7] bg-sky-50 font-bold border border-sky-100 shadow-2xs' : 'text-slate-600 hover:text-[#0284C7] hover:bg-sky-50/60 font-medium' }}" aria-expanded="false" aria-haspopup="true">
+                        <button type="button" class="inline-flex items-center gap-1 xl:gap-1.5 px-2.5 xl:px-3 py-2 rounded-xl transition {{ request()->routeIs('services*') ? 'text-[#0284C7] bg-sky-50 font-bold border border-sky-100 shadow-2xs' : 'text-slate-600 hover:text-[#0284C7] hover:bg-sky-50/60 font-medium' }}" aria-expanded="false" aria-haspopup="true">
                             <span>Layanan</span>
                             <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-[#0284C7] group-hover:rotate-180 transition-transform duration-200 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </button>
                         <div class="absolute top-full left-0 pt-1.5 w-72 transition-all duration-200 opacity-0 invisible -translate-y-1 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 pointer-events-none group-hover:pointer-events-auto z-50">
                             <div class="bg-white rounded-2xl shadow-xl border border-slate-200 p-2 space-y-0.5">
-                                <a href="{{ route('gate') }}" class="flex items-start gap-3 p-2.5 rounded-xl hover:bg-sky-50/60 transition group/item">
-                                    <div class="w-8 h-8 rounded-lg bg-sky-100 text-[#01ABE8] flex items-center justify-center shrink-0 group-hover/item:bg-[#01ABE8] group-hover/item:text-white transition">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                    </div>
-                                    <div>
-                                        <div class="text-xs font-bold text-slate-800 group-hover/item:text-[#01ABE8] transition">Presensi Gate Mandiri</div>
-                                        <p class="text-[11px] text-slate-500 font-normal leading-tight">Kiosk check-in kehadiran santri</p>
-                                    </div>
-                                </a>
                                 <a href="{{ route('services.students') }}" class="flex items-start gap-3 p-2.5 rounded-xl hover:bg-sky-50/60 transition group/item">
                                     <div class="w-8 h-8 rounded-lg bg-sky-50 text-[#0284C7] flex items-center justify-center shrink-0 group-hover/item:bg-[#01ABE8] group-hover/item:text-white transition">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
@@ -461,7 +488,9 @@
                                 <a href="{{ route('profile.headmaster') }}" class="block py-1 text-slate-600 hover:text-[#01ABE8] transition">&rsaquo; Sambutan Kepala Madrasah</a>
                                 <a href="{{ route('profile.vision-mission') }}" class="block py-1 text-slate-600 hover:text-[#01ABE8] transition">&rsaquo; Visi, Misi & Nilai Dasar</a>
                                 <a href="{{ route('profile.organization') }}" class="block py-1 text-slate-600 hover:text-[#01ABE8] transition">&rsaquo; Struktur Pimpinan & Organisasi</a>
+                                @if($profile->is_teachers_active ?? true)
                                 <a href="{{ route('profile.teachers') }}" class="block py-1 text-slate-600 hover:text-[#01ABE8] transition">&rsaquo; Dewan Guru & Staf</a>
+                                @endif
                                 <a href="{{ route('profile.facilities') }}" class="block py-1 text-slate-600 hover:text-[#01ABE8] transition">&rsaquo; Sarana & Prasarana Sekolah</a>
                             </div>
                         </div>
@@ -476,7 +505,9 @@
                                 <svg class="accordion-arrow w-3.5 h-3.5 text-slate-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                             </button>
                             <div class="accordion-content hidden pl-10 pr-2 py-1 space-y-1 text-xs">
+                                @if($profile->is_ppdb_active ?? true)
                                 <a href="{{ route('ppdb') }}" class="block py-1 text-[#0284C7] font-bold hover:text-[#01ABE8] transition">&rsaquo; Penerimaan Siswa (PPDB/PMBM) <span class="text-[9px] bg-sky-100 text-[#0284C7] px-1 py-0.2 rounded font-bold">BARU</span></a>
+                                @endif
                                 <a href="{{ route('academic.cambridge') }}" class="block py-1 text-slate-600 hover:text-[#01ABE8] transition">&rsaquo; Cambridge Lower Secondary</a>
                                 <a href="{{ route('academic.curriculum') }}" class="block py-1 text-slate-600 hover:text-[#01ABE8] transition">&rsaquo; Kurikulum Merdeka & Riset</a>
                                 <a href="{{ route('academic.extracurricular') }}" class="block py-1 text-slate-600 hover:text-[#01ABE8] transition">&rsaquo; Ekstrakurikuler & Adiwiyata</a>
@@ -510,7 +541,6 @@
                                 <svg class="accordion-arrow w-3.5 h-3.5 text-slate-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                             </button>
                             <div class="accordion-content hidden pl-10 pr-2 py-1 space-y-1 text-xs">
-                                <a href="{{ route('gate') }}" class="block py-1 text-slate-600 hover:text-[#01ABE8] transition">&rsaquo; Presensi Gate Kiosk Mandiri</a>
                                 <a href="{{ route('services.students') }}" class="block py-1 text-slate-600 hover:text-[#01ABE8] transition">&rsaquo; Portal Siswa & Dewan Guru</a>
                                 <a href="{{ route('services.guardians') }}" class="block py-1 text-slate-600 hover:text-[#01ABE8] transition">&rsaquo; Portal Wali Murid</a>
                                 <a href="{{ route('services.index') }}" class="block py-1 text-slate-600 hover:text-[#01ABE8] transition">&rsaquo; Pusat Layanan PTSP</a>
@@ -646,10 +676,22 @@
                         </span>
                     </div>
 
-                    <!-- Social Media Links (Instagram, TikTok, YouTube) -->
+                    <!-- Social Media Links (Facebook, Instagram, TikTok, YouTube) -->
                     <div class="pt-3 border-t border-sky-950">
                         <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-2.5">Media Sosial Resmi</span>
                         <div class="flex items-center gap-2.5">
+                            <!-- Facebook -->
+                            <a href="{{ $profile->facebook_url ?? 'https://www.facebook.com/MTsN32?rdid=sYBd4mjz784GCLt3&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1D9gaWjQTm%2F#' }}" 
+                               target="_blank" 
+                               rel="noopener noreferrer" 
+                               aria-label="Facebook Resmi MTsN 32 Jakarta" 
+                               title="Facebook: MTsN 32 Jakarta" 
+                               class="w-10 h-10 rounded-xl bg-[#0A2240] border border-sky-900/50 text-slate-300 hover:text-white hover:border-[#1877F2] hover:bg-[#1877F2] transition duration-300 flex items-center justify-center shadow-xs group">
+                                <svg class="w-4.5 h-4.5 fill-current group-hover:scale-110 transition duration-200" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clip-rule="evenodd"/>
+                                </svg>
+                            </a>
+
                             <!-- Instagram -->
                             <a href="{{ $profile->instagram_url ?? 'https://www.instagram.com/official_mtsn32_jakarta?stkn=bmNjczQ0cGsyaTJt' }}" 
                                target="_blank" 
@@ -709,7 +751,7 @@
                     <h3 class="text-sm font-bold text-white uppercase tracking-wider border-b border-sky-900/50 pb-2">Tautan Navigasi</h3>
                     <ul class="space-y-2 text-xs text-slate-400">
                         <li><a href="{{ route('home') }}" class="hover:text-[#01ABE8] transition flex items-center gap-1.5"><span class="text-[#01ABE8]">&rsaquo;</span> Beranda Utama</a></li>
-                        <li><a href="{{ route('profile') }}" class="hover:text-[#01ABE8] transition flex items-center gap-1.5"><span class="text-[#01ABE8]">&rsaquo;</span> Profil & Dewan Guru</a></li>
+                        <li><a href="{{ route('profile') }}" class="hover:text-[#01ABE8] transition flex items-center gap-1.5"><span class="text-[#01ABE8]">&rsaquo;</span> Profil {{ ($profile->is_teachers_active ?? true) ? '& Dewan Guru' : 'Madrasah' }}</a></li>
                         <li><a href="{{ route('academic') }}" class="hover:text-[#01ABE8] transition flex items-center gap-1.5"><span class="text-[#01ABE8]">&rsaquo;</span> Cambridge & Ekstrakurikuler</a></li>
                         <li><a href="{{ route('information') }}" class="hover:text-[#01ABE8] transition flex items-center gap-1.5"><span class="text-[#01ABE8]">&rsaquo;</span> Warta & Pengumuman</a></li>
                         <li><a href="{{ route('login') }}" class="hover:text-[#01ABE8] transition flex items-center gap-1.5"><span class="text-[#01ABE8]">&rsaquo;</span> Portal Siswa, Guru & Wali</a></li>
@@ -1102,6 +1144,95 @@
 
             updateSearchUI();
         });
+
+        // --------------------------------------------------------------------------
+        // Page Preloader Handler (Instant feel, graceful dismissal)
+        // --------------------------------------------------------------------------
+        (function () {
+            const preloader = document.getElementById('page-preloader');
+            if (!preloader) return;
+
+            let dismissed = false;
+            const hidePreloader = function () {
+                if (dismissed) return;
+                dismissed = true;
+                preloader.classList.add('loaded');
+                setTimeout(function () {
+                    if (preloader.parentNode) preloader.parentNode.removeChild(preloader);
+                }, 500);
+            };
+
+            if (document.readyState === 'complete') {
+                setTimeout(hidePreloader, 350);
+            } else {
+                window.addEventListener('load', function () {
+                    setTimeout(hidePreloader, 350);
+                });
+            }
+
+            // Fallback timeout: never block user longer than 1.2s under any circumstances
+            setTimeout(hidePreloader, 1200);
+        })();
+
+        // --------------------------------------------------------------------------
+        // Professional Scroll Reveal Animations (Subtle & Fluid)
+        // --------------------------------------------------------------------------
+        (function () {
+            if (!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                return;
+            }
+
+            const initScrollReveal = function () {
+                const candidateSelectors = [
+                    'main section',
+                    'footer',
+                    '.reveal-on-scroll',
+                    '.reveal-on-scroll-scale'
+                ];
+
+                const elements = Array.from(document.querySelectorAll(candidateSelectors.join(', ')))
+                    .filter(function (el) {
+                        return !el.hasAttribute('data-no-reveal');
+                    });
+
+                const observer = new IntersectionObserver(function (entries, obs) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-revealed');
+                            obs.unobserve(entry.target);
+                        }
+                    });
+                }, {
+                    root: null,
+                    rootMargin: '0px 0px -40px 0px',
+                    threshold: 0.05
+                });
+
+                elements.forEach(function (el, idx) {
+                    if (!el.classList.contains('reveal-on-scroll') && !el.classList.contains('reveal-on-scroll-scale')) {
+                        el.classList.add('reveal-on-scroll');
+                    }
+
+                    // Check if already in viewport on load
+                    const rect = el.getBoundingClientRect();
+                    if (rect.top < window.innerHeight && rect.bottom > 0) {
+                        setTimeout(function () {
+                            el.classList.add('is-revealed');
+                        }, Math.min(idx, 3) * 80);
+                        return;
+                    }
+
+                    observer.observe(el);
+                });
+            };
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initScrollReveal);
+            } else {
+                initScrollReveal();
+            }
+        })();
     </script>
+    @stack('scripts')
 </body>
 </html>

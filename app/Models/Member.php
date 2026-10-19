@@ -66,6 +66,17 @@ class Member extends Model
         return $this->getIdentifierAttribute();
     }
 
+    public function getBarcodeAttribute(?string $value): string
+    {
+        if ($this->member_type === 'guru') {
+            if (empty($value) || str_starts_with(strtoupper($value), 'MTS32')) {
+                return $this->nip ?: ($value ?? '-');
+            }
+        }
+
+        return $value ?? ($this->member_type === 'guru' ? ($this->nip ?? '-') : ($this->nisn ?? '-'));
+    }
+
     /**
      * Daftarkan atau perbarui akun siswa/guru beserta data anggotanya.
      * Peran akun selalu siswa_guru; hak admin/pustakawan tidak bisa dibuat dari sini.
@@ -86,13 +97,19 @@ class Member extends Model
         $user->saveQuietly();
 
         $isTeacher = $data['member_type'] === 'guru';
-        static::updateOrCreate(['user_id' => $user->id], [
+        $memberAttrs = [
             'member_type' => $data['member_type'],
             'nisn' => $isTeacher ? null : $data['username'],
             'nip' => $isTeacher ? $data['username'] : null,
             'barcode' => $data['username'],
             'is_active' => true,
-        ]);
+        ];
+
+        if (! empty($data['class_or_unit'])) {
+            $memberAttrs['class_or_unit'] = $data['class_or_unit'];
+        }
+
+        static::updateOrCreate(['user_id' => $user->id], $memberAttrs);
         $user->getOrCreateQrToken();
 
         return $user;

@@ -2,18 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActivityLog;
 use App\Models\Article;
 use App\Models\Book;
 use App\Models\BookCopy;
 use App\Models\Category;
 use App\Models\Extracurricular;
 use App\Models\Facility;
+use App\Models\FeaturedProgram;
 use App\Models\Gallery;
+use App\Models\HeroSlide;
 use App\Models\Member;
 use App\Models\SchoolProfile;
 use App\Models\TeacherStaff;
 use App\Models\Visit;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -50,14 +54,18 @@ class PublicController extends Controller
 
         $categories = Category::withCount('books')->get();
         $galleries = Gallery::latest('event_date')->take(6)->get();
+        $featuredPrograms = FeaturedProgram::getOrderedPrograms();
+        $heroSlides = HeroSlide::getOrderedSlides();
 
-        return view('public.home', compact('profile', 'stats', 'latestArticles', 'tickerArticles', 'featuredBooks', 'categories', 'galleries'));
+        return view('public.home', compact('profile', 'stats', 'latestArticles', 'tickerArticles', 'featuredBooks', 'categories', 'galleries', 'featuredPrograms', 'heroSlides'));
     }
 
     public function profile(): View
     {
         $profile = SchoolProfile::getActiveProfile();
-        $teachers = TeacherStaff::where('is_active', true)->orderBy('sort_order')->orderBy('id')->get();
+        $teachers = ($profile->is_teachers_active ?? true)
+            ? TeacherStaff::where('is_active', true)->orderBy('sort_order')->orderBy('id')->get()
+            : collect();
         $facilities = Facility::where('is_active', true)->latest()->get();
 
         return view('public.profile', compact('profile', 'teachers', 'facilities'));
@@ -122,6 +130,16 @@ class PublicController extends Controller
         $query = Book::with(['category', 'copies']);
 
         if ($search) {
+            ActivityLog::record(
+                logType: 'pencarian',
+                eventName: 'Pencarian OPAC',
+                description: 'Pencarian katalog buku OPAC: "'.$search.'"',
+                actorName: auth()->check() ? auth()->user()->name : 'Pengunjung Perpustakaan',
+                actorType: auth()->check() ? auth()->user()->role : 'umum',
+                actorIdentifier: $request->ip(),
+                properties: ['keyword' => $search, 'category_id' => $categoryId]
+            );
+
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
                     ->orWhere('author', 'like', "%{$search}%")
@@ -175,9 +193,13 @@ class PublicController extends Controller
     /**
      * Tampilkan halaman informasi Penerimaan Peserta Didik Baru (PPDB/PMBM).
      */
-    public function ppdb(): View
+    public function ppdb(): View|RedirectResponse
     {
         $profile = SchoolProfile::getActiveProfile();
+        if (! ($profile->is_ppdb_active ?? true)) {
+            return redirect()->route('home')->with('info', 'Layanan informasi PPDB / PMBM saat ini sedang tidak dibuka.');
+        }
+
         $announcements = Article::where('category', 'pengumuman')
             ->whereNotNull('published_at')
             ->where('published_at', '<=', now())
@@ -221,9 +243,13 @@ class PublicController extends Controller
     /**
      * Halaman Mandiri: Direktori Dewan Guru & Tenaga Kependidikan.
      */
-    public function teachers(Request $request): View
+    public function teachers(Request $request): View|RedirectResponse
     {
         $profile = SchoolProfile::getActiveProfile();
+        if (! ($profile->is_teachers_active ?? true)) {
+            return redirect()->route('profile')->with('info', 'Direktori Dewan Guru & Staf saat ini sedang dinonaktifkan oleh madrasah.');
+        }
+
         $role = $request->query('peran');
 
         $query = TeacherStaff::where('is_active', true)->orderBy('sort_order')->orderBy('id');
@@ -241,9 +267,8 @@ class PublicController extends Controller
      */
     public function teacherDetail(TeacherStaff $teacher): View
     {
-        abort_unless($teacher->is_active, 404);
-
         $profile = SchoolProfile::getActiveProfile();
+        abort_unless(($profile->is_teachers_active ?? true) && $teacher->is_active, 404);
 
         $otherTeachers = TeacherStaff::where('is_active', true)
             ->where('id', '!=', $teacher->id)
@@ -271,7 +296,7 @@ class PublicController extends Controller
      */
     public function facilityDetail(Facility $facility): View
     {
-        abort_unless($facility->is_active, 404);
+        abort_unless($facility->is_active || auth()->check(), 404);
 
         $profile = SchoolProfile::getActiveProfile();
 
@@ -313,6 +338,24 @@ class PublicController extends Controller
         $extracurriculars = Extracurricular::where('is_active', true)->get();
 
         return view('public.academic.extracurricular', compact('profile', 'extracurriculars'));
+    }
+
+    /**
+     * Halaman Detail Mandiri: Profil & Program Pembinaan Ekstrakurikuler.
+     */
+    public function extracurricularDetail(Extracurricular $extracurricular): View
+    {
+        abort_unless($extracurricular->is_active, 404);
+
+        $profile = SchoolProfile::getActiveProfile();
+        $relatedExtracurriculars = Extracurricular::where('is_active', true)
+            ->where('id', '!=', $extracurricular->id)
+            ->orderByRaw('CASE WHEN category = ? THEN 0 ELSE 1 END', [$extracurricular->category])
+            ->latest()
+            ->take(4)
+            ->get();
+
+        return view('public.academic.extracurricular-detail', compact('profile', 'extracurricular', 'relatedExtracurriculars'));
     }
 
     /**
@@ -462,6 +505,18 @@ class PublicController extends Controller
             ]);
         }
 
+        if (mb_strlen($query) >= 3) {
+            ActivityLog::record(
+                logType: 'pencarian',
+                eventName: 'Pencarian Instan Web',
+                description: 'Pencarian instan header/modal: "'.$query.'"',
+                actorName: auth()->check() ? auth()->user()->name : 'Pengunjung Website',
+                actorType: auth()->check() ? auth()->user()->role : 'umum',
+                actorIdentifier: $request->ip(),
+                properties: ['keyword' => $query, 'source' => 'quick_search']
+            );
+        }
+
         $books = Book::with('category')
             ->where(function ($q) use ($query) {
                 $q->where('title', 'like', "%{$query}%")
@@ -499,22 +554,25 @@ class PublicController extends Controller
                 'url' => route('article.detail', $a->slug),
             ]);
 
-        $teachers = TeacherStaff::where('is_active', true)
-            ->where(function ($q) use ($query) {
-                $q->where('name', 'like', "%{$query}%")
-                    ->orWhere('position_or_subject', 'like', "%{$query}%");
-            })
-            ->orderBy('sort_order')
-            ->take(4)
-            ->get()
-            ->map(fn (TeacherStaff $t) => [
-                'id' => $t->id,
-                'title' => $t->name,
-                'subtitle' => $t->position_or_subject ?: ($t->role_type === 'guru' ? 'Guru Madrasah' : 'Staf Administrasi'),
-                'badge' => ucfirst($t->role_type),
-                'cover_url' => $t->photo_url,
-                'url' => route('profile.teachers.show', $t->id),
-            ]);
+        $profile = SchoolProfile::getActiveProfile();
+        $teachers = ($profile->is_teachers_active ?? true)
+            ? TeacherStaff::where('is_active', true)
+                ->where(function ($q) use ($query) {
+                    $q->where('name', 'like', "%{$query}%")
+                        ->orWhere('position_or_subject', 'like', "%{$query}%");
+                })
+                ->orderBy('sort_order')
+                ->take(4)
+                ->get()
+                ->map(fn (TeacherStaff $t) => [
+                    'id' => $t->id,
+                    'title' => $t->name,
+                    'subtitle' => $t->position_or_subject ?: ($t->role_type === 'guru' ? 'Guru Madrasah' : 'Staf Administrasi'),
+                    'badge' => ucfirst($t->role_type),
+                    'cover_url' => $t->photo_url,
+                    'url' => route('profile.teachers.show', $t->id),
+                ])
+            : collect();
 
         $facilities = Facility::where('is_active', true)
             ->where(function ($q) use ($query) {
@@ -568,6 +626,16 @@ class PublicController extends Controller
         ];
 
         if ($query !== '') {
+            ActivityLog::record(
+                logType: 'pencarian',
+                eventName: 'Pencarian Website',
+                description: 'Pencarian konten website madrasah: "'.$query.'"',
+                actorName: auth()->check() ? auth()->user()->name : 'Pengunjung Website',
+                actorType: auth()->check() ? auth()->user()->role : 'umum',
+                actorIdentifier: $request->ip(),
+                properties: ['keyword' => $query, 'type' => $type]
+            );
+
             $booksQuery = Book::with(['category', 'copies'])
                 ->where(function ($q) use ($query) {
                     $q->where('title', 'like', "%{$query}%")
@@ -585,12 +653,14 @@ class PublicController extends Controller
                 })
                 ->latest('published_at');
 
-            $teachersQuery = TeacherStaff::where('is_active', true)
-                ->where(function ($q) use ($query) {
-                    $q->where('name', 'like', "%{$query}%")
-                        ->orWhere('position_or_subject', 'like', "%{$query}%");
-                })
-                ->orderBy('sort_order');
+            $teachersQuery = ($profile->is_teachers_active ?? true)
+                ? TeacherStaff::where('is_active', true)
+                    ->where(function ($q) use ($query) {
+                        $q->where('name', 'like', "%{$query}%")
+                            ->orWhere('position_or_subject', 'like', "%{$query}%");
+                    })
+                    ->orderBy('sort_order')
+                : TeacherStaff::whereRaw('1 = 0');
 
             $facilitiesQuery = Facility::where('is_active', true)
                 ->where(function ($q) use ($query) {

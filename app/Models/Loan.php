@@ -53,9 +53,14 @@ class Loan extends Model
     {
         $checkDate = $this->return_date ?? now()->startOfDay();
         if ($checkDate->gt($this->due_date)) {
-            return $checkDate->diffInDays($this->due_date);
+            return (int) abs($checkDate->diffInDays($this->due_date));
         }
 
         return 0;
+    }
+
+    public function getDaysOverdue(): int
+    {
+        return $this->calculateOverdueDays();
     }
 }

@@ -5,7 +5,10 @@
         $authUser = auth()->user();
         $authPayload = $authUser->only(['id', 'name', 'username', 'role']) + ['is_staff' => $authUser->isStaff()];
     @endphp
-    <script>window.__AUTH_USER__ = {{ Illuminate\Support\Js::from($authPayload) }};</script>
+    <script>
+        window.__AUTH_USER__ = {{ Illuminate\Support\Js::from($authPayload) }};
+        window.__CSRF_TOKEN__ = {{ Illuminate\Support\Js::from(csrf_token()) }};
+    </script>
     @viteReactRefresh
     @vite(['resources/js/main.jsx'])
     <div id="root"></div>

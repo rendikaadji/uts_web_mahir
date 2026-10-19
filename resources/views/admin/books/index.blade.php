@@ -53,6 +53,12 @@
                                     <div class="truncate">
                                         <a href="{{ route('admin.books.show', $book) }}" class="font-bold text-slate-900 hover:text-[#01ABE8] block truncate">{{ $book->title }}</a>
                                         <span class="text-[11px] text-slate-500 block truncate">Penulis: {{ $book->author }}</span>
+                                        @if($book->pdf_url)
+                                            <span class="inline-flex items-center gap-1 text-[10px] font-bold text-rose-600 bg-rose-50 border border-rose-200/60 px-1.5 py-0.2 rounded mt-0.5">
+                                                <svg class="w-2.5 h-2.5 text-rose-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/></svg>
+                                                <span>PDF E-Book</span>
+                                            </span>
+                                        @endif
                                     </div>
                                 </div>
                             </td>
@@ -69,12 +75,15 @@
                                 {{ $book->isbn ?? '-' }}
                             </td>
                             <td class="py-3.5 px-4 text-center whitespace-nowrap">
-                                <span class="inline-flex items-center gap-1">
-                                    <span class="font-bold {{ $book->available_copies_count > 0 ? 'text-emerald-700' : 'text-rose-600' }}">
+                                <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg {{ $book->available_copies_count > 0 ? 'bg-emerald-50 border border-emerald-200/80' : 'bg-rose-50 border border-rose-200/80' }}">
+                                    <span class="font-extrabold text-xs {{ $book->available_copies_count > 0 ? 'text-emerald-700' : 'text-rose-600' }}">
                                         {{ $book->available_copies_count }}
                                     </span>
-                                    <span class="text-slate-400 text-[11px]">/ {{ $book->total_copies_count }}</span>
-                                </span>
+                                    <span class="text-slate-400 font-semibold text-[11px]">/ {{ $book->total_copies_count }}</span>
+                                    <span class="text-[10px] uppercase font-bold {{ $book->available_copies_count > 0 ? 'text-emerald-600' : 'text-rose-500' }}">
+                                        {{ $book->available_copies_count > 0 ? 'Tersedia' : 'Habis' }}
+                                    </span>
+                                </div>
                             </td>
                             <td class="py-3.5 px-4 text-right whitespace-nowrap">
                                 <div class="inline-flex items-center justify-end gap-1.5">

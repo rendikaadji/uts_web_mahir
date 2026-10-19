@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActivityLog;
 use App\Models\Member;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -63,6 +64,16 @@ class AuthController extends Controller
             Auth::login($user, $request->boolean('remember'));
             $request->session()->regenerate();
 
+            ActivityLog::record(
+                logType: 'interaksi',
+                eventName: 'Login Pengguna',
+                description: 'Pengguna '.$user->name.' berhasil masuk ke sistem portal.',
+                actorName: $user->name,
+                actorType: $user->role,
+                actorIdentifier: $user->username ?? $user->email,
+                properties: ['role' => $user->role]
+            );
+
             return $this->redirectUserByRole($user)->with('success', 'Selamat datang kembali, '.$user->name.'!');
         }
 
@@ -73,6 +84,19 @@ class AuthController extends Controller
 
     public function logout(Request $request): RedirectResponse
     {
+        if (Auth::check()) {
+            $user = Auth::user();
+            ActivityLog::record(
+                logType: 'interaksi',
+                eventName: 'Logout Pengguna',
+                description: 'Pengguna '.$user->name.' keluar dari sistem portal.',
+                actorName: $user->name,
+                actorType: $user->role,
+                actorIdentifier: $user->username ?? $user->email,
+                properties: ['role' => $user->role]
+            );
+        }
+
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

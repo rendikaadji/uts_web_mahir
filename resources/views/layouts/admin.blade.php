@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'Panel Pengelola' }} - MTsN 32 Jakarta</title>
     <link rel="icon" type="image/png" href="{{ asset('images/logo-mtsn32.png') }}">
     <link rel="apple-touch-icon" href="{{ asset('images/logo-mtsn32.png') }}">
@@ -38,7 +39,7 @@
 <body class="bg-[#EEF2F6] text-slate-800 antialiased min-h-screen flex selection:bg-[#01ABE8]/20 selection:text-[#0B1B3D]">
 
     <!-- Mobile Sidebar Backdrop & Drawer -->
-    <div id="admin-mobile-drawer" class="fixed inset-0 z-50 transform -translate-x-full transition-transform duration-300 ease-in-out md:hidden" aria-hidden="true">
+    <div id="admin-mobile-drawer" class="fixed inset-0 z-50 transform -translate-x-full transition-transform duration-300 ease-in-out md:hidden" aria-hidden="true" inert>
         <div id="admin-drawer-backdrop" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs opacity-0 transition-opacity duration-300"></div>
         <aside class="relative w-4/5 max-w-xs bg-[#081734] text-slate-300 h-full shadow-2xl flex flex-col overflow-hidden border-r border-[#15284F]">
             @include('layouts.partials.admin-sidebar-nav')
@@ -205,6 +206,18 @@
                                     <span>Profil Madrasah</span>
                                 </a>
                             @endif
+                            @if(auth()->user()->isAdminUtama())
+                                <a href="{{ route('admin.admins.index') }}" class="flex items-center gap-2.5 px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#0B1B3D] font-medium transition">
+                                    <svg class="w-4 h-4 text-[#01ABE8]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                                    <span>Kelola Akun Admin</span>
+                                </a>
+                            @endif
+                            @if(auth()->user()->isLibrarianUtama())
+                                <a href="{{ route('admin.librarians.index') }}" class="flex items-center gap-2.5 px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#0B1B3D] font-medium transition">
+                                    <svg class="w-4 h-4 text-[#01ABE8]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                                    <span>Kelola Akun Pustakawan</span>
+                                </a>
+                            @endif
                             <a href="{{ route('home') }}" target="_blank" class="flex items-center gap-2.5 px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-[#0B1B3D] font-medium transition">
                                 <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                                 <span>Lihat Web Publik</span>
@@ -272,6 +285,8 @@
             function openDrawer() {
                 if (drawer && backdrop) {
                     drawer.classList.remove('-translate-x-full');
+                    drawer.removeAttribute('aria-hidden');
+                    drawer.removeAttribute('inert');
                     backdrop.classList.remove('opacity-0');
                     backdrop.classList.add('opacity-100');
                 }
@@ -280,6 +295,8 @@
             function closeDrawer() {
                 if (drawer && backdrop) {
                     drawer.classList.add('-translate-x-full');
+                    drawer.setAttribute('aria-hidden', 'true');
+                    drawer.setAttribute('inert', '');
                     backdrop.classList.remove('opacity-100');
                     backdrop.classList.add('opacity-0');
                 }
@@ -382,5 +399,7 @@
             });
         });
     </script>
+    @stack('modals')
+    @stack('scripts')
 </body>
 </html>

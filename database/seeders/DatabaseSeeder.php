@@ -133,17 +133,17 @@ class DatabaseSeeder extends Seeder
             'user_id' => $guruUser->id,
             'member_type' => 'guru',
             'nip' => '198501012010011001',
-            'barcode' => 'MTS32-G-001',
+            'barcode' => '198501012010011001',
             'phone' => '081312345678',
-            'class_or_unit' => 'Guru Cambridge Math & Koord. Kurikulum',
+            'class_or_unit' => null,
             'is_active' => true,
         ]);
 
-        // Wali Murid
+        // Wali Murid (Format Opsi A: wali_[NISN])
         $waliUser = User::create([
-            'name' => 'Bambang Suryo, S.T.',
-            'username' => 'walimurid',
-            'email' => 'bambang.suryo@gmail.com',
+            'name' => 'Bambang Suryo, S.T. (Wali Raihan & Aisyah)',
+            'username' => 'wali_0081234567',
+            'email' => 'wali_0081234567@wali.mtsn32.sch.id',
             'password' => Hash::make('password'),
             'role' => 'wali_murid',
             'is_active' => true,

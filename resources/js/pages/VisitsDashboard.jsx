@@ -45,7 +45,7 @@ export default function VisitsDashboard() {
 
     // Auth state
     const currentUser = getStoredUser();
-    const isStaff = currentUser?.is_staff || false;
+    const isStaff = Boolean(currentUser?.is_staff || ['admin_madrasah', 'pustakawan'].includes(currentUser?.role));
 
     // Synchronize role filter when tab changes
     const handleTabChange = (newTab) => {
@@ -179,17 +179,17 @@ export default function VisitsDashboard() {
     const roleBadge = (role) => {
         switch (role) {
             case 'admin_madrasah':
-                return <span className="rounded-full bg-[#07132B] text-[#38BDF8] border border-[#18336E] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">Admin</span>;
+                return <span className="inline-flex rounded-full bg-[#07132B] text-[#38BDF8] border border-[#18336E] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider whitespace-nowrap">Admin</span>;
             case 'pustakawan':
-                return <span className="rounded-full bg-[#0B1B3D] text-[#FAF8F5] border border-[#2A6283] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">Pustakawan</span>;
+                return <span className="inline-flex rounded-full bg-[#0B1B3D] text-[#FAF8F5] border border-[#2A6283] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider whitespace-nowrap">Pustakawan</span>;
             case 'guru':
-                return <span className="rounded-full bg-[#0B1B3D] text-[#38BDF8] border border-[#1A3570] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">Dewan Guru</span>;
+                return <span className="inline-flex rounded-full bg-[#0B1B3D] text-[#38BDF8] border border-[#1A3570] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider whitespace-nowrap">Dewan Guru</span>;
             case 'siswa':
             case 'siswa_guru':
-                return <span className="rounded-full bg-[#F0F9FF] text-[#0B1B3D] border border-[#BAE6FD] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">Siswa</span>;
+                return <span className="inline-flex rounded-full bg-[#F0F9FF] text-[#0B1B3D] border border-[#BAE6FD] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider whitespace-nowrap">Siswa</span>;
             case 'tamu':
             default:
-                return <span className="rounded-full bg-[#DDECF4] text-[#102A62] border border-[#BAC6D8] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">Tamu</span>;
+                return <span className="inline-flex rounded-full bg-[#DDECF4] text-[#102A62] border border-[#BAC6D8] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider whitespace-nowrap">Tamu</span>;
         }
     };
 
@@ -399,12 +399,12 @@ export default function VisitsDashboard() {
                                 <table className="w-full text-left text-xs">
                                     <thead className="bg-[#0B1B3D] text-white uppercase tracking-wider text-[10.5px]">
                                         <tr>
-                                            <th className="px-5 py-3.5 text-[#E0F2FE]">Waktu</th>
-                                            <th className="px-5 py-3.5 text-white">Nama Pengunjung</th>
-                                            <th className="px-5 py-3.5 text-[#E0F2FE]">Peran</th>
-                                            <th className="px-5 py-3.5 text-[#E0F2FE]">Identitas / Asal</th>
-                                            <th className="px-5 py-3.5 text-[#E0F2FE]">Metode</th>
-                                            <th className="px-5 py-3.5 text-[#E0F2FE]">Pencatat</th>
+                                            <th className="px-5 py-3.5 align-middle text-[#E0F2FE]">Waktu</th>
+                                            <th className="px-5 py-3.5 align-middle text-white">Nama Pengunjung</th>
+                                            <th className="px-5 py-3.5 align-middle text-[#E0F2FE]">Peran</th>
+                                            <th className="px-5 py-3.5 align-middle text-[#E0F2FE]">Identitas / Asal</th>
+                                            <th className="px-5 py-3.5 align-middle text-[#E0F2FE]">Metode</th>
+                                            <th className="px-5 py-3.5 align-middle text-[#E0F2FE]">Pencatat</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-[#DCEAF2]">
@@ -417,19 +417,19 @@ export default function VisitsDashboard() {
                                         ) : (
                                             stats.recent.map((item) => (
                                                 <tr key={item.id} className="hover:bg-[#F0F6FA] transition">
-                                                    <td className="px-5 py-3.5 font-mono text-[#475569]">
+                                                    <td className="px-5 py-3.5 align-middle whitespace-nowrap font-mono text-[#475569]">
                                                         {item.checked_in_formatted}
                                                     </td>
-                                                    <td className="px-5 py-3.5 font-bold text-[#07132B]">
+                                                    <td className="px-5 py-3.5 align-middle font-bold text-[#07132B]">
                                                         {item.visitor_name}
                                                     </td>
-                                                    <td className="px-5 py-3.5">
+                                                    <td className="px-5 py-3.5 align-middle">
                                                         {roleBadge(item.visitor_role)}
                                                     </td>
-                                                    <td className="px-5 py-3.5 text-[#475569]">
+                                                    <td className="px-5 py-3.5 align-middle text-[#475569]">
                                                         {item.visitor_origin || '-'}
                                                     </td>
-                                                    <td className="px-5 py-3.5">
+                                                    <td className="px-5 py-3.5 align-middle">
                                                         <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                                                             item.method === 'qr'
                                                                 ? 'bg-[#F0F9FF] text-[#0B1B3D] border border-[#BAE6FD]'
@@ -438,7 +438,7 @@ export default function VisitsDashboard() {
                                                             {item.method === 'qr' ? 'QR Scan' : 'Manual'}
                                                         </span>
                                                     </td>
-                                                    <td className="px-5 py-3.5 text-[#64748B]">
+                                                    <td className="px-5 py-3.5 align-middle whitespace-nowrap text-[#64748B]">
                                                         {item.recorded_by || 'Kiosk Mandiri'}
                                                     </td>
                                                 </tr>
@@ -520,17 +520,7 @@ export default function VisitsDashboard() {
                                     </svg>
                                     + Presensi Manual
                                 </button>
-                                <a
-                                    href={getEffectiveExportUrl()}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="rounded-lg border border-[#CBD5E1] bg-white hover:bg-[#F0F9FF] px-3.5 py-2 text-xs font-semibold text-[#0B1B3D] transition flex items-center gap-1.5 shadow-2xs cursor-pointer"
-                                >
-                                    <svg className="w-3.5 h-3.5 text-[#19346D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                    </svg>
-                                    Ekspor Siswa (Excel)
-                                </a>
+                                
                             </div>
                         </div>
 
@@ -627,19 +617,19 @@ export default function VisitsDashboard() {
                                         ) : (
                                             visits.map((visit) => (
                                                 <tr key={visit.id} className="hover:bg-[#F0F6FA] transition">
-                                                    <td className="px-5 py-3.5 font-mono text-[#475569]">
+                                                    <td className="px-5 py-3.5 align-middle whitespace-nowrap font-mono text-[#475569]">
                                                         {visit.checked_in_formatted}
                                                     </td>
-                                                    <td className="px-5 py-3.5 font-bold text-[#07132B]">
+                                                    <td className="px-5 py-3.5 align-middle font-bold text-[#07132B]">
                                                         {visit.visitor_name}
                                                     </td>
-                                                    <td className="px-5 py-3.5 font-mono text-[#19346D]">
+                                                    <td className="px-5 py-3.5 align-middle font-mono text-[#19346D]">
                                                         {visit.visitor_origin || '-'}
                                                     </td>
-                                                    <td className="px-5 py-3.5">
+                                                    <td className="px-5 py-3.5 align-middle">
                                                         {roleBadge(visit.visitor_role)}
                                                     </td>
-                                                    <td className="px-5 py-3.5">
+                                                    <td className="px-5 py-3.5 align-middle">
                                                         <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                                                             visit.method === 'qr'
                                                                 ? 'bg-[#F0F9FF] text-[#0B1B3D] border border-[#BAE6FD]'
@@ -648,10 +638,10 @@ export default function VisitsDashboard() {
                                                             {visit.method === 'qr' ? 'QR Scan Mandiri' : 'Manual'}
                                                         </span>
                                                     </td>
-                                                    <td className="px-5 py-3.5 text-[#64748B]">
+                                                    <td className="px-5 py-3.5 align-middle whitespace-nowrap text-[#64748B]">
                                                         {visit.recorded_by || 'Kiosk Mandiri'}
                                                     </td>
-                                                    <td className="px-5 py-3.5 text-right">
+                                                    <td className="px-5 py-3.5 align-middle text-right">
                                                         <button
                                                             type="button"
                                                             onClick={() => {
@@ -774,17 +764,7 @@ export default function VisitsDashboard() {
                                     </svg>
                                     + Presensi Manual
                                 </button>
-                                <a
-                                    href={getEffectiveExportUrl()}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="rounded-lg border border-[#CBD5E1] bg-white hover:bg-[#F0F9FF] px-3.5 py-2 text-xs font-semibold text-[#0B1B3D] transition flex items-center gap-1.5 shadow-2xs cursor-pointer"
-                                >
-                                    <svg className="w-3.5 h-3.5 text-[#19346D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                    </svg>
-                                    Ekspor Guru (Excel)
-                                </a>
+                                
                             </div>
                         </div>
 
@@ -881,19 +861,19 @@ export default function VisitsDashboard() {
                                         ) : (
                                             visits.map((visit) => (
                                                 <tr key={visit.id} className="hover:bg-[#F0F6FA] transition">
-                                                    <td className="px-5 py-3.5 font-mono text-[#475569]">
+                                                    <td className="px-5 py-3.5 align-middle whitespace-nowrap font-mono text-[#475569]">
                                                         {visit.checked_in_formatted}
                                                     </td>
-                                                    <td className="px-5 py-3.5 font-bold text-[#07132B]">
+                                                    <td className="px-5 py-3.5 align-middle font-bold text-[#07132B]">
                                                         {visit.visitor_name}
                                                     </td>
-                                                    <td className="px-5 py-3.5 font-mono text-[#19346D]">
+                                                    <td className="px-5 py-3.5 align-middle font-mono text-[#19346D]">
                                                         {visit.visitor_origin || '-'}
                                                     </td>
-                                                    <td className="px-5 py-3.5">
+                                                    <td className="px-5 py-3.5 align-middle">
                                                         {roleBadge(visit.visitor_role)}
                                                     </td>
-                                                    <td className="px-5 py-3.5">
+                                                    <td className="px-5 py-3.5 align-middle">
                                                         <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                                                             visit.method === 'qr'
                                                                 ? 'bg-[#F0F9FF] text-[#0B1B3D] border border-[#BAE6FD]'
@@ -902,10 +882,10 @@ export default function VisitsDashboard() {
                                                             {visit.method === 'qr' ? 'QR Scan Mandiri' : 'Manual'}
                                                         </span>
                                                     </td>
-                                                    <td className="px-5 py-3.5 text-[#64748B]">
+                                                    <td className="px-5 py-3.5 align-middle whitespace-nowrap text-[#64748B]">
                                                         {visit.recorded_by || 'Kiosk Mandiri'}
                                                     </td>
-                                                    <td className="px-5 py-3.5 text-right">
+                                                    <td className="px-5 py-3.5 align-middle text-right">
                                                         <button
                                                             type="button"
                                                             onClick={() => {
@@ -987,17 +967,7 @@ export default function VisitsDashboard() {
                                     </svg>
                                     + Catat Tamu Baru
                                 </button>
-                                <a
-                                    href={getEffectiveExportUrl()}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="rounded-lg border border-[#CBD5E1] bg-white hover:bg-[#F0F9FF] px-3.5 py-2 text-xs font-semibold text-[#0B1B3D] transition flex items-center gap-1.5 shadow-2xs cursor-pointer"
-                                >
-                                    <svg className="w-3.5 h-3.5 text-[#19346D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                    </svg>
-                                    Ekspor Buku Tamu (Excel)
-                                </a>
+                                
                             </div>
                         </div>
 
@@ -1079,22 +1049,22 @@ export default function VisitsDashboard() {
                                         ) : (
                                             visits.map((visit) => (
                                                 <tr key={visit.id} className="hover:bg-[#F0F6FA] transition">
-                                                    <td className="px-5 py-3.5 font-mono text-[#475569]">
+                                                    <td className="px-5 py-3.5 align-middle whitespace-nowrap font-mono text-[#475569]">
                                                         {visit.checked_in_formatted}
                                                     </td>
-                                                    <td className="px-5 py-3.5 font-bold text-[#07132B]">
+                                                    <td className="px-5 py-3.5 align-middle font-bold text-[#07132B]">
                                                         {visit.visitor_name}
                                                     </td>
-                                                    <td className="px-5 py-3.5 text-[#19346D] font-medium">
+                                                    <td className="px-5 py-3.5 align-middle text-[#19346D] font-medium">
                                                         {visit.visitor_origin || '-'}
                                                     </td>
-                                                    <td className="px-5 py-3.5 text-[#475569] max-w-xs truncate">
+                                                    <td className="px-5 py-3.5 align-middle text-[#475569] max-w-xs truncate">
                                                         {visit.visitor_purpose || '-'}
                                                     </td>
-                                                    <td className="px-5 py-3.5 font-mono text-[#475569]">
+                                                    <td className="px-5 py-3.5 align-middle whitespace-nowrap font-mono text-[#475569]">
                                                         {visit.visitor_phone || '-'}
                                                     </td>
-                                                    <td className="px-5 py-3.5 text-[#64748B]">
+                                                    <td className="px-5 py-3.5 align-middle whitespace-nowrap text-[#64748B]">
                                                         {visit.recorded_by || 'Kiosk Mandiri Tamu'}
                                                     </td>
                                                 </tr>
@@ -1149,17 +1119,7 @@ export default function VisitsDashboard() {
                                 </p>
                             </div>
                             <div className="flex items-center gap-2.5">
-                                <a
-                                    href={getEffectiveExportUrl()}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="rounded-lg border border-[#CBD5E1] bg-white hover:bg-[#F0F9FF] px-3.5 py-2 text-xs font-semibold text-[#0B1B3D] transition flex items-center gap-1.5 shadow-2xs cursor-pointer"
-                                >
-                                    <svg className="w-3.5 h-3.5 text-[#19346D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                    </svg>
-                                    Ekspor Staf (Excel)
-                                </a>
+                                
                             </div>
                         </div>
 
@@ -1193,24 +1153,24 @@ export default function VisitsDashboard() {
                                         ) : (
                                             visits.map((visit) => (
                                                 <tr key={visit.id} className="hover:bg-[#F0F6FA] transition">
-                                                    <td className="px-5 py-3.5 font-mono text-[#475569]">
+                                                    <td className="px-5 py-3.5 align-middle whitespace-nowrap font-mono text-[#475569]">
                                                         {visit.checked_in_formatted}
                                                     </td>
-                                                    <td className="px-5 py-3.5 font-bold text-[#07132B]">
+                                                    <td className="px-5 py-3.5 align-middle font-bold text-[#07132B]">
                                                         {visit.visitor_name}
                                                     </td>
-                                                    <td className="px-5 py-3.5">
+                                                    <td className="px-5 py-3.5 align-middle">
                                                         {roleBadge(visit.visitor_role)}
                                                     </td>
-                                                    <td className="px-5 py-3.5 font-mono text-[#475569]">
+                                                    <td className="px-5 py-3.5 align-middle whitespace-nowrap font-mono text-[#475569]">
                                                         {visit.visitor_origin || '-'}
                                                     </td>
-                                                    <td className="px-5 py-3.5">
+                                                    <td className="px-5 py-3.5 align-middle">
                                                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#F0F9FF] text-[#0B1B3D] border border-[#BAE6FD]">
                                                             {visit.method === 'qr' ? 'QR Code' : 'Manual'}
                                                         </span>
                                                     </td>
-                                                    <td className="px-5 py-3.5 text-[#64748B]">
+                                                    <td className="px-5 py-3.5 align-middle whitespace-nowrap text-[#64748B]">
                                                         {visit.device_note || 'Tugas Jaga'}
                                                     </td>
                                                 </tr>
@@ -1251,17 +1211,7 @@ export default function VisitsDashboard() {
                                     </svg>
                                     + Presensi Manual
                                 </button>
-                                <a
-                                    href={getEffectiveExportUrl()}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="rounded-lg bg-[#0B1B3D] hover:bg-[#132A58] text-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] transition flex items-center gap-2 shadow-xs cursor-pointer"
-                                >
-                                    <svg className="w-3.5 h-3.5 text-[#01ABE8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                    </svg>
-                                    Ekspor Master Excel
-                                </a>
+                                
                             </div>
                         </div>
 
@@ -1373,19 +1323,19 @@ export default function VisitsDashboard() {
                                         ) : (
                                             visits.map((visit) => (
                                                 <tr key={visit.id} className="hover:bg-[#F0F6FA] transition">
-                                                    <td className="px-5 py-3.5 font-mono text-[#475569]">
+                                                    <td className="px-5 py-3.5 align-middle whitespace-nowrap font-mono text-[#475569]">
                                                         {visit.checked_in_formatted}
                                                     </td>
-                                                    <td className="px-5 py-3.5 font-bold text-[#07132B]">
+                                                    <td className="px-5 py-3.5 align-middle font-bold text-[#07132B]">
                                                         {visit.visitor_name}
                                                     </td>
-                                                    <td className="px-5 py-3.5">
+                                                    <td className="px-5 py-3.5 align-middle">
                                                         {roleBadge(visit.visitor_role)}
                                                     </td>
-                                                    <td className="px-5 py-3.5 text-[#475569]">
+                                                    <td className="px-5 py-3.5 align-middle text-[#475569]">
                                                         {visit.visitor_origin || '-'}
                                                     </td>
-                                                    <td className="px-5 py-3.5">
+                                                    <td className="px-5 py-3.5 align-middle">
                                                         <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                                                             visit.method === 'qr'
                                                                 ? 'bg-[#F0F9FF] text-[#0B1B3D] border border-[#BAE6FD]'
@@ -1394,7 +1344,7 @@ export default function VisitsDashboard() {
                                                             {visit.method === 'qr' ? 'QR Scan' : 'Manual'}
                                                         </span>
                                                     </td>
-                                                    <td className="px-5 py-3.5 text-[#64748B]">
+                                                    <td className="px-5 py-3.5 align-middle whitespace-nowrap text-[#64748B]">
                                                         {visit.recorded_by || 'Kiosk Mandiri'}
                                                     </td>
                                                 </tr>
@@ -1492,3 +1442,4 @@ export default function VisitsDashboard() {
         </div>
     );
 }
+

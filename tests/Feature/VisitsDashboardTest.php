@@ -138,10 +138,11 @@ class VisitsDashboardTest extends TestCase
         $response->assertSee(['Waktu Presensi', 'Dicatat Oleh', 'Dr. H. Subagyo', 'Tamu', 'Manual', 'Kiosk Mandiri']);
     }
 
-    public function test_admin_madrasah_is_forbidden_from_visit_reports(): void
+    public function test_admin_madrasah_can_access_visit_reports(): void
     {
         $admin = User::factory()->create(['role' => 'admin_madrasah']);
 
-        $this->actingAs($admin)->getJson('/api/v1/visits')->assertStatus(403);
+        $this->actingAs($admin)->getJson('/api/v1/visits')->assertStatus(200);
+        $this->actingAs($admin)->getJson('/api/v1/visits/stats')->assertStatus(200);
     }
 }

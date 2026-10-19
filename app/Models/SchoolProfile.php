@@ -14,6 +14,7 @@ class SchoolProfile extends Model
         'headmaster_nip',
         'headmaster_photo',
         'headmaster_welcome',
+        'headmaster_motto',
         'vice_curriculum',
         'vice_curriculum_photo',
         'vice_student_affairs',
@@ -33,29 +34,100 @@ class SchoolProfile extends Model
         'email',
         'address',
         'maps_embed_url',
+        'facebook_url',
         'instagram_url',
         'tiktok_url',
         'youtube_url',
+        'is_video_profile_active',
+        'video_profile_badge',
+        'video_profile_location',
+        'video_profile_title',
+        'video_profile_subtitle',
+        'video_profile_link_text',
+        'video_profile_link_url',
+        'video_profile_url',
+        'video_profile_cover',
+        'video_profile_description',
         'cambridge_description',
         'cambridge_subjects',
+        'is_teachers_active',
+        'is_ppdb_active',
+        'ppdb_academic_year',
+        'ppdb_status_note',
+        'ppdb_external_url',
+        'ppdb_guide_url',
+        'ppdb_whatsapp_helpdesk',
     ];
 
     protected function casts(): array
     {
         return [
             'cambridge_subjects' => 'array',
+            'is_teachers_active' => 'boolean',
+            'is_ppdb_active' => 'boolean',
+            'is_video_profile_active' => 'boolean',
         ];
     }
+
+    public function getVideoCoverUrlAttribute(): string
+    {
+        if ($this->video_profile_cover) {
+            return str_starts_with($this->video_profile_cover, 'http')
+                ? $this->video_profile_cover
+                : asset('storage/'.$this->video_profile_cover);
+        }
+
+        return asset('images/campus-life.jpg');
+    }
+
+    public function getVideoEmbedUrlAttribute(): ?string
+    {
+        if (! $this->video_profile_url) {
+            return null;
+        }
+
+        $url = trim($this->video_profile_url);
+
+        // Pattern YouTube: watch?v=ID, youtu.be/ID, embed/ID, shorts/ID
+        if (preg_match('/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/', $url, $matches)) {
+            return 'https://www.youtube-nocookie.com/embed/'.$matches[1].'?autoplay=1&rel=0&modestbranding=1';
+        }
+
+        return str_starts_with($url, 'http') ? $url : asset('storage/'.$url);
+    }
+
+    public function getIsYoutubeVideoAttribute(): bool
+    {
+        if (! $this->video_profile_url) {
+            return false;
+        }
+
+        return (bool) preg_match('/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)/', $this->video_profile_url);
+    }
+
+    protected $attributes = [
+        'is_teachers_active' => true,
+        'is_ppdb_active' => true,
+        'ppdb_academic_year' => '2026/2027',
+        'ppdb_external_url' => 'https://ppdb-madrasahdki.kemenag.go.id',
+        'facebook_url' => 'https://www.facebook.com/MTsN32?rdid=sYBd4mjz784GCLt3&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1D9gaWjQTm%2F#',
+    ];
 
     public static function getActiveProfile(): self
     {
         return static::firstOrCreate([], [
+            'is_teachers_active' => true,
+            'is_ppdb_active' => true,
+            'ppdb_academic_year' => '2026/2027',
+            'ppdb_external_url' => 'https://ppdb-madrasahdki.kemenag.go.id',
+            'facebook_url' => 'https://www.facebook.com/MTsN32?rdid=sYBd4mjz784GCLt3&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1D9gaWjQTm%2F#',
             'school_name' => 'MTsN 32 Jakarta',
             'npsn' => '20178264',
             'accreditation' => 'A (Unggul)',
             'headmaster_name' => 'H. Fahrurozi, M.Pd.',
             'headmaster_nip' => '197005121997031002',
             'headmaster_welcome' => 'Assalamu\'alaikum Wr. Wb. Selamat datang di portal resmi MTsN 32 Jakarta. Kami bertekad mewujudkan madrasah maju, bermutu, dan berdaya saing global melalui perpaduan Kurikulum Nasional, Program Internasional Cambridge, serta nilai-nilai luhur Al-Qur\'an.',
+            'headmaster_motto' => 'Maju Bermutu, Mendunia Bersama MTsN 32 Jakarta',
             'vice_curriculum' => 'Dra. Hj. Siti Rohmah, M.Pd.',
             'vice_student_affairs' => 'Ahmad Syarifuddin, S.Pd.I.',
             'vice_facilities' => 'Mochamad Ridwan, S.T.',

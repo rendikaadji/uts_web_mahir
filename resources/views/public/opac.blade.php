@@ -98,7 +98,7 @@
                     </div>
 
                     @if($book->description)
-                        <p class="text-[11px] text-slate-500 line-clamp-2 italic">{{ $book->description }}</p>
+                        <p class="text-[11px] text-slate-500 line-clamp-2 italic">{{ strip_tags($book->description) }}</p>
                     @endif
 
                     <a href="{{ route('opac.detail', $book->slug) }}" class="w-full py-2.5 px-3 rounded-xl bg-[#0B1B3D] hover:bg-[#152e66] text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition shadow-xs group-hover:bg-[#152e66]">

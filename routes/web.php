@@ -1,20 +1,27 @@
 <?php
 
+use App\Http\Controllers\Admin\AcademicYearController;
+use App\Http\Controllers\Admin\ActivityLogController;
+use App\Http\Controllers\Admin\AdminManagementController;
 use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
 use App\Http\Controllers\Admin\BookController;
 use App\Http\Controllers\Admin\CirculationController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ExtracurricularController;
 use App\Http\Controllers\Admin\FacilityController;
+use App\Http\Controllers\Admin\FeaturedProgramController;
 use App\Http\Controllers\Admin\FineController;
 use App\Http\Controllers\Admin\GalleryController;
+use App\Http\Controllers\Admin\HeroSlideController;
+use App\Http\Controllers\Admin\LibrarianManagementController;
+use App\Http\Controllers\Admin\PpdbController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SchoolProfileController;
+use App\Http\Controllers\Admin\SchoolVideoController;
 use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\Admin\VisitController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GuardianController;
-use App\Http\Controllers\KioskController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\PublicController;
 use Illuminate\Support\Facades\Route;
@@ -40,6 +47,7 @@ Route::get('/ppdb', [PublicController::class, 'ppdb'])->name('ppdb');
 Route::get('/akademik/cambridge', [PublicController::class, 'cambridge'])->name('academic.cambridge');
 Route::get('/akademik/kurikulum', [PublicController::class, 'curriculum'])->name('academic.curriculum');
 Route::get('/akademik/ekstrakurikuler', [PublicController::class, 'extracurricular'])->name('academic.extracurricular');
+Route::get('/akademik/ekstrakurikuler/{extracurricular}', [PublicController::class, 'extracurricularDetail'])->name('academic.extracurricular-detail');
 
 // Grup 3: Warta & Informasi
 Route::get('/informasi', [PublicController::class, 'information'])->name('information');
@@ -62,13 +70,9 @@ Route::get('/perpustakaan/layanan', [PublicController::class, 'libraryServices']
 Route::get('/opac', [PublicController::class, 'opac'])->name('opac');
 Route::get('/opac/{slug}', [PublicController::class, 'bookDetail'])->name('opac.detail');
 
-// 2. Presensi Gate (Kiosk Mode)
-Route::get('/gate', [KioskController::class, 'index'])->name('gate');
-Route::post('/gate/check-in', [KioskController::class, 'checkIn'])->name('gate.checkin');
-
-// 2b. SPA presensi QR (scan kamera + dashboard hanya untuk pustakawan; kartu QR untuk semua yang login)
+// 2. SPA presensi QR (scan kamera + dashboard untuk pustakawan dan admin_madrasah; kartu QR untuk semua yang login)
 Route::view('/presensi/my-qr', 'app')->middleware('auth')->name('presensi.my-qr');
-Route::view('/presensi/{path?}', 'admin.presensi')->where('path', '.*')->middleware(['auth', 'role:pustakawan'])->name('presensi');
+Route::view('/presensi/{path?}', 'admin.presensi')->where('path', '.*')->middleware(['auth', 'role:pustakawan,admin_madrasah'])->name('presensi');
 
 // 3. Autentikasi Satu Pintu & Pemulihan Akun
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -83,13 +87,34 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('
 Route::middleware(['auth', 'role:admin_madrasah,pustakawan'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
+    // Pusat Log Aktivitas Website (Akses: Admin Utama & Admin Pustakawan)
+    Route::get('/log-aktivitas', [ActivityLogController::class, 'index'])->name('logs.index');
+    Route::get('/log-aktivitas/feed', [ActivityLogController::class, 'feed'])->name('logs.feed');
+    Route::get('/log-aktivitas/export-excel', [ActivityLogController::class, 'exportExcel'])->name('logs.export-excel');
+    Route::delete('/log-aktivitas/{activityLog}', [ActivityLogController::class, 'destroy'])->name('logs.destroy');
+    Route::post('/log-aktivitas/clear', [ActivityLogController::class, 'clear'])->name('logs.clear');
+
+    // Portal Siswa & Guru (Akses: Admin Utama & Admin Pustakawan)
+    Route::get('/portal-siswa-guru', [DashboardController::class, 'portalStudents'])->name('portal.students');
+    Route::get('/portal-siswa-guru/export-excel', [DashboardController::class, 'portalStudentsExportExcel'])->name('portal.students.export-excel');
+    Route::post('/portal-siswa-guru/{member}/toggle', [DashboardController::class, 'toggleMemberStatus'])->name('portal.students.toggle');
+
+    // Manajemen Siklus Tahun Ajaran (Kelulusan & Kenaikan Kelas Massal)
+    Route::prefix('tahun-ajaran')->name('academic-year.')->group(function () {
+        Route::get('/status', [AcademicYearController::class, 'status'])->name('status');
+        Route::post('/cek-kelulusan', [AcademicYearController::class, 'checkGraduation'])->name('check-graduation');
+        Route::post('/proses-kelulusan', [AcademicYearController::class, 'processGraduation'])->name('process-graduation');
+        Route::get('/preview-kenaikan', [AcademicYearController::class, 'previewPromotion'])->name('preview-promotion');
+        Route::post('/proses-kenaikan', [AcademicYearController::class, 'processPromotion'])->name('process-promotion');
+    });
+
+    // Portal Wali Murid (Akses: Admin Utama & Admin Pustakawan)
+    Route::get('/portal-wali-murid', [DashboardController::class, 'portalGuardians'])->name('portal.guardians');
+    Route::get('/portal-wali-murid/export-excel', [DashboardController::class, 'portalGuardiansExportExcel'])->name('portal.guardians.export-excel');
+    Route::post('/portal-wali-murid/{user}/toggle', [DashboardController::class, 'toggleGuardianStatus'])->name('portal.guardians.toggle');
+
     // Admin Website (CMS & pengguna): hanya admin_madrasah
     Route::middleware('role:admin_madrasah')->group(function () {
-        Route::get('/portal-siswa-guru', [DashboardController::class, 'portalStudents'])->name('portal.students');
-        Route::post('/portal-siswa-guru/{member}/toggle', [DashboardController::class, 'toggleMemberStatus'])->name('portal.students.toggle');
-        Route::get('/portal-wali-murid', [DashboardController::class, 'portalGuardians'])->name('portal.guardians');
-        Route::post('/portal-wali-murid/{user}/toggle', [DashboardController::class, 'toggleGuardianStatus'])->name('portal.guardians.toggle');
-
         // CMS Berita & Pengumuman
         Route::get('/berita', [AdminArticleController::class, 'index'])->name('articles.index');
         Route::get('/berita/tambah', [AdminArticleController::class, 'create'])->name('articles.create');
@@ -104,11 +129,44 @@ Route::middleware(['auth', 'role:admin_madrasah,pustakawan'])->prefix('admin')->
 
         // Dewan Guru & Staf
         Route::get('/guru', [TeacherController::class, 'index'])->name('teachers.index');
+        Route::post('/guru/toggle-modul', [TeacherController::class, 'toggleModule'])->name('teachers.toggle-module');
+        Route::post('/guru/{teacher}/toggle', [TeacherController::class, 'toggle'])->name('teachers.toggle');
         Route::get('/guru/tambah', [TeacherController::class, 'create'])->name('teachers.create');
         Route::post('/guru', [TeacherController::class, 'store'])->name('teachers.store');
         Route::get('/guru/{teacher}/edit', [TeacherController::class, 'edit'])->name('teachers.edit');
         Route::put('/guru/{teacher}', [TeacherController::class, 'update'])->name('teachers.update');
         Route::delete('/guru/{teacher}', [TeacherController::class, 'destroy'])->name('teachers.destroy');
+
+        // Manajemen Akun Admin Madrasah (Admin Utama & Admin Biasa)
+        Route::get('/kelola-admin', [AdminManagementController::class, 'index'])->name('admins.index');
+        Route::get('/kelola-admin/tambah', [AdminManagementController::class, 'create'])->name('admins.create');
+        Route::post('/kelola-admin', [AdminManagementController::class, 'store'])->name('admins.store');
+        Route::get('/kelola-admin/{admin}/edit', [AdminManagementController::class, 'edit'])->name('admins.edit');
+        Route::put('/kelola-admin/{admin}', [AdminManagementController::class, 'update'])->name('admins.update');
+        Route::delete('/kelola-admin/{admin}', [AdminManagementController::class, 'destroy'])->name('admins.destroy');
+        Route::post('/kelola-admin/{admin}/toggle', [AdminManagementController::class, 'toggle'])->name('admins.toggle');
+
+        // PPDB / PMBM Online (Kontrol Status & Pengaturan)
+        Route::get('/ppdb', [PpdbController::class, 'index'])->name('ppdb.index');
+        Route::post('/ppdb/toggle', [PpdbController::class, 'toggle'])->name('ppdb.toggle');
+        Route::put('/ppdb', [PpdbController::class, 'update'])->name('ppdb.update');
+
+        // Video Profil Madrasah / Jelajahi Sekolah
+        Route::get('/video-profil', [SchoolVideoController::class, 'index'])->name('video.index');
+        Route::put('/video-profil', [SchoolVideoController::class, 'update'])->name('video.update');
+
+        // Slider Foto Beranda Awal (Tambah, Edit, Hapus & Ganti Foto Slider)
+        Route::get('/slider-beranda', [HeroSlideController::class, 'index'])->name('hero-slides.index');
+        Route::get('/slider-beranda/tambah', [HeroSlideController::class, 'create'])->name('hero-slides.create');
+        Route::post('/slider-beranda', [HeroSlideController::class, 'store'])->name('hero-slides.store');
+        Route::get('/slider-beranda/{heroSlide}/edit', [HeroSlideController::class, 'edit'])->name('hero-slides.edit');
+        Route::put('/slider-beranda/{heroSlide}', [HeroSlideController::class, 'update'])->name('hero-slides.update');
+        Route::delete('/slider-beranda/{heroSlide}', [HeroSlideController::class, 'destroy'])->name('hero-slides.destroy');
+        Route::post('/slider-beranda/{heroSlide}/toggle', [HeroSlideController::class, 'toggle'])->name('hero-slides.toggle');
+
+        // Program Unggulan Beranda (Kelola Foto & Informasi)
+        Route::get('/program-unggulan', [FeaturedProgramController::class, 'index'])->name('featured-programs.index');
+        Route::put('/program-unggulan/{featuredProgram}', [FeaturedProgramController::class, 'update'])->name('featured-programs.update');
 
         // Ekstrakurikuler
         Route::get('/ekskul', [ExtracurricularController::class, 'index'])->name('extracurriculars.index');
@@ -138,8 +196,12 @@ Route::middleware(['auth', 'role:admin_madrasah,pustakawan'])->prefix('admin')->
 
     // Admin Perpustakaan (buku, sirkulasi, denda, kunjungan, laporan): hanya pustakawan
     Route::middleware('role:pustakawan')->group(function () {
+        Route::get('/perpustakaan/dashboard', [DashboardController::class, 'libraryDashboard'])->name('library.dashboard');
+
         // Sirkulasi Perpustakaan (Peminjaman & Pengembalian ACID)
         Route::get('/sirkulasi', [CirculationController::class, 'index'])->name('circulation.index');
+        Route::get('/sirkulasi/lookup-member', [CirculationController::class, 'lookupMember'])->name('circulation.lookup-member');
+        Route::get('/sirkulasi/lookup-copy', [CirculationController::class, 'lookupCopy'])->name('circulation.lookup-copy');
         Route::post('/sirkulasi/pinjam', [CirculationController::class, 'borrow'])->name('circulation.borrow');
         Route::post('/sirkulasi/kembali', [CirculationController::class, 'returnBook'])->name('circulation.return');
 
@@ -152,6 +214,9 @@ Route::middleware(['auth', 'role:admin_madrasah,pustakawan'])->prefix('admin')->
         Route::put('/buku/{book}', [BookController::class, 'update'])->name('books.update');
         Route::delete('/buku/{book}', [BookController::class, 'destroy'])->name('books.destroy');
         Route::post('/buku/{book}/eksemplar', [BookController::class, 'addCopy'])->name('books.addCopy');
+        Route::get('/eksemplar/{copy}/edit', [BookController::class, 'editCopy'])->name('books.editCopy');
+        Route::put('/eksemplar/{copy}', [BookController::class, 'updateCopy'])->name('books.updateCopy');
+        Route::delete('/eksemplar/{copy}', [BookController::class, 'destroyCopy'])->name('books.destroyCopy');
 
         // Denda
         Route::get('/denda', [FineController::class, 'index'])->name('fines.index');
@@ -164,15 +229,26 @@ Route::middleware(['auth', 'role:admin_madrasah,pustakawan'])->prefix('admin')->
         Route::get('/laporan', [ReportController::class, 'index'])->name('reports.index');
         Route::get('/laporan/export-excel', [ReportController::class, 'exportExcel'])->name('reports.export');
         Route::get('/laporan/cetak-pdf', [ReportController::class, 'printPdf'])->name('reports.print');
+
+        // Manajemen Akun Pustakawan (Hanya Pustakawan Utama)
+        Route::get('/kelola-pustakawan', [LibrarianManagementController::class, 'index'])->name('librarians.index');
+        Route::get('/kelola-pustakawan/tambah', [LibrarianManagementController::class, 'create'])->name('librarians.create');
+        Route::post('/kelola-pustakawan', [LibrarianManagementController::class, 'store'])->name('librarians.store');
+        Route::get('/kelola-pustakawan/{librarian}/edit', [LibrarianManagementController::class, 'edit'])->name('librarians.edit');
+        Route::put('/kelola-pustakawan/{librarian}', [LibrarianManagementController::class, 'update'])->name('librarians.update');
+        Route::delete('/kelola-pustakawan/{librarian}', [LibrarianManagementController::class, 'destroy'])->name('librarians.destroy');
+        Route::post('/kelola-pustakawan/{librarian}/toggle', [LibrarianManagementController::class, 'toggle'])->name('librarians.toggle');
     });
 });
 
-// 5. Area Anggota (Siswa & Guru)
-Route::middleware(['auth', 'role:siswa_guru'])->prefix('member')->name('member.')->group(function () {
+// 5. Area Anggota (Siswa & Guru) - Dapat diakses oleh Siswa, Guru, serta Admin/Pustakawan untuk preview kartu
+Route::middleware(['auth', 'role:siswa_guru,admin_madrasah,pustakawan'])->prefix('member')->name('member.')->group(function () {
     Route::get('/', [MemberController::class, 'dashboard'])->name('dashboard');
+    Route::post('/ubah-password', [MemberController::class, 'updatePassword'])->name('password.update');
 });
 
-// 6. Area Pemantauan Wali Murid
-Route::middleware(['auth', 'role:wali_murid'])->prefix('wali')->name('guardian.')->group(function () {
+// 6. Area Pemantauan Wali Murid - Dapat diakses oleh Wali Murid, serta Admin/Pustakawan untuk preview
+Route::middleware(['auth', 'role:wali_murid,admin_madrasah,pustakawan'])->prefix('wali')->name('guardian.')->group(function () {
     Route::get('/', [GuardianController::class, 'dashboard'])->name('dashboard');
+    Route::post('/ubah-password', [GuardianController::class, 'updatePassword'])->name('password.update');
 });

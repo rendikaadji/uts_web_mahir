@@ -20,9 +20,26 @@ export function clearAuth() {
     window.dispatchEvent(new Event('auth-changed'));
 }
 
+function getCookie(name) {
+    if (typeof document === 'undefined') return null;
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) {
+        return decodeURIComponent(parts.pop().split(';').shift());
+    }
+    return null;
+}
+
 function csrfHeaders() {
-    const token = document.querySelector('meta[name="csrf-token"]')?.content;
-    return token ? { 'X-CSRF-TOKEN': token, 'X-Requested-With': 'XMLHttpRequest' } : {};
+    const token = document.querySelector('meta[name="csrf-token"]')?.content || (typeof window !== 'undefined' ? window.__CSRF_TOKEN__ : null);
+    if (token) {
+        return { 'X-CSRF-TOKEN': token, 'X-Requested-With': 'XMLHttpRequest' };
+    }
+    const xsrfCookie = getCookie('XSRF-TOKEN');
+    if (xsrfCookie) {
+        return { 'X-XSRF-TOKEN': xsrfCookie, 'X-Requested-With': 'XMLHttpRequest' };
+    }
+    return { 'X-Requested-With': 'XMLHttpRequest' };
 }
 
 /**
@@ -47,6 +64,9 @@ async function request(endpoint, options = {}) {
     if (!response.ok) {
         if (response.status === 401) {
             clearAuth();
+        }
+        if (response.status === 419) {
+            throw new Error('Sesi keamanan Anda telah kedaluwarsa (CSRF token mismatch). Silakan muat ulang (refresh) halaman lalu coba lagi.');
         }
         const error = new Error(data.message || `Request failed with status ${response.status}`);
         error.status = response.status;
@@ -133,6 +153,11 @@ export function importMembers(file, defaultRole = 'siswa', updateExisting = fals
     formData.append('default_role', defaultRole);
     formData.append('update_existing', updateExisting ? '1' : '0');
 
+    const metaToken = document.querySelector('meta[name="csrf-token"]')?.content || (typeof window !== 'undefined' ? window.__CSRF_TOKEN__ : null);
+    if (metaToken) {
+        formData.append('_token', metaToken);
+    }
+
     return fetch('/api/v1/members/import', {
         method: 'POST',
         credentials: 'same-origin',
@@ -146,6 +171,9 @@ export function importMembers(file, defaultRole = 'siswa', updateExisting = fals
         if (!response.ok) {
             if (response.status === 401) {
                 clearAuth();
+            }
+            if (response.status === 419) {
+                throw new Error('Sesi keamanan Anda telah kedaluwarsa (CSRF token mismatch). Silakan muat ulang (refresh) halaman lalu coba unggah kembali.');
             }
             const error = new Error(data.message || `Import gagal (Status: ${response.status})`);
             error.status = response.status;
@@ -177,6 +205,14 @@ export async function downloadAuthFile(endpoint, filename) {
 
 export function downloadMemberTemplate() {
     return downloadAuthFile('/api/v1/members/template', 'template_import_anggota_mtsn32.xlsx');
+}
+
+export function downloadMembersQrZip() {
+    return downloadAuthFile('/api/v1/members/export-qr-zip', 'data_anggota.zip');
+}
+
+export function downloadStudentsQrZip() {
+    return downloadMembersQrZip();
 }
 
 

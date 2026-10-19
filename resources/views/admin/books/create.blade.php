@@ -1,6 +1,96 @@
 @extends('layouts.admin', ['title' => 'Tambah Buku', 'headerTitle' => 'Registrasi Koleksi Buku Baru'])
 
 @section('content')
+<style>
+    /* Styling Lembar Kerja Visual Word */
+    #editorArea {
+        min-height: 200px;
+        outline: none;
+    }
+    #editorArea:empty:before {
+        content: attr(data-placeholder);
+        color: #94a3b8;
+        pointer-events: none;
+        display: block;
+    }
+    #editorArea p {
+        margin-bottom: 0.75rem;
+        line-height: 1.65;
+    }
+    #editorArea h2 {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #0B1B3D;
+        margin-top: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+    #editorArea h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-top: 0.9rem;
+        margin-bottom: 0.4rem;
+    }
+    #editorArea ul {
+        list-style-type: disc;
+        margin-left: 1.5rem;
+        margin-bottom: 0.75rem;
+        line-height: 1.55;
+    }
+    #editorArea ol {
+        list-style-type: decimal;
+        margin-left: 1.5rem;
+        margin-bottom: 0.75rem;
+        line-height: 1.55;
+    }
+    #editorArea li {
+        margin-bottom: 0.3rem;
+    }
+    #editorArea blockquote {
+        border-left: 4px solid #01ABE8;
+        background-color: #f8fafc;
+        padding: 0.6rem 0.9rem;
+        margin: 0.85rem 0;
+        font-style: italic;
+        color: #475569;
+        border-radius: 0 0.5rem 0.5rem 0;
+    }
+    #editorArea a {
+        color: #01ABE8;
+        text-decoration: underline;
+        font-weight: 600;
+    }
+    #editorArea hr {
+        margin: 1.25rem 0;
+        border: none;
+        border-top: 2px dashed #e2e8f0;
+    }
+    .editor-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #334155;
+        background: transparent;
+        transition: all 0.15s ease;
+        cursor: pointer;
+    }
+    .editor-btn:hover {
+        background-color: #e2e8f0;
+        color: #01ABE8;
+    }
+    .editor-divider {
+        width: 1px;
+        height: 18px;
+        background-color: #cbd5e1;
+        margin: 0 3px;
+    }
+</style>
+
 <div class="space-y-6">
     <!-- Breadcrumb & Top Bar -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -15,7 +105,7 @@
         </a>
     </div>
 
-    <form action="{{ route('admin.books.store') }}" method="POST" enctype="multipart/form-data">
+    <form id="bookForm" action="{{ route('admin.books.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             
@@ -53,13 +143,124 @@
                         </div>
                     </div>
 
-                    <!-- Sinopsis / Ringkasan -->
+                    <!-- Sinopsis / Ringkasan (Word-Style Rich Text Editor) -->
                     <div>
                         <div class="flex items-center justify-between mb-1.5">
                             <label class="block text-xs font-bold text-slate-800">Sinopsis / Ringkasan Buku</label>
                             <span class="text-[11px] text-slate-400">Teks ikhtisar untuk pembaca</span>
                         </div>
-                        <textarea name="description" rows="5" placeholder="Tuliskan rangkuman isi buku, topik bahasan, atau keunggulan buku ini untuk referensi peserta didik..." class="w-full px-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-900 text-xs sm:text-sm focus:outline-none focus:ring-4 focus:ring-[#01ABE8]/15 focus:border-[#01ABE8] transition placeholder:text-slate-400 leading-relaxed">{{ old('description') }}</textarea>
+
+                        <!-- Card Editor Visual Word Style Sesuai Referensi -->
+                        <div class="rounded-xl border border-slate-300 bg-white overflow-hidden shadow-2xs focus-within:ring-4 focus-within:ring-[#01ABE8]/15 focus-within:border-[#01ABE8] transition">
+                            
+                            <!-- Penjelasan Ramah untuk Pengguna -->
+                            <div class="px-4 sm:px-5 py-2.5 bg-blue-50/40 border-b border-blue-100/60 text-[11px] text-slate-600 flex items-center justify-between">
+                                <span class="flex items-center gap-1.5">
+                                    <svg class="w-3.5 h-3.5 text-[#01ABE8] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    Ketik naskah seperti biasa. Gunakan toolbar di bawah untuk membuat tulisan tebal, penomoran, atau rata tengah tanpa perlu kode HTML &lt;p&gt;.
+                                </span>
+                            </div>
+
+                            <!-- Toolbar Microsoft Word Style -->
+                            <div id="editorToolbar" class="p-2 sm:p-2.5 border-b border-slate-200 bg-white flex flex-wrap items-center gap-1 sticky top-0 z-10">
+                                
+                                <!-- Format Heading / Paragraf -->
+                                <select id="formatBlockSelect" class="h-8 px-2.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#01ABE8]/20 focus:border-[#01ABE8] cursor-pointer" title="Format Paragraf & Judul">
+                                    <option value="p">Paragraf Normal</option>
+                                    <option value="h2">Judul Besar (H2)</option>
+                                    <option value="h3">Subjudul (H3)</option>
+                                    <option value="blockquote">Kutipan / Quote</option>
+                                </select>
+
+                                <div class="editor-divider"></div>
+
+                                <!-- Gaya Teks: Bold, Italic, Underline, Strikethrough -->
+                                <button type="button" data-cmd="bold" class="editor-btn font-bold" title="Tebal (Ctrl+B)">
+                                    B
+                                </button>
+                                <button type="button" data-cmd="italic" class="editor-btn italic" title="Miring (Ctrl+I)">
+                                    I
+                                </button>
+                                <button type="button" data-cmd="underline" class="editor-btn underline" title="Garis Bawah (Ctrl+U)">
+                                    U
+                                </button>
+                                <button type="button" data-cmd="strikeThrough" class="editor-btn line-through" title="Coret">
+                                    S
+                                </button>
+
+                                <div class="editor-divider"></div>
+
+                                <!-- Perataan Teks: Rata Kiri, Rata Tengah, Rata Kanan, Justify -->
+                                <button type="button" data-cmd="justifyLeft" class="editor-btn" title="Rata Kiri">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h10M4 18h14"/></svg>
+                                </button>
+                                <button type="button" data-cmd="justifyCenter" class="editor-btn" title="Rata Tengah">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M7 12h10M5 18h14"/></svg>
+                                </button>
+                                <button type="button" data-cmd="justifyRight" class="editor-btn" title="Rata Kanan">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M10 12h10M6 18h14"/></svg>
+                                </button>
+                                <button type="button" data-cmd="justifyFull" class="editor-btn" title="Rata Kanan Kiri (Justify)">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                                </button>
+
+                                <div class="editor-divider"></div>
+
+                                <!-- Daftar / List: Numbered List & Bullet List -->
+                                <button type="button" data-cmd="insertOrderedList" class="editor-btn" title="Penomoran Angka (1, 2, 3...)">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 6h13M7 12h13M7 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+                                </button>
+                                <button type="button" data-cmd="insertUnorderedList" class="editor-btn" title="Poin Bullets (&bull;)">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16M2 6h.01M2 12h.01M2 18h.01"/></svg>
+                                </button>
+
+                                <div class="editor-divider"></div>
+
+                                <!-- Sisipkan Link, Garis Pemisah, Hapus Format -->
+                                <button type="button" id="createLinkBtn" class="editor-btn" title="Sisipkan Link Tautan">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                                </button>
+                                <button type="button" data-cmd="insertHorizontalRule" class="editor-btn" title="Sisipkan Garis Pemisah">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>
+                                </button>
+                                <button type="button" data-cmd="removeFormat" class="editor-btn text-rose-600 hover:text-rose-700" title="Bersihkan Format Teks">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+
+                                <div class="editor-divider"></div>
+
+                                <!-- Undo & Redo -->
+                                <button type="button" data-cmd="undo" class="editor-btn" title="Batal (Ctrl+Z)">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a5 5 0 015 5v2m-15-7l4-4m-4 4l4 4"/></svg>
+                                </button>
+                                <button type="button" data-cmd="redo" class="editor-btn" title="Ulangi (Ctrl+Y)">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 10H11a5 5 0 00-5 5v2m15-7l-4-4m4 4l-4 4"/></svg>
+                                </button>
+                            </div>
+
+                            <!-- Lembar Kerja Pengetikan (Contenteditable) -->
+                            <div class="p-4 bg-white">
+                                <div id="editorArea" 
+                                     contenteditable="true" 
+                                     data-placeholder="Tuliskan rangkuman isi buku, topik bahasan, atau keunggulan buku ini untuk referensi peserta didik..." 
+                                     class="text-slate-800 text-xs sm:text-sm leading-relaxed min-h-[200px] focus:outline-none">
+                                    {!! old('description') !!}
+                                </div>
+                                
+                                <!-- Hidden Textarea yang Dikirim ke Controller -->
+                                <textarea name="description" id="finalDescriptionInput" class="hidden">{{ old('description') }}</textarea>
+                            </div>
+
+                            <!-- Footer Editor: Penghitung Kata -->
+                            <div class="px-4 py-2 border-t border-slate-100 bg-slate-50 flex items-center justify-between text-[11px] text-slate-400 font-medium">
+                                <div class="flex items-center gap-3">
+                                    <span id="wordCount">0 kata</span>
+                                    <span>&bull;</span>
+                                    <span id="charCount">0 karakter</span>
+                                </div>
+                                <span class="text-slate-400 text-[10px]">Tersimpan otomatis saat formulir buku disimpan</span>
+                            </div>
+                        </div>
                         @error('description') <p class="text-rose-500 text-xs mt-1.5 font-medium">{{ $message }}</p> @enderror
                     </div>
                 </div>
@@ -160,6 +361,46 @@
                     @error('cover_image') <p class="text-rose-500 text-xs font-medium">{{ $message }}</p> @enderror
                 </div>
 
+                <!-- CARD 3: BERKAS DIGITAL E-BOOK (PDF BUKU) -->
+                <div class="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-5 sm:p-6 space-y-4">
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                        <div class="flex items-center gap-2">
+                            <span class="w-1.5 h-4 rounded-full bg-rose-500"></span>
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-[#0B1B3D]">Dokumen E-Book (PDF)</h3>
+                        </div>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500">
+                            Opsional
+                        </span>
+                    </div>
+
+                    <p class="text-xs text-slate-500 leading-relaxed">
+                        Unggah berkas digital (format PDF) agar pengunjung web dapat membaca preview buku secara interaktif dan mengunduh berkasnya di katalog OPAC.
+                    </p>
+
+                    <!-- Dropzone Input Box PDF -->
+                    <div id="pdfDropzone" class="relative border-2 border-dashed border-slate-300 hover:border-rose-400 bg-slate-50/60 hover:bg-rose-50/20 rounded-xl p-5 text-center transition cursor-pointer group" onclick="document.getElementById('digitalFileInput').click()">
+                        <div class="w-10 h-10 rounded-full bg-white shadow-2xs border border-slate-200 text-rose-500 group-hover:border-rose-300 group-hover:scale-105 flex items-center justify-center mx-auto mb-2 transition">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 13h6m-6 4h4"/></svg>
+                        </div>
+                        <p class="text-xs font-bold text-slate-800 group-hover:text-rose-600 transition">Pilih / Unggah Berkas PDF Buku</p>
+                        <p class="text-[11px] text-slate-400 mt-0.5">Format dokumen .PDF (Maksimal 50MB)</p>
+                        
+                        <!-- Selected PDF File Indicator -->
+                        <div id="pdfFileInfo" class="hidden mt-3 p-2.5 bg-rose-50 border border-rose-200 rounded-xl text-left">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2 overflow-hidden">
+                                    <svg class="w-4 h-4 text-rose-600 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/></svg>
+                                    <span id="pdfFileName" class="text-xs font-bold text-slate-800 truncate">buku.pdf</span>
+                                </div>
+                                <span id="pdfFileSize" class="text-[10px] font-mono text-slate-500 shrink-0 ml-2">0 MB</span>
+                            </div>
+                        </div>
+
+                        <input type="file" name="digital_file" id="digitalFileInput" accept="application/pdf,.pdf" class="hidden">
+                    </div>
+                    @error('digital_file') <p class="text-rose-500 text-xs font-medium">{{ $message }}</p> @enderror
+                </div>
+
             </div>
 
         </div>
@@ -167,6 +408,7 @@
 </div>
 
 <script>
+    // --- COVER PREVIEW ---
     document.getElementById('coverInput')?.addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
@@ -182,5 +424,83 @@
             reader.readAsDataURL(file);
         }
     });
+
+    // --- PDF FILE INPUT HANDLER ---
+    document.getElementById('digitalFileInput')?.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const infoBox = document.getElementById('pdfFileInfo');
+        const nameEl = document.getElementById('pdfFileName');
+        const sizeEl = document.getElementById('pdfFileSize');
+
+        if (file) {
+            if (nameEl) nameEl.textContent = file.name;
+            if (sizeEl) {
+                const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+                sizeEl.textContent = sizeMb + ' MB';
+            }
+            if (infoBox) infoBox.classList.remove('hidden');
+        } else {
+            if (infoBox) infoBox.classList.add('hidden');
+        }
+    });
+
+    // --- RICH TEXT WYSIWYG WORD-STYLE LOGIC FOR SINOPSIS ---
+    const editorArea = document.getElementById('editorArea');
+    const finalDescriptionInput = document.getElementById('finalDescriptionInput');
+    const formatBlockSelect = document.getElementById('formatBlockSelect');
+    const wordCount = document.getElementById('wordCount');
+    const charCount = document.getElementById('charCount');
+    const bookForm = document.getElementById('bookForm');
+
+    function execCmd(command, value = null) {
+        document.execCommand(command, false, value);
+        editorArea?.focus();
+        syncContent();
+    }
+
+    document.querySelectorAll('.editor-btn[data-cmd]').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const cmd = this.getAttribute('data-cmd');
+            execCmd(cmd);
+        });
+    });
+
+    formatBlockSelect?.addEventListener('change', function() {
+        const val = this.value;
+        if (val) {
+            execCmd('formatBlock', '<' + val + '>');
+        }
+    });
+
+    document.getElementById('createLinkBtn')?.addEventListener('click', function(e) {
+        e.preventDefault();
+        const url = prompt('Masukkan alamat URL tautan (contoh: https://mtsn32jkt.sch.id):', 'https://');
+        if (url && url !== 'https://') {
+            execCmd('createLink', url);
+        }
+    });
+
+    function syncContent() {
+        if (!editorArea || !finalDescriptionInput) return;
+        const html = editorArea.innerHTML;
+        finalDescriptionInput.value = html;
+
+        const text = editorArea.innerText.trim();
+        const words = text ? text.split(/\s+/).length : 0;
+        const chars = text.length;
+
+        if (wordCount) wordCount.innerText = words + ' kata';
+        if (charCount) charCount.innerText = chars + ' karakter';
+    }
+
+    editorArea?.addEventListener('input', syncContent);
+    editorArea?.addEventListener('keyup', syncContent);
+
+    bookForm?.addEventListener('submit', function() {
+        syncContent();
+    });
+
+    syncContent();
 </script>
 @endsection

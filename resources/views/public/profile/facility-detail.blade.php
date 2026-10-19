@@ -101,9 +101,9 @@
 
                 <div class="prose prose-slate max-w-none text-slate-600 text-sm leading-relaxed space-y-4">
                     @if($facility->description)
-                        <p class="text-base text-slate-700 leading-relaxed font-normal">
-                            {{ $facility->description }}
-                        </p>
+                        <div class="text-base text-slate-700 leading-relaxed font-normal">
+                            {!! $facility->description !!}
+                        </div>
                     @endif
                     <p>
                         Penyediaan dan pemeliharaan fasilitas <strong>{{ $facility->name }}</strong> merupakan komitmen berkelanjutan MTs Negeri 32 Jakarta dalam menghadirkan ekosistem pendidikan yang representatif, nyaman, dan berdaya saing tinggi. Seluruh sarana penunjang didesain ramah anak (Child-Friendly School), berorientasi ramah lingkungan (Madrasah Adiwiyata), serta terintegrasi dengan teknologi pembelajaran modern.

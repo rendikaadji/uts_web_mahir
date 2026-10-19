@@ -1,4 +1,4 @@
-@extends('layouts.public', ['title' => 'Profil Madrasah & Dewan Guru'])
+@extends('layouts.public', ['title' => ($profile->is_teachers_active ?? true) ? 'Profil Madrasah & Dewan Guru' : 'Profil MTsN 32 Jakarta'])
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 py-10">
@@ -98,7 +98,13 @@
 
                 <div class="text-slate-700 text-sm sm:text-base leading-relaxed space-y-3.5 text-justify">
                     @if($profile->headmaster_welcome)
-                        {!! nl2br(e($profile->headmaster_welcome)) !!}
+                        @if(str_contains($profile->headmaster_welcome, '<p>') || str_contains($profile->headmaster_welcome, '<div'))
+                            <div class="prose prose-slate max-w-none text-slate-700 text-sm sm:text-base leading-relaxed">
+                                {!! $profile->headmaster_welcome !!}
+                            </div>
+                        @else
+                            {!! nl2br(e($profile->headmaster_welcome)) !!}
+                        @endif
                     @else
                         <p>Bismillahirrohmanirrohim. Assalamu'alaikum Warahmatullahi Wabarakatuh.</p>
                         <p>Selamat datang di portal resmi MTs Negeri 32 Jakarta. Kami berikhtiar sungguh-sungguh untuk mendidik generasi muslim yang berakhlak mulia, cerdas, berwawasan global, dan mandiri.</p>
@@ -109,7 +115,7 @@
 
                 <div class="pt-5 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
-                        <p class="text-xs text-slate-500 font-medium italic">"Maju Bermutu, Mendunia Bersama MTsN 32 Jakarta"</p>
+                        <p class="text-xs text-slate-500 font-medium italic">"{!! e($profile->headmaster_motto ?? 'Maju Bermutu, Mendunia Bersama MTsN 32 Jakarta') !!}"</p>
                     </div>
                     <div class="text-right">
                         <span class="text-xs font-bold text-[#0B1B3D] block">{{ $profile->headmaster_name }}</span>
@@ -269,6 +275,7 @@
         </div>
     </div>
 
+    @if(($profile->is_teachers_active ?? true) && $teachers->isNotEmpty())
     <!-- 3. Direktori Dewan Guru & Tenaga Kependidikan -->
     <div id="guru" class="space-y-6 scroll-mt-28">
         <div class="text-center space-y-1">
@@ -299,6 +306,7 @@
             @endforeach
         </div>
     </div>
+    @endif
 
     <!-- 4. Sarana dan Prasarana -->
     <div id="sarana" class="space-y-6 scroll-mt-28">

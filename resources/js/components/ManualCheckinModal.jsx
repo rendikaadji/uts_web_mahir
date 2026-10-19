@@ -31,12 +31,17 @@ export default function ManualCheckinModal({ isOpen, onClose, onSuccess, default
         };
 
         if (type === 'member') {
-            if (!userId) {
-                setError('ID Pengguna / Anggota wajib diisi.');
+            const rawVal = userId ? String(userId).trim() : '';
+            if (!rawVal) {
+                setError('NISN, NIP, atau ID Anggota wajib diisi.');
                 setLoading(false);
                 return;
             }
-            payload.user_id = parseInt(userId, 10);
+            if (/^\d{1,4}$/.test(rawVal)) {
+                payload.user_id = parseInt(rawVal, 10);
+            } else {
+                payload.identifier = rawVal;
+            }
         } else {
             if (!guestName.trim()) {
                 setError('Nama tamu wajib diisi.');
@@ -128,18 +133,18 @@ export default function ManualCheckinModal({ isOpen, onClose, onSuccess, default
                     {type === 'member' ? (
                         <div>
                             <label className="block text-[11px] font-semibold uppercase tracking-wider text-[#475569] mb-1.5">
-                                User ID Anggota <span className="text-[#A65B47]">*</span>
+                                NISN / NIP / ID Anggota <span className="text-[#A65B47]">*</span>
                             </label>
                             <input
-                                type="number"
+                                type="text"
                                 required
                                 value={userId}
                                 onChange={(e) => setUserId(e.target.value)}
-                                placeholder="Masukkan ID akun (contoh: 3)"
-                                className="w-full rounded-sm border border-[#CBD5E1] bg-[#F8FAFC] px-4 py-2.5 text-sm text-[#07132B] placeholder-[#94A3B8] focus:border-[#0B1B3D] focus:outline-none"
+                                placeholder="Ketik NISN siswa, NIP guru, atau ID akun..."
+                                className="w-full rounded-xl border border-[#CBD5E1] bg-[#F8FAFC] px-4 py-2.5 text-sm text-[#07132B] placeholder-[#94A3B8] focus:border-[#0B1B3D] focus:outline-none"
                             />
                             <p className="text-[11px] text-[#475569] mt-1.5">
-                                Masukkan nomor ID anggota perpustakaan yang lupa membawa kartu QR.
+                                Masukkan NISN siswa, NIP guru, atau nomor ID anggota yang lupa membawa kartu QR.
                             </p>
                         </div>
                     ) : (

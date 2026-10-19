@@ -24,7 +24,8 @@ class ManualCheckinRequest extends FormRequest
     {
         return [
             'user_id' => ['nullable', 'exists:users,id'],
-            'guest_name' => ['required_without:user_id', 'nullable', 'string', 'max:150'],
+            'identifier' => ['nullable', 'string', 'max:100'],
+            'guest_name' => ['required_without_all:user_id,identifier', 'nullable', 'string', 'max:150'],
             'guest_origin' => ['nullable', 'string', 'max:150'],
             'guest_purpose' => ['nullable', 'string', 'max:255'],
             'guest_phone' => ['nullable', 'string', 'max:30'],

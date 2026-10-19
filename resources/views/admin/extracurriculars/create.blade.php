@@ -1,21 +1,114 @@
 @extends('layouts.admin', ['title' => 'Tambah Ekstrakurikuler', 'headerTitle' => 'Registrasi Ekstrakurikuler Baru'])
 
 @section('content')
+<style>
+    /* Styling Isi Lembar Kerja Visual Word */
+    #editorArea {
+        min-height: 220px;
+        outline: none;
+    }
+    #editorArea:empty:before {
+        content: attr(data-placeholder);
+        color: #94a3b8;
+        pointer-events: none;
+        display: block;
+    }
+    #editorArea p {
+        margin-bottom: 0.75rem;
+        line-height: 1.65;
+    }
+    #editorArea h2 {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #0B1B3D;
+        margin-top: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+    #editorArea h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-top: 0.9rem;
+        margin-bottom: 0.4rem;
+    }
+    #editorArea ul {
+        list-style-type: disc;
+        margin-left: 1.5rem;
+        margin-bottom: 0.75rem;
+        line-height: 1.55;
+    }
+    #editorArea ol {
+        list-style-type: decimal;
+        margin-left: 1.5rem;
+        margin-bottom: 0.75rem;
+        line-height: 1.55;
+    }
+    #editorArea li {
+        margin-bottom: 0.3rem;
+    }
+    #editorArea blockquote {
+        border-left: 4px solid #01ABE8;
+        background-color: #f8fafc;
+        padding: 0.6rem 0.9rem;
+        margin: 0.85rem 0;
+        font-style: italic;
+        color: #475569;
+        border-radius: 0 0.5rem 0.5rem 0;
+    }
+    #editorArea a {
+        color: #01ABE8;
+        text-decoration: underline;
+        font-weight: 600;
+    }
+    #editorArea hr {
+        margin: 1.25rem 0;
+        border: none;
+        border-top: 2px dashed #e2e8f0;
+    }
+    .editor-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #334155;
+        background: transparent;
+        transition: all 0.15s ease;
+        cursor: pointer;
+    }
+    .editor-btn:hover {
+        background-color: #e2e8f0;
+        color: #01ABE8;
+    }
+    .editor-divider {
+        width: 1px;
+        height: 18px;
+        background-color: #cbd5e1;
+        margin: 0 3px;
+    }
+</style>
+
 <div class="space-y-6">
     <!-- Breadcrumb & Top Bar -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
         <div class="flex items-center gap-2 text-xs text-slate-500">
-            <a href="{{ route('admin.extracurriculars.index') }}" class="hover:text-[#01ABE8] transition font-medium">Ekstrakurikuler</a>
+            <a href="{{ route('admin.extracurriculars.index') }}" class="hover:text-[#01ABE8] transition font-medium flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/></svg>
+                Ekstrakurikuler
+            </a>
             <span>&rsaquo;</span>
             <span class="text-slate-900 font-bold">Tambah Baru</span>
         </div>
-        <a href="{{ route('admin.extracurriculars.index') }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-[#0B1B3D] transition">
+        <a href="{{ route('admin.extracurriculars.index') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-slate-600 hover:text-[#0B1B3D] hover:bg-slate-100 transition">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-            Kembali ke Daftar
+            <span>Kembali ke Daftar</span>
         </a>
     </div>
 
-    <form action="{{ route('admin.extracurriculars.store') }}" method="POST" enctype="multipart/form-data">
+    <form id="ekskulForm" action="{{ route('admin.extracurriculars.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             
@@ -51,13 +144,124 @@
                         </div>
                     </div>
 
-                    <!-- Deskripsi Kegiatan -->
+                    <!-- Deskripsi Kegiatan: Visual Word Style Editor -->
                     <div>
                         <div class="flex items-center justify-between mb-1.5">
-                            <label class="block text-xs font-bold text-slate-800">Deskripsi & Tujuan Kegiatan <span class="text-rose-500">*</span></label>
-                            <span class="text-[11px] text-slate-400">Rincian kurikulum kegiatan</span>
+                            <label class="block text-xs font-bold text-slate-800">Deskripsi & Kurikulum Kegiatan <span class="text-rose-500">*</span></label>
+                            <span class="text-[11px] text-slate-400">Format teks seperti Microsoft Word</span>
                         </div>
-                        <textarea name="description" rows="4" required placeholder="Jelaskan fokus keahlian, pembinaan karakter, dan aktivitas rutin santri dalam ekstrakurikuler ini..." class="w-full px-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-900 text-xs sm:text-sm focus:outline-none focus:ring-4 focus:ring-[#01ABE8]/15 focus:border-[#01ABE8] transition placeholder:text-slate-400 leading-relaxed">{{ old('description') }}</textarea>
+
+                        <!-- Card Editor Visual Word -->
+                        <div class="rounded-xl border border-slate-300 bg-white overflow-hidden shadow-2xs focus-within:ring-4 focus-within:ring-[#01ABE8]/15 focus-within:border-[#01ABE8] transition">
+                            
+                            <!-- Penjelasan Ramah untuk Pengguna Awam -->
+                            <div class="px-6 py-2.5 bg-blue-50/40 border-b border-blue-100/60 text-[11px] text-slate-600 flex items-center justify-between">
+                                <span class="flex items-center gap-1.5">
+                                    <svg class="w-3.5 h-3.5 text-[#01ABE8] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    Ketik naskah seperti biasa. Gunakan toolbar di bawah untuk membuat tulisan tebal, penomoran, atau rata tengah tanpa perlu kode HTML &lt;p&gt;.
+                                </span>
+                            </div>
+
+                            <!-- Toolbar Microsoft Word Style -->
+                            <div id="editorToolbar" class="p-2 sm:p-2.5 border-b border-slate-200 bg-white flex flex-wrap items-center gap-1 sticky top-0 z-10">
+                                
+                                <!-- Format Heading / Paragraf -->
+                                <select id="formatBlockSelect" class="h-8 px-2.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#01ABE8]/20 focus:border-[#01ABE8] cursor-pointer" title="Format Paragraf & Judul">
+                                    <option value="p">Paragraf Normal</option>
+                                    <option value="h2">Judul Besar (H2)</option>
+                                    <option value="h3">Subjudul (H3)</option>
+                                    <option value="blockquote">Kutipan / Quote</option>
+                                </select>
+
+                                <div class="editor-divider"></div>
+
+                                <!-- Gaya Teks: Bold, Italic, Underline, Strikethrough -->
+                                <button type="button" data-cmd="bold" class="editor-btn font-bold" title="Tebal (Ctrl+B)">
+                                    B
+                                </button>
+                                <button type="button" data-cmd="italic" class="editor-btn italic" title="Miring (Ctrl+I)">
+                                    I
+                                </button>
+                                <button type="button" data-cmd="underline" class="editor-btn underline" title="Garis Bawah (Ctrl+U)">
+                                    U
+                                </button>
+                                <button type="button" data-cmd="strikeThrough" class="editor-btn line-through" title="Coret">
+                                    S
+                                </button>
+
+                                <div class="editor-divider"></div>
+
+                                <!-- Perataan Teks: Rata Kiri, Rata Tengah, Rata Kanan, Rata Kanan-Kiri (Justify) -->
+                                <button type="button" data-cmd="justifyLeft" class="editor-btn" title="Rata Kiri">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h10M4 18h14"/></svg>
+                                </button>
+                                <button type="button" data-cmd="justifyCenter" class="editor-btn" title="Rata Tengah">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M7 12h10M5 18h14"/></svg>
+                                </button>
+                                <button type="button" data-cmd="justifyRight" class="editor-btn" title="Rata Kanan">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M10 12h10M6 18h14"/></svg>
+                                </button>
+                                <button type="button" data-cmd="justifyFull" class="editor-btn" title="Rata Kanan Kiri (Justify)">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                                </button>
+
+                                <div class="editor-divider"></div>
+
+                                <!-- Daftar / List: Numbered List & Bullet List -->
+                                <button type="button" data-cmd="insertOrderedList" class="editor-btn" title="Penomoran Angka (1, 2, 3...)">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 6h13M7 12h13M7 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+                                </button>
+                                <button type="button" data-cmd="insertUnorderedList" class="editor-btn" title="Poin Bullets (&bull;)">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16M2 6h.01M2 12h.01M2 18h.01"/></svg>
+                                </button>
+
+                                <div class="editor-divider"></div>
+
+                                <!-- Tambahan: Sisipkan Link, Garis Pemisah, Hapus Format -->
+                                <button type="button" id="createLinkBtn" class="editor-btn" title="Sisipkan Link Tautan">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                                </button>
+                                <button type="button" data-cmd="insertHorizontalRule" class="editor-btn" title="Sisipkan Garis Pemisah">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>
+                                </button>
+                                <button type="button" data-cmd="removeFormat" class="editor-btn text-rose-600 hover:text-rose-700" title="Bersihkan Format Teks">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+
+                                <div class="editor-divider"></div>
+
+                                <!-- Undo & Redo -->
+                                <button type="button" data-cmd="undo" class="editor-btn" title="Batal (Ctrl+Z)">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a5 5 0 015 5v2m-15-7l4-4m-4 4l4 4"/></svg>
+                                </button>
+                                <button type="button" data-cmd="redo" class="editor-btn" title="Ulangi (Ctrl+Y)">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 10H11a5 5 0 00-5 5v2m15-7l-4-4m4 4l-4 4"/></svg>
+                                </button>
+                            </div>
+
+                            <!-- Lembar Kerja Pengetikan (Contenteditable) -->
+                            <div class="p-4 bg-white">
+                                <div id="editorArea" 
+                                     contenteditable="true" 
+                                     data-placeholder="Jelaskan fokus keahlian, pembinaan karakter, jadwal, dan aktivitas rutin santri dalam ekstrakurikuler ini..." 
+                                     class="text-slate-800 text-xs sm:text-sm leading-relaxed min-h-[220px] focus:outline-none">
+                                    {!! old('description') !!}
+                                </div>
+                                
+                                <!-- Hidden Textarea yang Dikirim ke Controller -->
+                                <textarea name="description" id="finalDescriptionInput" class="hidden" required>{{ old('description') }}</textarea>
+                            </div>
+
+                            <!-- Footer Editor: Penghitung Kata -->
+                            <div class="px-4 py-2 border-t border-slate-100 bg-slate-50 flex items-center justify-between text-[11px] text-slate-400 font-medium">
+                                <div class="flex items-center gap-3">
+                                    <span id="wordCount">0 kata</span>
+                                    <span>&bull;</span>
+                                    <span id="charCount">0 karakter</span>
+                                </div>
+                                <span class="text-slate-400 text-[10px]">Tersimpan otomatis saat formulir dikirim</span>
+                            </div>
+                        </div>
                         @error('description') <p class="text-rose-500 text-xs mt-1.5 font-medium">{{ $message }}</p> @enderror
                     </div>
                 </div>
@@ -75,7 +279,7 @@
                             <span class="text-[11px] text-slate-400">Opsional</span>
                         </div>
                         <textarea name="achievements" rows="3" placeholder="Contoh: Juara 1 Tingkat Nasional Kompetisi Robotik Madrasah Kemenag RI 2025..." class="w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-xs sm:text-sm focus:outline-none focus:ring-4 focus:ring-[#01ABE8]/15 focus:border-[#01ABE8] transition placeholder:text-slate-400 leading-relaxed">{{ old('achievements') }}</textarea>
-                        <p class="text-[11px] text-slate-400 mt-1.5">Daftar prestasi ini akan otomatis disorot dengan badge kejuaraan pada laman Akademik & Kesiswaan publik.</p>
+                        <p class="text-[11px] text-slate-400 mt-1.5">Daftar prestasi ini akan otomatis disorot dengan badge piala kejuaraan pada laman detail publik.</p>
                     </div>
                 </div>
 
@@ -112,8 +316,8 @@
                     <!-- Tombol Aksi -->
                     <div class="pt-3 border-t border-slate-100 space-y-2">
                         <button type="submit" class="w-full py-3 px-4 rounded-xl bg-[#01ABE8] hover:bg-[#0096cc] active:scale-[0.98] text-white text-xs font-extrabold shadow-xs hover:shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                            <span>Simpan Ekstrakurikuler</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                            <span>Daftarkan Ekstrakurikuler</span>
                         </button>
                         <a href="{{ route('admin.extracurriculars.index') }}" class="w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold text-center block transition">
                             Batal & Kembali
@@ -121,30 +325,31 @@
                     </div>
                 </div>
 
-                <!-- CARD 2: FOTO / LOGO EKSKUL (DROPZONE MODERN) -->
+                <!-- CARD 2: FOTO DOKUMENTASI EKSKUL -->
                 <div class="bg-white rounded-2xl border border-slate-200/90 shadow-xs p-5 sm:p-6 space-y-4">
                     <div class="flex items-center gap-2 pb-3 border-b border-slate-100">
                         <span class="w-1.5 h-4 rounded-full bg-[#01ABE8]"></span>
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-[#0B1B3D]">Foto / Lambang Ekskul</h3>
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-[#0B1B3D]">Foto / Dokumentasi Ekskul</h3>
                     </div>
 
-                    <!-- Live Preview Box -->
-                    <div id="photoPreviewContainer" class="hidden aspect-square w-32 mx-auto rounded-2xl overflow-hidden border-2 border-[#01ABE8]/40 bg-slate-100 relative group shadow-sm">
-                        <img id="photoPreview" src="" alt="Preview Foto" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-[#0B1B3D]/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                            <span class="text-[11px] font-bold text-white bg-slate-900/80 px-2 py-1 rounded-lg backdrop-blur-xs">Ganti</span>
+                    <!-- Live Preview Box (16:9 Aspect Video persis Sarana) -->
+                    <div class="aspect-video w-full rounded-2xl overflow-hidden border border-slate-200/90 bg-slate-50/80 relative group flex items-center justify-center">
+                        <img id="photoPreview" src="" alt="" class="w-full h-full object-cover hidden">
+                        <div id="photoPlaceholder" class="flex flex-col items-center justify-center p-4 text-slate-400">
+                            <svg class="w-10 h-10 mb-1 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            <span class="text-xs font-medium text-slate-400">Belum ada foto</span>
                         </div>
                     </div>
 
-                    <!-- Dropzone Input Box -->
-                    <div class="relative border-2 border-dashed border-slate-300 hover:border-[#01ABE8] bg-slate-50/60 hover:bg-sky-50/30 rounded-xl p-5 text-center transition cursor-pointer group" onclick="document.getElementById('photoInput').click()">
-                        <div class="w-10 h-10 rounded-full bg-white shadow-2xs border border-slate-200 text-slate-500 group-hover:text-[#01ABE8] group-hover:border-[#01ABE8]/40 flex items-center justify-center mx-auto mb-2 transition">
+                    <!-- Dropzone Input Box (Persis Sarana) -->
+                    <div class="relative border-2 border-dashed border-slate-300 hover:border-[#01ABE8] bg-slate-50/60 hover:bg-sky-50/30 rounded-2xl p-4 text-center transition cursor-pointer group" onclick="document.getElementById('photoInput').click()">
+                        <div class="w-10 h-10 rounded-full bg-white shadow-2xs border border-slate-200 text-slate-500 group-hover:text-[#01ABE8] group-hover:border-[#01ABE8]/40 flex items-center justify-center mx-auto mb-1.5 transition">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                         </div>
-                        <p class="text-xs font-bold text-slate-800 group-hover:text-[#01ABE8] transition">Unggah Lambang / Foto</p>
-                        <p class="text-[11px] text-slate-400 mt-0.5">JPG, PNG, atau WebP (Maks. 2MB)</p>
-                        <p class="text-[10px] text-slate-400 mt-1 font-medium">Disarankan foto atau logo rasio 1:1</p>
-                        <input type="file" name="photo" id="photoInput" accept="image/jpeg,image/png,image/webp" class="hidden">
+                        <p class="text-xs font-bold text-slate-800 group-hover:text-[#01ABE8] transition">Unggah Foto Ekstrakurikuler</p>
+                        <p class="text-[11px] text-slate-400 mt-0.5">Format JPG, PNG, atau WebP (Maks. 2 MB)</p>
+                        <p class="text-[10px] text-slate-400 mt-0.5">Opsional, dapat ditambahkan nanti</p>
+                        <input type="file" name="photo" id="photoInput" accept="image/jpeg,image/png,image/jpg,image/webp" class="hidden">
                     </div>
                     @error('photo') <p class="text-rose-500 text-xs font-medium">{{ $message }}</p> @enderror
                 </div>
@@ -156,16 +361,77 @@
 </div>
 
 <script>
+    // --- RICH TEXT WYSIWYG EDITOR LOGIC FOR EXTRACURRICULARS ---
+    const editorArea = document.getElementById('editorArea');
+    const finalDescriptionInput = document.getElementById('finalDescriptionInput');
+    const formatBlockSelect = document.getElementById('formatBlockSelect');
+    const wordCount = document.getElementById('wordCount');
+    const charCount = document.getElementById('charCount');
+    const ekskulForm = document.getElementById('ekskulForm');
+
+    function execCmd(command, value = null) {
+        document.execCommand(command, false, value);
+        editorArea.focus();
+        syncContent();
+    }
+
+    document.querySelectorAll('.editor-btn[data-cmd]').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const cmd = this.getAttribute('data-cmd');
+            execCmd(cmd);
+        });
+    });
+
+    formatBlockSelect?.addEventListener('change', function() {
+        const val = this.value;
+        if (val) {
+            execCmd('formatBlock', '<' + val + '>');
+        }
+    });
+
+    document.getElementById('createLinkBtn')?.addEventListener('click', function(e) {
+        e.preventDefault();
+        const url = prompt('Masukkan alamat URL tautan (contoh: https://mtsn32jkt.sch.id):', 'https://');
+        if (url && url !== 'https://') {
+            execCmd('createLink', url);
+        }
+    });
+
+    function syncContent() {
+        const html = editorArea.innerHTML;
+        finalDescriptionInput.value = html;
+
+        const text = editorArea.innerText.trim();
+        const words = text ? text.split(/\s+/).length : 0;
+        const chars = text.length;
+
+        if (wordCount) wordCount.innerText = words + ' kata';
+        if (charCount) charCount.innerText = chars + ' karakter';
+    }
+
+    editorArea?.addEventListener('input', syncContent);
+    editorArea?.addEventListener('keyup', syncContent);
+
+    ekskulForm?.addEventListener('submit', function() {
+        syncContent();
+    });
+
+    syncContent();
+
+    // --- PHOTO PREVIEW LOGIC ---
     document.getElementById('photoInput')?.addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = function(e) {
                 const preview = document.getElementById('photoPreview');
-                const container = document.getElementById('photoPreviewContainer');
-                if (preview && container) {
+                const placeholder = document.getElementById('photoPlaceholder');
+                if (preview) {
                     preview.src = e.target.result;
-                    container.classList.remove('hidden');
+                    preview.style.display = 'block';
+                    preview.classList.remove('hidden');
+                    if (placeholder) placeholder.style.display = 'none';
                 }
             }
             reader.readAsDataURL(file);
