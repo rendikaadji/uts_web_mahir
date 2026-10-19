@@ -45,16 +45,25 @@ main() {
         sleep 3
       done
       log "health $path -> $code"
-      [ "$code" = 200 ] || return 1
+      if [ "$code" != 200 ]; then
+        log "isi respons: $(curl -s --max-time 20 "$base$path" | head -c 300)"
+        log "error_log: $(tail -n 3 "$DOCROOT/error_log" 2> /dev/null | cut -c1-300)"
+        return 1
+      fi
     done
   }
 
   # Hosting (LiteSpeed) tidak mengikuti symlink, jadi isi public/ disalin ke docroot.
+  # Blok handler PHP dari cPanel (MultiPHP) di .htaccess docroot disimpan lalu ditempel lagi;
+  # tanpa itu situs jatuh ke PHP bawaan 7.4 sampai cPanel menulis ulang blok tersebut.
   sync_docroot() {
+    local keep
+    keep=$(awk '/^# (php -- BEGIN cpanel-dont-remove|BEGIN cPanel-generated handler)/{f=1} f{print} /^# (php -- END cpanel-dont-remove|END cPanel-generated handler)/{f=0}' "$DOCROOT/.htaccess" 2> /dev/null || true)
     rm -f public/storage
     mkdir -p "$DOCROOT/storage"
     cp -a public/. "$DOCROOT/"
     sed -i "s|__DIR__.'/../|'$PWD/|g" "$DOCROOT/index.php"
+    { [ -z "$keep" ] || printf '%s\n\n' "$keep"; cat public/.htaccess; } > "$DOCROOT/.htaccess"
   }
 
   install_and_cache() {
@@ -127,7 +136,6 @@ main() {
   "$PHP" artisan optimize:clear
   "$PHP" artisan optimize
   "$PHP" artisan route:list --except-vendor > /dev/null
-  "$PHP" artisan about --only=environment
 
   STAGE=sync
   sync_docroot
