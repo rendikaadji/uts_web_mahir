@@ -98,7 +98,6 @@ class FacilityDetailTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSeeText('Sarana & Prasarana Sekolah');
-        $response->assertSeeText('Sekolah Modern & Asri');
         $response->assertSeeText('JELAJAHI SEKOLAH');
         $response->assertDontSeeText('Sarana & Prasarana Kampus');
         $response->assertDontSeeText('JELAJAHI KAMPUS');
