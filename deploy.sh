@@ -35,11 +35,11 @@ main() {
   }
 
   health() {
-    local base path code i
+    local base path code
     base=$(dbget APP_URL | sed 's|/*$||')
     for path in /up / /login; do
       code=000
-      for i in 1 2 3; do
+      for _ in 1 2 3; do
         code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$base$path" || true)
         [ "$code" = 200 ] && break
         sleep 3
