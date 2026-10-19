@@ -28,6 +28,7 @@ class ImportLegacySqliteSeederTest extends TestCase
         $pdo->exec('create table sistem_lama (id integer primary key)');
         $pdo->exec("insert into users values (1, 'Admin Lama', 'admin', null, '".Hash::make('admin123')."', 'admin_madrasah', 1, 'x')");
         $pdo->exec("insert into users values (2, 'Siswa', 'siswa1', null, '".Hash::make('rahasia')."', 'siswa_guru', 1, 'x')");
+        $pdo->exec("insert into users values (3, 'Rizki', 'rizki', null, '".Hash::make('rahasia2')."', 'pustakawan', 1, 'x')");
         $pdo->exec("insert into categories values (1, 'Fiksi', 'fiksi', null, null, null)");
         putenv('LEGACY_SQLITE_PATH='.$this->legacyPath);
     }
@@ -64,11 +65,34 @@ class ImportLegacySqliteSeederTest extends TestCase
         $this->assertSame(1, Category::count());
         $this->assertDatabaseHas('users', ['username' => 'siswa1']);
         $this->assertDatabaseHas('users', ['username' => $librarian->username]);
-        $this->assertSame(3, User::count());
+        $this->assertSame(4, User::count());
 
         $admin = DB::table('users')->where('username', 'admin')->first();
         $this->assertSame(1, (int) $admin->id);
         $this->assertTrue(Hash::check('password-baru-kuat', $admin->password));
         $this->assertSame($current->name, $admin->name);
+    }
+
+    public function test_only_admins_mode_adds_missing_admins_and_leaves_other_data(): void
+    {
+        $current = User::factory()->create([
+            'username' => 'admin',
+            'role' => 'admin_madrasah',
+            'password' => 'password-baru-kuat',
+        ]);
+        putenv('LEGACY_IMPORT=yes');
+        putenv('LEGACY_ONLY_ADMINS=yes');
+
+        try {
+            $this->seed(ImportLegacySqliteSeeder::class);
+        } finally {
+            putenv('LEGACY_ONLY_ADMINS');
+        }
+
+        $this->assertSame(0, Category::count());
+        $this->assertDatabaseMissing('users', ['username' => 'siswa1']);
+        $this->assertDatabaseHas('users', ['username' => 'rizki', 'role' => 'pustakawan']);
+        $this->assertSame(2, User::count());
+        $this->assertTrue(Hash::check('password-baru-kuat', $current->fresh()->password));
     }
 }
