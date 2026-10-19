@@ -127,7 +127,6 @@ main() {
   "$PHP" artisan optimize:clear
   "$PHP" artisan optimize
   "$PHP" artisan route:list --except-vendor > /dev/null
-  "$PHP" artisan about --only=environment
 
   STAGE=sync
   sync_docroot
