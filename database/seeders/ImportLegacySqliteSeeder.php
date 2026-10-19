@@ -93,7 +93,7 @@ class ImportLegacySqliteSeeder extends Seeder
         $skipped = array_diff(array_column($legacySchema->getTables(), 'name'), $tables, self::SKIPPED_TABLES);
         $this->command->line('Tabel lama tanpa pasangan (dilewati): '.($skipped ? implode(', ', $skipped) : '-'));
 
-        $this->warnAboutWeakPrivilegedPasswords();
+        $this->warnAboutWeakPrivilegedPasswords($write);
     }
 
     /**
@@ -118,9 +118,11 @@ class ImportLegacySqliteSeeder extends Seeder
         }
     }
 
-    private function warnAboutWeakPrivilegedPasswords(): void
+    private function warnAboutWeakPrivilegedPasswords(bool $write): void
     {
-        DB::table('users')
+        $this->command->info($write ? 'Akun admin/pustakawan di database sekarang:' : 'Akun admin/pustakawan di data LAMA (akan masuk saat import):');
+
+        DB::connection($write ? null : 'legacy')->table('users')
             ->whereIn('role', ['admin_madrasah', 'pustakawan'])
             ->get()
             ->each(function (object $user): void {
