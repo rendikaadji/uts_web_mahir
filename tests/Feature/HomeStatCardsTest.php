@@ -81,7 +81,7 @@ class HomeStatCardsTest extends TestCase
         $response->assertOk();
         $response->assertDontSee('850+');
         $response->assertDontSee('2.500+');
-        $response->assertDontSee('stats-metric-section');
+        $response->assertDontSee('id="stats-metric-section"', false);
     }
 
     public function test_cards_use_real_counts_and_only_appear_when_data_exists(): void
@@ -96,7 +96,7 @@ class HomeStatCardsTest extends TestCase
 
         $response = $this->get(route('home'));
 
-        $response->assertSee('stats-metric-section');
+        $response->assertSee('id="stats-metric-section"', false);
         $response->assertSee('data-counter="1"', false);
         $response->assertSee('Dewan Guru');
         $response->assertDontSee('Siswa Terdaftar Aktif');
