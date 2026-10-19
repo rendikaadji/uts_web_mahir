@@ -16,4 +16,10 @@ $PHP artisan package:discover --ansi
 $PHP artisan migrate --force
 $PHP artisan optimize:clear
 $PHP artisan optimize
+# Hosting (LiteSpeed) tidak mengikuti symlink, jadi isi public/ disalin ke docroot.
+DOCROOT="$HOME/public_html"
+rm -f public/storage
+mkdir -p "$DOCROOT/storage"
+cp -a public/. "$DOCROOT/"
+sed -i "s|__DIR__.'/../|'$PWD/|g" "$DOCROOT/index.php"
 echo "deployed $(git rev-parse --short HEAD) at $(date)"
