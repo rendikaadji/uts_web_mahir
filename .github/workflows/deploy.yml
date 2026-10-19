@@ -86,6 +86,7 @@ jobs:
           LOG_LEVEL: error
         run: |
           composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+          rm -f bootstrap/cache/packages.php bootstrap/cache/services.php
           php artisan package:discover
           php artisan optimize
           php artisan route:list --except-vendor > /dev/null

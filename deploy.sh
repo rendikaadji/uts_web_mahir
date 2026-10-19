@@ -59,6 +59,7 @@ main() {
 
   install_and_cache() {
     "$PHP" "$HOME/bin/composer" install --no-dev --optimize-autoloader --no-interaction --no-scripts
+    rm -f bootstrap/cache/packages.php bootstrap/cache/services.php
     "$PHP" artisan package:discover --ansi
   }
 
