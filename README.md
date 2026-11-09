@@ -192,20 +192,20 @@ Dengan Laravel Herd, situs sudah tersedia di `http://website-mtsn32.test`.
 
 **Halaman login**
 
-![Halaman login](mtsn32-docs/images/01-login.png)
+![Halaman login](images/01-login.png)
 
 **Dashboard perpustakaan (akun `pustakawan`)**
 
-![Dashboard pustakawan](mtsn32-docs/images/02-dashboard-pustakawan.png)
+![Dashboard pustakawan](images/02-dashboard-pustakawan.png)
 
 **Daftar Kategori Buku dengan DataTables (cari, urut, pagination, jumlah buku)**
 
-![Daftar kategori](mtsn32-docs/images/03-kategori-daftar.png)
+![Daftar kategori](images/03-kategori-daftar.png)
 
 **Validasi form Tambah Kategori (pesan error bahasa Indonesia)**
 
-![Validasi kategori](mtsn32-docs/images/04-kategori-validasi.png)
+![Validasi kategori](images/04-kategori-validasi.png)
 
 **Protected route: akun `admin` membuka `/admin/kategori` ditolak 403**
 
-![Akses ditolak 403](mtsn32-docs/images/05-kategori-403-admin.png)
+![Akses ditolak 403](images/05-kategori-403-admin.png)
