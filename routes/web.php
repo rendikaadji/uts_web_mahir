@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\AdminManagementController;
 use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
 use App\Http\Controllers\Admin\BookController;
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CirculationController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ExtracurricularController;
@@ -217,6 +218,9 @@ Route::middleware(['auth', 'role:admin_madrasah,pustakawan'])->prefix('admin')->
         Route::get('/eksemplar/{copy}/edit', [BookController::class, 'editCopy'])->name('books.editCopy');
         Route::put('/eksemplar/{copy}', [BookController::class, 'updateCopy'])->name('books.updateCopy');
         Route::delete('/eksemplar/{copy}', [BookController::class, 'destroyCopy'])->name('books.destroyCopy');
+
+        // Kategori Buku (antarmuka Bootstrap 5 + DataTables)
+        Route::resource('kategori', CategoryController::class)->except('show')->names('categories')->parameters(['kategori' => 'category']);
 
         // Denda
         Route::get('/denda', [FineController::class, 'index'])->name('fines.index');
